@@ -2161,6 +2161,7 @@ static void RB_RenderDepthOnly(drawSurf_t *drawSurfs, int numDrawSurfs)
 	}
 }
 
+extern void RB_RenderWorldEffects(void);
 static void RB_RenderMainPass(drawSurf_t *drawSurfs, int numDrawSurfs)
 {
 	if (backEnd.viewParms.flags & VPF_DEPTHSHADOW)
@@ -2556,10 +2557,10 @@ const void	*RB_WorldEffects(const void *data)
 
 	RB_RenderWorldEffects();
 
-	/*if (tess.shader)
+	if (tess.shader)
 	{
-	RB_BeginSurface( tess.shader, tess.fogNum, tess.cubemapIndex );
-	}*/
+		RB_BeginSurface( tess.shader, tess.fogNum, 0 );
+	}
 
 	return (const void *)(cmd + 1);
 }
@@ -2602,11 +2603,6 @@ static const void *RB_CaptureShadowMap(const void *data)
 
 	return (const void *)(cmd + 1);
 }
-
-
-#ifdef __JKA_WEATHER__
-extern void RB_RenderWorldEffects(void);
-#endif //__JKA_WEATHER__
 
 /*
 =============
@@ -2951,6 +2947,11 @@ void RB_ExecuteRenderCommands( const void *data ) {
 		case RC_SWAP_BUFFERS:
 			data = RB_SwapBuffers( data );
 			break;
+#ifdef __JKA_WEATHER__
+		case RC_WORLD_EFFECTS:
+			data = RB_WorldEffects(data);
+			break;
+#endif //__JKA_WEATHER__
 		case RC_SCREENSHOT:
 			data = RB_TakeScreenshotCmd( data );
 			break;
@@ -2966,11 +2967,6 @@ void RB_ExecuteRenderCommands( const void *data ) {
 		case RC_CAPSHADOWMAP:
 			data = RB_CaptureShadowMap(data);
 			break;
-#ifdef __JKA_WEATHER__
-		case RC_WORLD_EFFECTS:
-			data = RB_WorldEffects(data);
-			break;
-#endif //__JKA_WEATHER__
 		case RC_CONVOLVECUBEMAP:
 			data = RB_PrefilterEnvMap(data);
 			break;

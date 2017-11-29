@@ -50,14 +50,14 @@ void R_WorldEffect_f(void);
 ////////////////////////////////////////////////////////////////////////////////////////
 // Exported Functionality
 ////////////////////////////////////////////////////////////////////////////////////////
-bool R_GetWindVector(vec3_t windVector);
-bool R_GetWindSpeed(float &windSpeed);
-//bool R_GetWindGusting(vec3_t atpoint);
+bool R_GetWindVector(vec3_t windVector, vec3_t atpoint);
+bool R_GetWindSpeed(float &windSpeed, vec3_t atpoint);
+bool R_GetWindGusting(vec3_t atpoint);
 bool R_IsOutside(vec3_t pos);
 float R_IsOutsideCausingPain(vec3_t pos);
 float R_GetChanceOfSaberFizz();
 bool R_IsShaking(vec3_t pos);
-//bool R_SetTempGlobalFogColor(vec3_t color);
+bool R_SetTempGlobalFogColor(vec3_t color);
 
 bool R_IsRaining();
 bool R_IsPuffing();

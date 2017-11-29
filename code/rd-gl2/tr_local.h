@@ -646,6 +646,9 @@ struct SurfaceSpriteBlock
 	float fadeScale;
 	float widthVariance;
 	float heightVariance;
+	float widthfxGrow;
+	float heightfxGrow;
+	float fxDuration;
 };
 
 struct LiquidBlock
@@ -1130,11 +1133,13 @@ enum
 // Surface sprite shader flags
 enum
 {
-	SSDEF_FACE_CAMERA					= 0x01,
+	SSDEF_ORIENTED						= 0x01,
 	SSDEF_ALPHA_TEST					= 0x02,
-	SSDEF_FACE_UP						= 0x04,
+	SSDEF_VERTICAL						= 0x04,
+	SSDEF_FLATTENED						= 0x08,
+	SSDEF_EFFECT						= 0x10,
 
-	SSDEF_ALL							= 0x07,
+	SSDEF_ALL							= 0x01F,
 	SSDEF_COUNT							= SSDEF_ALL + 1
 };
 
@@ -1365,6 +1370,7 @@ typedef struct {
 	stereoFrame_t	stereoFrame;
 
 	int			time;				// time in milliseconds for shader effects and other time dependent rendering issues
+	int			frametime;
 	int			rdflags;			// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
@@ -1573,10 +1579,12 @@ struct srfSprites_t
 	vertexAttribute_t *attributes;
 };
 
-struct srfWeather_t
+#ifndef __JKA_WEATHER__
+struct srfXyc_Weather_t
 {
 	surfaceType_t surfaceType;
 };
+#endif //__JKA_WEATHER__
 
 typedef struct
 {
@@ -1848,7 +1856,7 @@ typedef struct {
 
 	int			numfogs;
 	fog_t		*fogs;
-	const fog_t	*globalFog;
+	/*const*/fog_t	*globalFog;
 
 	vec3_t		lightGridOrigin;
 	vec3_t		lightGridSize;
@@ -2229,7 +2237,9 @@ typedef struct {
 ** but may read fields that aren't dynamically modified
 ** by the frontend.
 */
-struct weatherSystem_t;
+#ifndef __JKA_WEATHER__
+struct xyc_weatherSystem_t;
+#endif //__JKA_WEATHER__
 typedef struct trGlobals_s {
 	qboolean				registered;		// cleared at shutdown, set at beginRegistration
 
@@ -2314,7 +2324,9 @@ typedef struct trGlobals_s {
 	shader_t				*shadowShader;
 	shader_t				*distortionShader;
 	shader_t				*projectionShadowShader;
-	shader_t				*weatherInternalShader;
+#ifndef __JKA_WEATHER__
+	shader_t				*xyc_weatherInternalShader;
+#endif //__JKA_WEATHER__
 
 	shader_t				*flareShader;
 	shader_t				*sunShader;
@@ -2336,7 +2348,9 @@ typedef struct trGlobals_s {
 	trRefEntity_t			worldEntity;		// point currentEntity at this when rendering world
 	model_t					*currentModel;
 
-	weatherSystem_t			*weatherSystem;
+#ifndef __JKA_WEATHER__
+	weatherSystem_t			*xyc_weatherSystem;
+#endif //__JKA_WEATHER__
 
 	//
 	// GPU shader programs
@@ -2365,9 +2379,9 @@ typedef struct trGlobals_s {
 	shaderProgram_t dglowUpsample;
 	shaderProgram_t spriteShader[SSDEF_COUNT];
 #ifdef __JKA_WEATHER__
-	shaderProgram_t jkaweatherShader;
+	shaderProgram_t jka_weatherShader;
 #else
-	shaderProgram_t weatherShader;
+	shaderProgram_t xyc_weatherShader;
 #endif //__JKA_WEATHER__
 
 	// -----------------------------------------
@@ -3132,14 +3146,14 @@ typedef enum {
 	RC_DRAW_SURFS,
 	RC_DRAW_BUFFER,
 	RC_SWAP_BUFFERS,
+#ifdef __JKA_WEATHER__
+	RC_WORLD_EFFECTS,
+#endif //__JKA_WEATHER__
 	RC_SCREENSHOT,
 	RC_VIDEOFRAME,
 	RC_COLORMASK,
 	RC_CLEARDEPTH,
 	RC_CAPSHADOWMAP,
-#ifdef __JKA_WEATHER__
-	RC_WORLD_EFFECTS,
-#endif //__JKA_WEATHER__
 	RC_CONVOLVECUBEMAP,
 	RC_POSTPROCESS,
 	RC_EXPORT_CUBEMAPS,
@@ -3226,6 +3240,9 @@ void RE_StretchPic ( float x, float y, float w, float h, float s1, float t1, flo
 void RE_RotatePic ( float x, float y, float w, float h, float s1, float t1, float s2, float t2, float a, qhandle_t hShader );
 void RE_RotatePic2 ( float x, float y, float w, float h, float s1, float t1, float s2, float t2,float a, qhandle_t hShader );
 void RE_RotatePic2RatioFix ( float ratio );
+#ifdef __JKA_WEATHER__
+void RE_RenderWorldEffects(void);
+#endif //__JKA_WEATHER__
 void RE_LAGoggles(void);
 void RE_Scissor(float x, float y, float w, float h);
 void RE_BeginFrame( stereoFrame_t stereoFrame );
