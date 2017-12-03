@@ -8727,16 +8727,22 @@ qboolean WP_ForceThrowable( gentity_t *ent, gentity_t *forwardEnt, gentity_t *se
 							{//not a force-usable func_static or, it is one, but it's solitary, so you only press it when looking right at it
 								if ( Q_stricmp( "limb", ent->classname ) )
 								{//not a limb
-									if ( ent->s.weapon == WP_TURRET && !Q_stricmp( "PAS", ent->classname ) && ent->s.apos.trType == TR_STATIONARY )
-									{//can knock over placed turrets
-										if ( !self->s.number || self->enemy != ent )
-										{//only NPCs who are actively mad at this turret can push it over
+								 //[Physics]
+								 //continue;
+									if (Q_stricmp("func_physics", ent->classname) != 0)
+									{
+										//[/Physics]
+										if (ent->s.weapon == WP_TURRET && !Q_stricmp("PAS", ent->classname) && ent->s.apos.trType == TR_STATIONARY)
+										{//can knock over placed turrets
+											if (!self->s.number || self->enemy != ent)
+											{//only NPCs who are actively mad at this turret can push it over
+												return qfalse;
+											}
+										}
+										else
+										{
 											return qfalse;
 										}
-									}
-									else
-									{
-										return qfalse;
 									}
 								}
 							}

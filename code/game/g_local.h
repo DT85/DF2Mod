@@ -365,6 +365,13 @@ extern cvar_t	*g_npcdebug;
 
 extern	cvar_t	*g_allowBunnyhopping;
 extern gentity_t *player;
+
+//[Physics]
+// g_physics.cpp
+void G_AddStaticEntity(gentity_t *ent, entityType_t entityType);
+void G_RemoveStaticEntity(gentity_t *ent);
+//[/Physics]
+
 //
 // g_spawn.c
 //

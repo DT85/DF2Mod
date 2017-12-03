@@ -48,6 +48,11 @@ const char *CG_DisplayBoxedText(int iBoxX, int iBoxY, int iBoxWidth, int iBoxHei
 								const char *psText, int iFontHandle, float fScale,
 								const vec4_t v4Color);
 
+//[Physics]
+qboolean BG_InitPhysics(const char* mapname);
+void BG_ShutdownPhysics();
+//[/Physics]
+
 #define NUM_CHUNKS		6
 /*
 Ghoul2 Insert Start
@@ -357,6 +362,12 @@ vmCvar_t	cg_scaleVehicleSensitivity;
 
 vmCvar_t	r_ratioFix;
 
+//[Physics]
+vmCvar_t	phys_fluidLinearViscosity;
+vmCvar_t	phys_fluidDensity;
+vmCvar_t	phys_fluidAngularViscosity;
+//[/Physics]
+
 typedef struct {
 	vmCvar_t	*vmCvar;
 	const char	*cvarName;
@@ -477,6 +488,12 @@ static cvarTable_t cvarTable[] = {
 	{ &cg_scaleVehicleSensitivity, "cg_scaleVehicleSensitivity", "1", CVAR_ARCHIVE },
 
 	{ &r_ratioFix, "r_ratioFix", "1", CVAR_ARCHIVE },
+
+	//[Physics]
+	{ &phys_fluidLinearViscosity, "phys_fluidLinearViscosity", "0.8", CVAR_ARCHIVE },
+	{ &phys_fluidAngularViscosity, "phys_fluidAngularViscosity", "0.8", CVAR_ARCHIVE },
+	{ &phys_fluidDensity, "phys_fluidDensity", "41.2", CVAR_ARCHIVE },
+	//[/Physics]
 };
 
 static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
@@ -2311,6 +2328,10 @@ void CG_Init( int serverCommandSequence ) {
 
 	CG_InitConsoleCommands();
 
+	//[Physics]
+	BG_InitPhysics(cgs.mapname);
+	//[/Physics]
+
 	cg.weaponPickupTextTime = 0;
 
 	cg.missionInfoFlashTime = 0;
@@ -2329,6 +2350,10 @@ Called before every level change or subsystem restart
 */
 void CG_Shutdown( void )
 {
+	//[Physics]
+	BG_ShutdownPhysics();
+	//[/Physics]
+
 	in_camera = false;
 	FX_Free();
 }

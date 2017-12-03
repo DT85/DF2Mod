@@ -1286,6 +1286,11 @@ Ghoul2 Insert End
 	int			forcePushTime;
 	int			forcePuller;	//who force-pulled me (so we don't damage them if we hit them)
 
+	//[Physics]
+	vec3_t      forceApplied;
+	int         forceThrowTime;
+	float       bodyVolume;
+	//[/Physics]
 
 	void sg_export(
 		ojk::SavedGameHelper& saved_game) const
@@ -1474,6 +1479,11 @@ Ghoul2 Insert End
 		saved_game.write<float>(lightLevel);
 		saved_game.write<int32_t>(forcePushTime);
 		saved_game.write<int32_t>(forcePuller);
+		//[Physics]
+		saved_game.write<float>(forceApplied);
+		saved_game.write<int32_t>(forceThrowTime);
+		saved_game.write<float>(bodyVolume);
+		//[/Physics]
 	}
 
 	void sg_import(
@@ -1663,6 +1673,11 @@ Ghoul2 Insert End
 		saved_game.read<float>(lightLevel);
 		saved_game.read<int32_t>(forcePushTime);
 		saved_game.read<int32_t>(forcePuller);
+		//[Physics]
+		saved_game.read<float>(forceApplied);
+		saved_game.read<int32_t>(forceThrowTime);
+		saved_game.read<float>(bodyVolume);
+		//[/Physics]
 	}
 };
 #endif //#ifdef GAME_INCLUDE

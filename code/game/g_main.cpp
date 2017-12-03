@@ -723,6 +723,9 @@ InitGame
 int giMapChecksum;
 SavedGameJustLoaded_e g_eSavedGameJustLoaded;
 qboolean g_qbLoadTransition = qfalse;
+//[Physics]
+qboolean G_InitPhysics(const char* mapname);
+//[/Physics]
 void InitGame(  const char *mapname, const char *spawntarget, int checkSum, const char *entities, int levelTime, int randomSeed, int globalTime, SavedGameJustLoaded_e eSavedGameJustLoaded, qboolean qbLoadTransition )
 {
 	//rww - default this to 0, we will auto-set it to 1 if we run into a terrain ent
@@ -798,6 +801,15 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 	// parse the key/value pairs and spawn gentities
 	G_SpawnEntitiesFromString( entities );
 
+	//[Physics]
+	gi.Printf("------- Physics Initialization -------\n");
+	gi.Printf("...Loading collision data for %s.\n", level.mapname);
+	if (!G_InitPhysics(level.mapname))
+	{
+		Com_Error(ERR_DROP, "Unable to load physics data.\n");
+	}
+	//[/Physics]
+
 	// general initialization
 	G_FindTeams();
 
@@ -825,6 +837,9 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 ShutdownGame
 =================
 */
+//[Physics]
+void BG_ShutdownPhysics();
+//[/Physics]
 void ShutdownGame( void )
 {
 	// write all the client session data so we can get it back
@@ -835,6 +850,10 @@ void ShutdownGame( void )
 
 	// Shut ICARUS down.
 	IIcarusInterface::DestroyIcarus();
+
+	//[Physics]
+	BG_ShutdownPhysics();
+	//[/Physics]
 
 	// Destroy the Game Interface again.  Only way to really free everything.
 	IGameInterface::Destroy();
@@ -1897,7 +1916,10 @@ int AITime = 0;
 int navTime = 0;
 #endif//	AI_TIMERS
 
-
+//[Physics]
+void BG_UpdatePhysics(int time, float timestep);
+void G_UpdateStaticBodies(void);
+//[/Physics]
 void G_RunFrame( int levelTime ) {
 	int			i;
 	gentity_t	*ent;
@@ -2058,6 +2080,10 @@ void G_RunFrame( int levelTime ) {
 		//UpdateTeamCounters( ent );	//	   to call anyway on a freed ent.
 	}
 
+	//[Physics] - Update the positions of physics objects
+	BG_UpdatePhysics(level.time, 1.0f/* / g_svfps.integer*/);
+	//[/Physics]
+
 	// perform final fixups on the player
 	ent = &g_entities[0];
 	if ( ent->inuse )
@@ -2108,6 +2134,10 @@ extern int delayedShutDown;
 		assert(0);
 		G_Error( "Game Errors. Scroll up the console to read them.\n" );
 	}
+
+	//[Physics] - Update the static entity positions
+	G_UpdateStaticBodies();
+	//[/Physics]
 
 #ifdef _DEBUG
 	if(!(level.framenum&0xff))

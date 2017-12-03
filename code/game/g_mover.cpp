@@ -38,6 +38,27 @@ extern void G_SetEnemy( gentity_t *self, gentity_t *enemy );
 void CalcTeamDoorCenter ( gentity_t *ent, vec3_t center );
 void InitMover( gentity_t *ent ) ;
 
+//[Physics]
+void BG_LoadBrushModelForEntity(int entityId, int modelId);
+void BG_DestroyBodyForEntity(int entityId);
+void BG_MoveRigidBodyTo(int entityId, const vec3_t newPosition);
+void BG_RigidBodySetVelocity(int entityId, const vec3_t velocity);
+void BG_OrientRigidBody(int entityId, const vec3_t newAngles);
+
+static void LoadPhysicsBody(const gentity_t* ent)
+{
+	if (!ent)
+	{
+		return;
+	}
+
+	if (ent->model[0] && ent->model[0] == '*')
+	{
+		BG_LoadBrushModelForEntity(ent->s.number, atoi(ent->model + 1));
+	}
+}
+//[/Physics]
+
 /*
 ===============================================================================
 
@@ -545,6 +566,10 @@ void G_MoverTeam( gentity_t *ent ) {
 	for ( part = ent ; part ; part = part->teamchain )
 	{
 		// call the reached function if time is at or past end point
+		//[Physics]
+		BG_MoveRigidBodyTo(ent->s.number, ent->currentOrigin);
+		//BG_OrientRigidBody (ent->s.number, ent->r.currentAngles);
+		//[/Physics]
 		if ( part->s.pos.trType == TR_LINEAR_STOP ||
 			part->s.pos.trType == TR_NONLINEAR_STOP )
 		{
@@ -640,10 +665,18 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 	case MOVER_POS1:
 		VectorCopy( ent->pos1, ent->s.pos.trBase );
 		ent->s.pos.trType = TR_STATIONARY;
+
+		//[Physics]
+		BG_RigidBodySetVelocity(ent->s.number, vec3_origin);
+		//[/Physics]
 		break;
 	case MOVER_POS2:
 		VectorCopy( ent->pos2, ent->s.pos.trBase );
 		ent->s.pos.trType = TR_STATIONARY;
+
+		//[Physics]
+		BG_RigidBodySetVelocity(ent->s.number, vec3_origin);
+		//[/Physics]
 		break;
 	case MOVER_1TO2:
 		VectorCopy( ent->pos1, ent->s.pos.trBase );
@@ -659,6 +692,10 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 			ent->s.pos.trType = TR_NONLINEAR_STOP;
 		}
 		ent->s.eFlags &= ~EF_BLOCKED_MOVER;
+
+		//[Physics]
+		BG_RigidBodySetVelocity(ent->s.number, ent->s.pos.trDelta);
+		//[/Physics]
 		break;
 	case MOVER_2TO1:
 		VectorCopy( ent->pos2, ent->s.pos.trBase );
@@ -674,10 +711,18 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time ) {
 			ent->s.pos.trType = TR_NONLINEAR_STOP;
 		}
 		ent->s.eFlags &= ~EF_BLOCKED_MOVER;
+
+		//[Physics]
+		BG_RigidBodySetVelocity(ent->s.number, ent->s.pos.trDelta);
+		//[/Physics]
 		break;
 	}
 	EvaluateTrajectory( &ent->s.pos, level.time, ent->currentOrigin );
 	gi.linkentity( ent );
+
+	//[Physics]
+	//BG_MoveRigidBodyTo (ent->s.number, ent->r.currentOrigin/*, ent->s.pos.trType == TR_STATIONARY ? vec3_origin : ent->s.pos.trDelta*/);
+	//[/Physics]
 }
 
 /*
@@ -1532,6 +1577,11 @@ void SP_func_door (gentity_t *ent)
 			ent->e_ThinkFunc = thinkF_Think_SpawnNewDoorTrigger;
 		}
 	}
+
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//G_AddStaticEntity (ent, ET_MOVER);
+	//[/Physics]
 }
 
 /*
@@ -1678,6 +1728,10 @@ void SP_func_plat (gentity_t *ent) {
 	if ( !ent->targetname ) {
 		SpawnPlatTrigger(ent);
 	}
+
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//[/Physics]
 }
 
 
@@ -1765,8 +1819,11 @@ void SP_func_button( gentity_t *ent ) {
 	}
 
 	InitMover( ent );
-}
 
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//[/Physics]
+}
 
 
 /*
@@ -2152,6 +2209,10 @@ void SP_func_train (gentity_t *self) {
 		gi.G2API_SetBoneAnim( &self->ghoul2[self->playerModel], "model_root", self->startFrame, self->endFrame, BONE_ANIM_OVERRIDE_LOOP, 1.0f + Q_flrand(-1.0f, 1.0f) * 0.1f, 0, -1, -1 );
 		self->endFrame = 0; // don't allow it to do anything with the animation function in G_main
 	}
+
+	//[Physics]
+	LoadPhysicsBody(self);
+	//[/Physics]
 }
 
 /*
@@ -2224,6 +2285,10 @@ void SP_func_static( gentity_t *ent )
 	{	// this means that this guy will never be updated, moved, changed, etc.
 		ent->s.eFlags = EF_PERMANENT;
 	}
+
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//[/Physics]
 }
 
 void func_static_use ( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -2354,6 +2419,10 @@ void SP_func_rotating (gentity_t *ent) {
 	}
 
 	gi.linkentity( ent );
+
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//[/Physics]
 }
 
 
@@ -2448,6 +2517,10 @@ void SP_func_bobbing (gentity_t *ent) {
 	{
 		ent->s.pos.trType = TR_SINE;
 	}
+
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//[/Physics]
 }
 
 /*
@@ -2508,6 +2581,10 @@ void SP_func_pendulum(gentity_t *ent) {
 	ent->s.apos.trType = TR_SINE;
 
 	ent->s.apos.trDelta[2] = speed;
+
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//[/Physics]
 }
 
 /*
@@ -2603,6 +2680,9 @@ void SP_func_wall( gentity_t *ent )
 
 	gi.linkentity (ent);
 
+	//[Physics]
+	LoadPhysicsBody(ent);
+	//[/Physics]
 }
 
 

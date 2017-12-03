@@ -392,6 +392,9 @@ void SP_func_breakable (gentity_t *self);
 void SP_func_glass( gentity_t *self );
 void SP_func_pendulum( gentity_t *ent );
 void SP_func_button (gentity_t *ent);
+//[Physics]
+void SP_func_physics(gentity_t *ent);
+//[Physics]
 void SP_func_door (gentity_t *ent);
 void SP_func_train (gentity_t *ent);
 void SP_func_timer (gentity_t *self);
@@ -625,6 +628,9 @@ spawn_t	spawns[] = {
 
 	{"func_plat", SP_func_plat},
 	{"func_button", SP_func_button},
+	//[Physics]
+	{ "func_physics", SP_func_physics },
+	//[Physics]
 	{"func_door", SP_func_door},
 	{"func_static", SP_func_static},
 	{"func_rotating", SP_func_rotating},

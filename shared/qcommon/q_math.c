@@ -1431,3 +1431,42 @@ void VectorClear4( vec4_t vec )
 void VectorSet5( vec5_t vec, float x, float y, float z, float w, float u ) {
 	vec[0]=x; vec[1]=y; vec[2]=z; vec[3]=w; vec[4]=u;
 }
+
+//[JAPhys]
+#include <float.h>
+void AxisToAngles(const vec3_t axis[3], vec3_t angles)
+{
+	// From XReal code
+	double          theta;
+	double          cp;
+	double          sp;
+
+	sp = axis[0][2];
+
+	// cap off our sin value so that we don't get any NANs
+	if (sp > 1.0)
+	{
+		sp = 1.0;
+	}
+	else if (sp < -1.0)
+	{
+		sp = -1.0;
+	}
+
+	theta = -asin(sp);
+	cp = cos(theta);
+
+	if (cp > 8192 * FLT_EPSILON)
+	{
+		angles[PITCH] = RAD2DEG(theta);
+		angles[YAW] = RAD2DEG(atan2(axis[0][1], axis[0][0]));
+		angles[ROLL] = RAD2DEG(atan2(axis[1][2], axis[2][2]));
+	}
+	else
+	{
+		angles[PITCH] = RAD2DEG(theta);
+		angles[YAW] = RAD2DEG(-atan2(axis[1][0], axis[1][1]));
+		angles[ROLL] = 0;
+	}
+}
+//[/JAPhys]

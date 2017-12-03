@@ -299,6 +299,9 @@ void VectorClear4( vec4_t vec );
 ///////////////////////////////////////////////////////////////////////////
 void VectorSet5( vec5_t vec, float x, float y, float z, float w, float u );
 
+//[JAPhys]
+void AxisToAngles(const vec3_t axis[3], vec3_t angles);
+//[/JAPhys]
 
 #if defined(__cplusplus)
 } // extern "C"

@@ -1377,6 +1377,10 @@ void Cmd_SaberDrop_f( gentity_t *ent, int saberNum )
 	}
 }
 
+//[Physics]
+void Cmd_SpawnPhysicsEntity(gentity_t *ent);
+//[/Physics]
+
 /*
 =================
 ClientCommand
@@ -1629,6 +1633,10 @@ void ClientCommand( int clientNum ) {
 			Cmd_SaberDrop_f( ent, saberNum );
 		}
 	}
+	//[Physics]
+	else if (Q_stricmp(cmd, "spawnPhysicsEntity") == 0)
+		Cmd_SpawnPhysicsEntity(ent);
+		//[/Physics]
 	else
 	{
 		gi.SendServerCommand( clientNum, va("print \"Unknown command %s\n\"", cmd ) );
