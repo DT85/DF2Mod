@@ -337,6 +337,13 @@ void G_UpdateStaticBodies()
     }
 }
 
+/*QUAKED func_physics (0 .5 .8) ?
+Creates a dynamic physics object.
+
+'model' - .glm or .md3 model to also draw.
+'shape' - Physics shape to take up. 0 = box, 1 = sphere, 2 = capsule, 3 = convex shape
+'mass' - Mass of the object
+*/
 void InitMover( gentity_t *ent );
 void SP_func_physics ( gentity_t* ent )
 {

@@ -1382,6 +1382,10 @@ static void CG_RegisterGraphics( void ) {
 	cg.loadLCARSStage = 3;
 	CG_LoadingString( cgs.mapname );
 
+	//[Physics]
+	BG_InitPhysics(cgs.mapname);
+	//[/Physics]
+
 	cgi_R_LoadWorldMap( cgs.mapname );
 
 	cg.loadLCARSStage = 4;
@@ -2327,10 +2331,6 @@ void CG_Init( int serverCommandSequence ) {
 	CG_GameStateReceived();
 
 	CG_InitConsoleCommands();
-
-	//[Physics]
-	BG_InitPhysics(cgs.mapname);
-	//[/Physics]
 
 	cg.weaponPickupTextTime = 0;
 

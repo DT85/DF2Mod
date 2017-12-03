@@ -629,7 +629,7 @@ spawn_t	spawns[] = {
 	{"func_plat", SP_func_plat},
 	{"func_button", SP_func_button},
 	//[Physics]
-	{ "func_physics", SP_func_physics },
+	{"func_physics", SP_func_physics},
 	//[Physics]
 	{"func_door", SP_func_door},
 	{"func_static", SP_func_static},

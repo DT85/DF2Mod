@@ -9777,6 +9777,35 @@ void ForceThrow( gentity_t *self, qboolean pull, qboolean fake )
 					}
 					GEntity_UseFunc( push_list[x], self, self );
 				}
+				//[Physics]
+				else if (Q_stricmp("func_physics", push_list[x]->classname) == 0)
+				{
+					vec3_t	tfrom;
+					vec3_t	pushDir;
+					vec3_t	thispush_org;
+
+					const float strength = 2000.0f;
+
+					VectorCopy(push_list[x]->currentOrigin, thispush_org);
+					VectorCopy(self->client->ps.origin, tfrom);
+					tfrom[2] += self->client->ps.viewheight;
+
+					VectorSubtract(thispush_org, tfrom, pushDir);
+					if (pull)
+					{
+						VectorNegate(pushDir, pushDir);
+					}
+
+					dist = VectorNormalize(pushDir);
+
+					VectorScale(pushDir, strength * 1.0f - (dist / (float)radius), pushDir);
+
+					VectorAdd(push_list[x]->forceApplied, pushDir, push_list[x]->forceApplied);
+					push_list[x]->forceThrowTime = level.time;
+
+					continue;
+				}
+				//[/Physics]
 				else if ( push_list[x]->s.eType == ET_MISSILE/*thermal resting on ground*/
 					|| push_list[x]->s.eType == ET_ITEM
 					|| push_list[x]->e_ThinkFunc == thinkF_G_RunObject || Q_stricmp( "limb", push_list[x]->classname ) == 0 )
