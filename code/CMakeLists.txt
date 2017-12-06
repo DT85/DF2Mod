@@ -43,7 +43,8 @@ if(BuildSPEngine)
 		${SPEngineIncludeDirectories}
 		${SharedDir}
 		${SPDir}
-		"${GSLIncludeDirectory}")
+		"${GSLIncludeDirectory}"
+		"${OpenJKLibDir}/bullet3")
 
 	#    Dependencies
 	# OpenAL (is optionally included for Windows)
@@ -151,6 +152,7 @@ if(BuildSPEngine)
 		"${SPDir}/qcommon/cm_patch.h"
 		"${SPDir}/qcommon/cm_polylib.h"
 		"${SPDir}/qcommon/cm_public.h"
+		"${SPDir}/qcommon/cm_phys.cpp"
 
 		"${SPDir}/qcommon/cmd.cpp"
 		"${SPDir}/qcommon/common.cpp"

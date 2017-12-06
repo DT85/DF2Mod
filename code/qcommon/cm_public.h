@@ -83,4 +83,20 @@ int	CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projecti
 // cm_patch.c
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *points) );
 
+
+// cm_phys.cpp
+void CM_NumData(int * brushes, int * surfaces);
+int CM_BrushContentFlags(int brushnum);
+int CM_PatchContentFlags(int patchnum);
+int CM_BrushOverallFlags(int brushnum);
+int CM_PatchSurfaceFlags(int patchnum);
+int CM_CalculateHull(int brushnum, vec3_t * points, int points_size);
+void CM_PatchMeshPoints(int patchnum, vec3_t * points, int points_size, int * width, int * height);
+void CM_SubmodelIndicies(int submodel, int * brushes, int * patches, int * brushes_num, int * patches_num);
+
+
+// cm_obj.cpp
+int CM_GetModelVerticies(char const * name, vec3_t * points, int points_num);
+objModel_t * CM_LoadObj(char const * name);
+
 #endif //__CM_PUBLIC_H__
