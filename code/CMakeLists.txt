@@ -97,6 +97,13 @@ if(BuildSPEngine)
 
 	#    Source Files
 
+	# Physics files
+	set(SPEnginePhysFiles
+		"${SPDir}/phys/phys_bullet.cpp"
+		)
+	source_group("phys" FILES ${SPEnginePhysFiles})
+	set(SPEngineFiles ${SPEngineFiles} ${SPEnginePhysFiles})
+	
 	# Client files
 	set(SPEngineClientFiles
 		"${SPDir}/client/keys.h"
