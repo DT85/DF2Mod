@@ -538,7 +538,7 @@ phys_object_t * Phys_Object_Create_Cylinder(phys_world_t * w, float cylinder_hei
 	return obj;
 }
 
-phys_object_t * Phys_Object_Create_From_Obj(phys_world_t * world, char const * path, phys_transform_t * initial_transform, phys_properties_t * properties, float scale) {
+/*phys_object_t * Phys_Object_Create_From_Obj(phys_world_t * world, char const * path, phys_transform_t * initial_transform, phys_properties_t * properties, float scale) {
 	phys_object_t * no = new phys_object_t {world->world};
 	
 	no->properties = *properties;
@@ -681,7 +681,7 @@ phys_object_t * Phys_Object_Create_From_Obj(phys_world_t * world, char const * p
 	no->set_properties();
 	
 	return no;
-}
+}*/
 
 phys_object_t * Phys_Object_Create_From_BModel(phys_world_t * world, int modeli, phys_transform_t * initial_transform, phys_properties_t * properties) {
 	vec3_t points[BP_POINTS_SIZE];

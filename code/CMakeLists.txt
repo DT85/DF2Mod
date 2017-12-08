@@ -238,6 +238,7 @@ if(BuildSPEngine)
 		"${SPDir}/game/g_local.h"
 		"${SPDir}/game/g_nav.h"
 		"${SPDir}/game/g_public.h"
+		"${SPDir}/game/g_phys.cpp"
 		"${SPDir}/game/g_shared.h"
 		"${SPDir}/game/genericparser2.h"
 		"${SPDir}/game/statindex.h"
