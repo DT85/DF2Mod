@@ -351,6 +351,11 @@ extern	game_export_t	globals;
 
 extern	cvar_t	*g_phys_resolution;
 
+extern	cvar_t  *phys_playerclip;
+
+extern  cvar_t  *bg_phys_clfric_move;
+extern  cvar_t  *bg_phys_clfric_stop;
+
 extern	cvar_t	*g_gravity;
 extern	cvar_t	*g_speed;
 extern	cvar_t	*g_cheats;

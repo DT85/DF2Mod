@@ -147,6 +147,9 @@ gentity_t		*player;
 //Phys
 cvar_t  *g_phys_resolution;
 
+cvar_t  *bg_phys_clfric_move;
+cvar_t  *bg_phys_clfric_stop;
+
 cvar_t	*g_speed;
 cvar_t	*g_gravity;
 cvar_t	*g_stepSlideFix;
@@ -704,7 +707,10 @@ void G_InitCvars( void ) {
 
 	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0 );
 
-	g_phys_resolution = gi.cvar("g_phys_resolution", "125", CVAR_SAVEGAME | CVAR_ROM);
+	g_phys_resolution = gi.cvar("g_phys_resolution", "125", CVAR_ARCHIVE);
+
+	bg_phys_clfric_move = gi.cvar("bg_phys_clfric_move", "0.3", CVAR_SYSTEMINFO|CVAR_ARCHIVE);
+	bg_phys_clfric_stop = gi.cvar("bg_phys_clfric_stop", "2.5", CVAR_SYSTEMINFO | CVAR_ARCHIVE);
 
 	gi.cvar( "tier_storyinfo", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
 	gi.cvar( "tiers_complete", "", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
@@ -2020,6 +2026,7 @@ void G_RunFrame( int levelTime ) {
 				TieFighterThink( ent );
 			}
 			G_RunMover( ent );
+			G_Phys_UpdateEnt(ent);
 			continue;
 		}
 
@@ -2063,6 +2070,7 @@ void G_RunFrame( int levelTime ) {
 		}
 
 		G_RunThink( ent );	// be aware that ent may be free after returning from here, at least one func frees them
+		G_Phys_UpdateEnt(ent);
 		ClearNPCGlobals();			//	but these 2 funcs are ok
 		//UpdateTeamCounters( ent );	//	   to call anyway on a freed ent.
 	}

@@ -1055,6 +1055,8 @@ void Com_Init( char *commandLine ) {
 	Com_Printf( "%s %s %s\n", Q3_VERSION, PLATFORM_STRING, SOURCE_DATE );
 
 	try {
+		GPTP_Init();
+
 		Com_InitZoneMemory();
 		Cvar_Init ();
 
@@ -1142,6 +1144,8 @@ void Com_Init( char *commandLine ) {
 		Sys_Init();	// this also detects CPU type, so I can now do this CPU check below...
 
 		Sys_SetProcessorAffinity();
+
+		Com_Phys_Init();
 
 		Netchan_Init( Com_Milliseconds() & 0xffff );	// pick a port value that should be nice and random
 //	VM_Init();
@@ -1560,6 +1564,8 @@ Com_Shutdown
 */
 void Com_Shutdown (void) {
 	CM_ClearMap();
+
+	GPTP_Shutdown();
 
 	if (logfile) {
 		FS_FCloseFile (logfile);

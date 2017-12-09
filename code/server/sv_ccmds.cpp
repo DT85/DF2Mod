@@ -475,6 +475,30 @@ static void SV_CompleteSaveName( char *args, int argNum ) {
 		Field_CompleteFilename( "saves", "sav", qtrue, qtrue );
 }
 
+#include <thread>
+
+static void * SV_TestGPTP_Task(void * arg) {
+	int * num = reinterpret_cast<int *>(arg);
+	return num;
+}
+
+static unsigned int mult = 1;
+
+static void SV_TestGPTP() {
+	unsigned int count = GPTP_GetThreadCount() * (mult *= 2);
+	std::vector<void *> handles;
+	for (unsigned int i = 0; i < count; i++) {
+		handles.push_back(GPTP_TaskBegin(SV_TestGPTP_Task, new int(i)));
+	}
+	int res = 0;
+	for (void * h : handles) {
+		int * r = reinterpret_cast<int *>(GPTP_TaskCollect(h));
+		res += *r;
+		delete r;
+	}
+	Com_Printf("GPTP Test Results: %u\n", res);
+}
+
 /*
 ==================
 SV_AddOperatorCommands

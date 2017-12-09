@@ -5194,7 +5194,7 @@ static void PM_GroundTrace( void ) {
 	}
 
 	// if the trace didn't hit anything, we are in free fall
-	if ( trace.fraction == 1.0 || g_gravity->value <= 0 )
+	if ( trace.fraction == 1.0 || g_gravity->value <= 0 && !((pm->ps->eFlags & EF_ON_PHYS) != 0))
 	{
 		PM_GroundTraceMissed();
 		pml.groundPlane = qfalse;
@@ -5261,7 +5261,7 @@ static void PM_GroundTrace( void ) {
 	*/
 
 	// slopes that are too steep will not be considered onground
-	if ( trace.plane.normal[2] < minNormal ) {
+	if ( trace.plane.normal[2] < minNormal && !((pm->ps->eFlags & EF_ON_PHYS) != 0) ) {
 		if ( pm->debugLevel ) {
 			Com_Printf("%i:steep\n", c_pmove);
 		}
@@ -5309,7 +5309,7 @@ static void PM_GroundTrace( void ) {
 		}
 	}
 
-	pm->ps->groundEntityNum = trace.entityNum;
+	//pm->ps->groundEntityNum = trace.entityNum;
 	pm->ps->lastOnGround = level.time;
 	if ( (pm->ps->clientNum < MAX_CLIENTS||PM_ControlledByPlayer()) )
 	{//if a player, clear the jumping "flag" so can't double-jump
@@ -5319,7 +5319,15 @@ static void PM_GroundTrace( void ) {
 	// don't reset the z velocity for slopes
 //	pm->ps->velocity[2] = 0;
 
-	PM_AddTouchEnt( trace.entityNum );
+	//PM_AddTouchEnt( trace.entityNum );
+
+	if (pm->gent->s.eFlags & EF_ON_PHYS) {
+		PM_AddTouchEnt(pm->ps->groundEntityNum);
+	}
+	else {
+		pm->ps->groundEntityNum = trace.entityNum;
+		PM_AddTouchEnt(trace.entityNum);
+	}
 }
 
 int		LastMatrixJumpTime = 0;
@@ -14794,6 +14802,16 @@ void Pmove( pmove_t *pmove )
 	Vehicle_t *pVeh = NULL;
 
 	pm = pmove;
+
+//#ifdef _GAME // TODO -- prediction in CGAME
+	G_Phys_SetClientCrouched((gentity_t *)pm->gent, (qboolean)(pm->cmd.upmove < 0));
+	if (pm->cmd.forwardmove || pm->cmd.rightmove) {
+		G_Phys_Set_Friction((gentity_t *)pm->gent, bg_phys_clfric_move->value);
+	}
+	else {
+		G_Phys_Set_Friction((gentity_t *)pm->gent, bg_phys_clfric_stop->value);
+	}
+//#endif
 
 	// this counter lets us debug movement problems with a journal by setting a conditional breakpoint fot the previous frame
 	c_pmove++;

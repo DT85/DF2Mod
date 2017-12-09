@@ -863,6 +863,8 @@ Marks the entity as free
 =================
 */
 void G_FreeEntity( gentity_t *ed ) {
+	G_Phys_Remove(ed);
+
 	gi.unlinkentity (ed);		// unlink from world
 
 	// Free the Game Element (the entity) and delete the Icarus ID.

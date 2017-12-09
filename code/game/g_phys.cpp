@@ -121,7 +121,7 @@ static void g_touch_cb(phys_world_t * w, phys_collision_t * col) {
 
 void G_Phys_Init() {
 	gi.Printf("================================\n");
-	gi.Printf("Initializing Serverside Physics\n");
+	Com_Printf("Initializing Bullet Physics\n");
 	
 	gworld = gi.Phys_World_Create(g_touch_cb);
 	G_Phys_Upd_Res();
@@ -142,9 +142,11 @@ void G_Phys_Shutdown() {
 void G_Phys_Frame() {
 	gentity_t *gent = g_entities;
 	for (int i = 0; i < MAX_GENTITIES; i++, gent++) {
-		//if (/*!gent->client->ps || */!gent->phys) continue;
+		//if (!gent->playerState || !gent->phys)
+		if (/*!gent->s || */!gent->phys) 
+			continue;
+
 		//gent->playerState->eFlags &= ~EF_ON_PHYS;
-		//gent->client->ps.eFlags &= ~EF_ON_PHYS;
 		gent->s.eFlags &= ~EF_ON_PHYS;
 	}
 	
@@ -154,16 +156,20 @@ void G_Phys_Frame() {
 	
 	gent = g_entities;
 	for (int i = 0; i < MAX_GENTITIES; i++, gent++) {
-		if (!(gent->client && gent->phys)) continue;
+		if (!(gent->client && gent->phys)) 
+			continue;
+
 		vec3_t btorig;
 		if (gent->phys_is_crouched) {
 			gi.Phys_Object_Get_Origin(gent->phys2, btorig);
-			VectorCopy(btorig, gent->client->ps.origin);
+			//VectorCopy(btorig, gent->client->ps.origin);
+			VectorCopy(btorig, gent->s.origin);
 			VectorCopy(btorig, gent->currentOrigin);
 			gi.Phys_Obj_Get_Linear_Velocity(gent->phys2, gent->client->ps.velocity);
 		} else {
 			gi.Phys_Object_Get_Origin(gent->phys, btorig);
-			VectorCopy(btorig, gent->client->ps.origin);
+			//VectorCopy(btorig, gent->client->ps.origin);
+			VectorCopy(btorig, gent->s.origin);
 			VectorCopy(btorig, gent->currentOrigin);
 			gi.Phys_Obj_Get_Linear_Velocity(gent->phys, gent->client->ps.velocity);
 		}
@@ -180,17 +186,22 @@ void G_Phys_Frame() {
 }
 
 void G_Phys_Upd_Res() {
-	if (!gworld) return;
+	if (!gworld) 
+		return;
+
 	gi.Phys_World_Set_Resolution(gworld, g_phys_resolution->integer);
 }
 
 void G_Phys_Upd_Grav() {
-	if (!gworld) return;
+	if (!gworld) 
+		return;
 	gi.Phys_World_Set_Gravity(gworld, g_gravity->value);
 }
 
 void G_Phys_Set_Friction(gentity_t * ent, float f) {
-	if (!ent->phys) return;
+	if (!ent->phys) 
+		return;
+
 	phys_properties_t * props;
 	props = gi.Phys_Object_Get_Properties(ent->phys);
 	props->friction = f;
@@ -211,7 +222,9 @@ void G_Phys_UpdateEnt(gentity_t * ent) {
 	phys_properties_t * props;
 	phys_properties_t * props2;
 	
-	if (!ent->phys) return;
+	if (!ent->phys) 
+		return;
+
 	switch (ent->s.eType) {
 	case ET_GENERAL:
 	default:
@@ -264,7 +277,9 @@ void G_Phys_UpdateEnt(gentity_t * ent) {
 }
 
 void G_Phys_AddBMover(gentity_t * mover) {
-	if (!mover->bmodel) return;
+	if (!mover->bmodel) 
+		return;
+
 	int bmodi = strtol(mover->model + 1, NULL, 10);
 	
 	VectorClear(trans.origin);
@@ -290,7 +305,7 @@ void G_Phys_AddClientCapsule(gentity_t * ent) {
 	//trap->Print("%s", ent->classname);
 	
 	props.mass = -1;
-	props.friction = 2.5; //bg_phys_clfric_stop.value;
+	props.friction = bg_phys_clfric_stop->value;
 	props.restitution = 0;
 	props.dampening = 0;
 	props.actor = qtrue;
@@ -316,7 +331,8 @@ void G_Phys_AddClientCapsule(gentity_t * ent) {
 }
 
 void G_Phys_SetClientCrouched(gentity_t * ent, qboolean crouched) {
-	if (crouched == ent->phys_is_crouched) return;
+	if (crouched == ent->phys_is_crouched) 
+		return;
 	
 	phys_properties_t * props = gi.Phys_Object_Get_Properties(ent->phys);
 	phys_properties_t * props2 = gi.Phys_Object_Get_Properties(ent->phys2);

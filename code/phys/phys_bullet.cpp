@@ -261,7 +261,8 @@ void * gptp_brush_task(void * arg) {
 	int points_num;
 	
 	int content_mask = CONTENTS_SOLID;
-	if (phys_playerclip->integer) content_mask |= CONTENTS_PLAYERCLIP;
+	if (phys_playerclip->integer) 
+		content_mask |= CONTENTS_PLAYERCLIP;
 	
 	while (true) {
 		int ib = data->brush_i--;
