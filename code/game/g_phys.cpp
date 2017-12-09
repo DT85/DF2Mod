@@ -27,10 +27,8 @@ static void g_touch_cb_do(phys_world_t * w, phys_collision_t * col, gentity_t * 
 		entThis->phys_post_do_vellerp = qtrue;
 		*/
 		
-		pmove_t		*pm;
-
-		pm->ps->eFlags |= EF_ON_PHYS;
-		pm->ps->groundEntityNum = entOther->s.number;
+		entThis->client->ps.eFlags |= EF_ON_PHYS;
+		entThis->client->ps.groundEntityNum = entOther->s.number;
 		gi.linkentity(entThis);
 		
 		//trap->Print("%f\n", col->impulse);
@@ -91,23 +89,23 @@ static void g_touch_cb(phys_world_t * w, phys_collision_t * col) {
 	
 	assert(w == gworld);
 	
-	phys_properties_t * propsA = gi.Phys_Object_Get_Properties(col->A);
-	phys_properties_t * propsB = gi.Phys_Object_Get_Properties(col->B);
+	phys_properties_t *propsA = gi.Phys_Object_Get_Properties(col->A);
+	phys_properties_t *propsB = gi.Phys_Object_Get_Properties(col->B);
 	
-	gentity_t * entA = (gentity_t *)propsA->token;
-	gentity_t * entB = (gentity_t *)propsB->token;
+	gentity_t *entA = (gentity_t *)propsA->token;
+	gentity_t *entB = (gentity_t *)propsB->token;
 	
 	if (!entA || !entB) return;
 
-	gentity_t * entClient = NULL;
-	gentity_t * entOther = NULL;
+	gentity_t *entClient = NULL;
+	gentity_t *entOther = NULL;
 	qboolean cli2 = qfalse;
 	
-	if (entA->s.eType == ET_PLAYER || entA->s.eType == ET_NPC) {
+	if (entA->s.eType == ET_PLAYER/* || entA->s.eType == ET_NPC*/) {
 		entClient = entA;
 		entOther = entB;
 	}
-	if (entB->s.eType == ET_PLAYER || entB->s.eType == ET_NPC) {
+	if (entB->s.eType == ET_PLAYER/* || entB->s.eType == ET_NPC*/) {
 		if (entClient) cli2 = qtrue;
 		entClient = entB;
 		entOther = entA;
@@ -142,10 +140,10 @@ void G_Phys_Shutdown() {
 }
 
 void G_Phys_Frame() {
-	gentity_t * gent = g_entities;
+	gentity_t *gent = g_entities;
 	for (int i = 0; i < MAX_GENTITIES; i++, gent++) {
-		if (!gent->playerState || !gent->phys) continue;
-		gent->playerState->eFlags &= ~EF_ON_PHYS;
+		if (/*!gent->client->ps || */!gent->phys) continue;
+		gent->client->ps.eFlags &= ~EF_ON_PHYS;
 	}
 	
 	int delta = level.time - last_time;
@@ -158,14 +156,14 @@ void G_Phys_Frame() {
 		vec3_t btorig;
 		if (gent->phys_is_crouched) {
 			gi.Phys_Object_Get_Origin(gent->phys2, btorig);
-			VectorCopy(btorig, gent->playerState->origin);
+			VectorCopy(btorig, gent->client->ps.origin);
 			VectorCopy(btorig, gent->currentOrigin);
-			gi.Phys_Obj_Get_Linear_Velocity(gent->phys2, gent->playerState->velocity);
+			gi.Phys_Obj_Get_Linear_Velocity(gent->phys2, gent->client->ps.velocity);
 		} else {
 			gi.Phys_Object_Get_Origin(gent->phys, btorig);
-			VectorCopy(btorig, gent->playerState->origin);
+			VectorCopy(btorig, gent->client->ps.origin);
 			VectorCopy(btorig, gent->currentOrigin);
-			gi.Phys_Obj_Get_Linear_Velocity(gent->phys, gent->playerState->velocity);
+			gi.Phys_Obj_Get_Linear_Velocity(gent->phys, gent->client->ps.velocity);
 		}
 		/*
 		if (gent->phys_post_do_vellerp) {
@@ -181,12 +179,12 @@ void G_Phys_Frame() {
 
 void G_Phys_Upd_Res() {
 	if (!gworld) return;
-	gi.Phys_World_Set_Resolution(gworld, g_phys_resolution.integer);
+	gi.Phys_World_Set_Resolution(gworld, g_phys_resolution->integer);
 }
 
 void G_Phys_Upd_Grav() {
 	if (!gworld) return;
-	gi.Phys_World_Set_Gravity(gworld, g_gravity.value);
+	gi.Phys_World_Set_Gravity(gworld, g_gravity->value);
 }
 
 void G_Phys_Set_Friction(gentity_t * ent, float f) {
@@ -213,19 +211,32 @@ void G_Phys_UpdateEnt(gentity_t * ent) {
 	
 	if (!ent->phys) return;
 	switch (ent->s.eType) {
+	case ET_GENERAL:
+	default:
+		gi.Phys_Object_Get_Origin(ent->phys, trans.origin);
+		gi.Phys_Object_Get_Rotation(ent->phys, trans.angles);
+		G_SetOrigin(ent, trans.origin);
+		G_SetAngles(ent, trans.angles);
+
+		ent->s.pos.trType = TR_INTERPOLATE;
+		ent->s.apos.trType = TR_INTERPOLATE;
+
+		gi.linkentity(ent);
+		break;
 	case ET_PLAYER:
 		props = gi.Phys_Object_Get_Properties(ent->phys);
 		props2 = gi.Phys_Object_Get_Properties(ent->phys2);
-		if (ent->client->noclip || ent->client->sess.sessionTeam == TEAM_SPECTATOR) {
+		if (ent->client->noclip) {
 			props->contents = 0;
 			props2->contents = 0;
 		} else {
-			props->contents = ent->r.contents;
-			props2->contents = ent->r.contents;
+			props->contents = ent->contents;
+			props2->contents = ent->contents;
 		}
 		gi.Phys_Object_Set_Properties(ent->phys);
 		gi.Phys_Object_Set_Properties(ent->phys2);
-	case ET_NPC:
+		break;
+	/*case ET_NPC:
 		VectorCopy(ent->currentOrigin, trans.origin);
 		VectorCopy(ent->currentAngles, trans.angles);
 		gi.Phys_Object_Set_Origin(ent->phys, trans.origin);
@@ -234,30 +245,18 @@ void G_Phys_UpdateEnt(gentity_t * ent) {
 		gi.Phys_Object_Set_Origin(ent->phys2, trans.origin);
 		gi.Phys_Object_Set_Rotation(ent->phys2, trans.angles);
 		gi.Phys_Obj_Set_Linear_Velocity(ent->phys2, ent->playerState->velocity);
-		break;
+		break;*/
 	case ET_MOVER:
 		VectorCopy(ent->currentOrigin, trans.origin);
 		VectorCopy(ent->currentAngles, trans.angles);
 		gi.Phys_Object_Set_Origin(ent->phys, trans.origin);
 		gi.Phys_Object_Set_Rotation(ent->phys, trans.angles);
 		phys_properties_t * props = gi.Phys_Object_Get_Properties(ent->phys);
+
 		if (props->contents != ent->contents) {
 			props->contents = ent->contents;
 			gi.Phys_Object_Set_Properties(ent->phys);
 		}
-		break;
-	case ET_PROP:
-	case ET_GENERAL:
-	default:
-		gi.Phys_Object_Get_Origin(ent->phys, trans.origin);
-		gi.Phys_Object_Get_Rotation(ent->phys, trans.angles);
-		G_SetOrigin(ent, trans.origin);
-		G_SetAngles(ent, trans.angles);
-		
-		ent->s.pos.trType = TR_INTERPOLATE;
-		ent->s.apos.trType = TR_INTERPOLATE;
-		
-		gi.linkentity( ent);
 		break;
 	}
 }
@@ -289,7 +288,7 @@ void G_Phys_AddClientCapsule(gentity_t * ent) {
 	//trap->Print("%s", ent->classname);
 	
 	props.mass = -1;
-	props.friction = bg_phys_clfric_stop.value;
+	props.friction = 2.5; //bg_phys_clfric_stop.value;
 	props.restitution = 0;
 	props.dampening = 0;
 	props.actor = qtrue;
@@ -302,10 +301,10 @@ void G_Phys_AddClientCapsule(gentity_t * ent) {
 	VectorClear(trans.angles);
 	
 	float radius = (fabs(ent->maxs[0] - ent->mins[0]) + fabs(ent->maxs[1] - ent->mins[1])) / 4;
-	float cheight = fabs(ent->playerState->standheight - ent->mins[2]) - 2 * radius;
-	float cheight2 = fabs(ent->playerState->crouchheight - ent->mins[2])- 2 * radius;
-	float voffs = (ent->mins[2] + ent->playerState->standheight) / 2;
-	float voffs2 = (ent->mins[2] + ent->playerState->crouchheight) / 2;
+	float cheight = fabs(ent->client->standheight - ent->mins[2]) - 2 * radius;
+	float cheight2 = fabs(ent->client->crouchheight - ent->mins[2])- 2 * radius;
+	float voffs = (ent->mins[2] + ent->client->standheight) / 2;
+	float voffs2 = (ent->mins[2] + ent->client->crouchheight) / 2;
 	
 	ent->phys = gi.Phys_Object_Create_Capsule(gworld, cheight, radius, voffs, &trans, &props);
 	props.disabled = qtrue;
@@ -321,7 +320,7 @@ void G_Phys_SetClientCrouched(gentity_t * ent, qboolean crouched) {
 	phys_properties_t * props2 = gi.Phys_Object_Get_Properties(ent->phys2);
 	
 	props->disabled = crouched;
-	props2->disabled = !crouched;
+	props2->disabled = (qboolean)!crouched;
 	
 	gi.Phys_Object_Set_Properties(ent->phys);
 	gi.Phys_Object_Set_Properties(ent->phys2);
@@ -344,7 +343,7 @@ static size_t const testmodels_num = sizeof(testmodels) / sizeof(char const *);
 
 void G_TEST_PhysTestEnt(vec3_t pos) {
 	gentity_t * physent = G_Spawn();
-	physent->s.eType = ET_PROP;
+	physent->s.eType = ET_GENERAL;
 	physent->contents = MASK_SOLID;
 	//physent->r.svFlags |= SVF_BROADCAST;
 	
@@ -365,7 +364,7 @@ void G_TEST_PhysTestEnt(vec3_t pos) {
 	
 	physent->phys = gi.Phys_Object_Create_From_Obj(gworld, testmodels[testm_i], &trans, &props, 1);
 	physent->s.modelindex = G_ModelIndex(testmodels[testm_i]);
-	
+
 	phys_properties_t * nprops = gi.Phys_Object_Get_Properties(physent->phys);
 	VectorCopy(nprops->mins, physent->mins);
 	VectorCopy(nprops->maxs, physent->maxs);

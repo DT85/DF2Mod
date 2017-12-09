@@ -9274,6 +9274,70 @@ void ForceThrow( gentity_t *self, qboolean pull, qboolean fake )
 						WP_ForcePowerStop( push_list[x], FP_DRAIN );
 					}
 				}
+				
+				// phys
+				if (push_list[x]->phys) 
+				{
+					float dirLen = 0;
+					int powerLevel, powerUse;
+					int pushPowerMod;
+					int pushPower;
+					vec3_t thispush_org;
+
+					if (pull)
+					{
+						powerLevel = self->client->ps.forcePowerLevel[FP_PULL];
+						pushPower = 256 * self->client->ps.forcePowerLevel[FP_PULL];
+						powerUse = FP_PULL;
+					}
+					else
+					{
+						powerLevel = self->client->ps.forcePowerLevel[FP_PUSH];
+						pushPower = 256 * self->client->ps.forcePowerLevel[FP_PUSH];
+						powerUse = FP_PUSH;
+					}
+
+					pushPower = 256 * powerLevel;
+
+					pushPowerMod = pushPower;
+					if (pull) {
+						VectorSubtract(self->client->ps.origin, thispush_org, pushDir);
+
+						if (VectorLength(pushDir) <= 256)
+						{
+							int randfact = 0;
+
+							if (powerLevel == FORCE_LEVEL_1)
+							{
+								randfact = 3;
+							}
+							else if (powerLevel == FORCE_LEVEL_2)
+							{
+								randfact = 7;
+							}
+							else if (powerLevel == FORCE_LEVEL_3)
+							{
+								randfact = 10;
+							}
+
+						}
+					}
+					else
+					{
+						VectorSubtract(thispush_org, self->client->ps.origin, pushDir);
+					}
+
+
+					dirLen = VectorLength(pushDir);
+					VectorNormalize(pushDir);
+
+					phys_properties_t * props = gi.Phys_Object_Get_Properties(push_list[x]->phys);
+
+					VectorScale(pushDir, pushPower * props->mass, pushDir);
+
+					gi.Phys_Object_Impulse(push_list[x]->phys, pushDir, NULL);
+				}
+				// /phys
 
 				if ( Rosh_BeingHealed( push_list[x] ) )
 				{

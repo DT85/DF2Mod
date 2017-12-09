@@ -231,6 +231,8 @@ typedef enum {
 #define EF_SPOTLIGHT			0x00100000	// Your lights are on...
 #define EF_PLANTED_CHARGE		0x00200000	// For detpack charge
 #define EF_POWERING_ROSH		0x00400000	// Only for Twins powering up Rosh
+//Won't be using anything Rosh-related in DF2, so should be safe to do this?
+#define EF_ON_PHYS				0x00400000	// entity is on a physics object (stand override)
 #define EF_FORCE_VISIBLE		0x00800000	// Always visible with force sight
 #define EF_IN_ATST				0x01000000	// Driving an ATST
 #define EF_DISINTEGRATION		0x02000000	// Disruptor effect

@@ -1286,6 +1286,14 @@ Ghoul2 Insert End
 	int			forcePushTime;
 	int			forcePuller;	//who force-pulled me (so we don't damage them if we hit them)
 
+	// Phys
+	phys_object_t * phys;
+	phys_object_t * phys2; // used for ducking clients
+	qboolean phys_is_crouched;
+	/*
+	qboolean phys_post_do_vellerp;
+	vec3_t phys_post_target_velocity;
+	*/
 
 	void sg_export(
 		ojk::SavedGameHelper& saved_game) const
@@ -1474,6 +1482,10 @@ Ghoul2 Insert End
 		saved_game.write<float>(lightLevel);
 		saved_game.write<int32_t>(forcePushTime);
 		saved_game.write<int32_t>(forcePuller);
+		// Phys
+		saved_game.write<int32_t>(phys);
+		saved_game.write<int32_t>(phys2);
+		saved_game.write<int32_t>(phys_is_crouched);
 	}
 
 	void sg_import(
@@ -1663,6 +1675,10 @@ Ghoul2 Insert End
 		saved_game.read<float>(lightLevel);
 		saved_game.read<int32_t>(forcePushTime);
 		saved_game.read<int32_t>(forcePuller);
+		// Phys
+		saved_game.read<int32_t>(phys);
+		saved_game.read<int32_t>(phys2);
+		saved_game.read<int32_t>(phys_is_crouched);
 	}
 };
 #endif //#ifdef GAME_INCLUDE

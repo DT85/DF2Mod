@@ -144,6 +144,9 @@ static void ValidateInUseBits(void)
 
 gentity_t		*player;
 
+//Phys
+cvar_t  *g_phys_resolution;
+
 cvar_t	*g_speed;
 cvar_t	*g_gravity;
 cvar_t	*g_stepSlideFix;

@@ -1168,6 +1168,8 @@ void CL_InitRef( void ) {
 	rit.PD_Load = PD_Load;
 	rit.PD_Store = PD_Store;
 
+	rit.CM_LoadObj = CM_LoadObj;
+
 	rit.Error = Com_Error;
 	rit.FS_FileExists = S_FileExists;
 	rit.GetG2VertSpaceServer = GetG2VertSpaceServer;

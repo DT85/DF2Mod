@@ -108,6 +108,9 @@ typedef struct {
 	bool			(*PD_Store)							( const char *name, const void *data, size_t size );
 	const void *	(*PD_Load)							( const char *name, size_t *size );
 
+	// OBJ model format
+	objModel_t * 	(*CM_LoadObj)						(char const * name);
+
 	// ============= NOT IN MP BEYOND THIS POINT
 	void				(*SV_Trace)							( trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end,
 															const int passEntityNum, const int contentmask,

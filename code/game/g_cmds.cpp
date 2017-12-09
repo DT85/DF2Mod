@@ -1377,6 +1377,10 @@ void Cmd_SaberDrop_f( gentity_t *ent, int saberNum )
 	}
 }
 
+static void Cmd_Testbox_f(gentity_t * ent) {
+	G_TEST_PhysTestEnt(ent->currentOrigin);
+}
+
 /*
 =================
 ClientCommand
@@ -1628,6 +1632,10 @@ void ClientCommand( int clientNum ) {
 		{//drop either left or right
 			Cmd_SaberDrop_f( ent, saberNum );
 		}
+	}
+	else if (Q_stricmp(cmd, "testbox") == 0)
+	{
+		Cmd_Testbox_f(ent);
 	}
 	else
 	{

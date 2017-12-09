@@ -44,8 +44,8 @@ if(BuildSPEngine)
 		${SharedDir}
 		${SPDir}
 		"${GSLIncludeDirectory}"
-		"${OpenJKLibDir}/bullet3")
-
+		"${OpenJKLibDir}/bullet3/include")
+		
 	#    Dependencies
 	# OpenAL (is optionally included for Windows)
 	if(MSVC AND NOT WIN64)
@@ -149,6 +149,7 @@ if(BuildSPEngine)
 		"${SPDir}/qcommon/cm_test.cpp"
 		"${SPDir}/qcommon/cm_trace.cpp"
 		"${SPDir}/qcommon/cm_local.h"
+		"${SPDir}/qcommon/cm_obj.cpp"
 		"${SPDir}/qcommon/cm_patch.h"
 		"${SPDir}/qcommon/cm_polylib.h"
 		"${SPDir}/qcommon/cm_public.h"
@@ -238,7 +239,6 @@ if(BuildSPEngine)
 		"${SPDir}/game/g_local.h"
 		"${SPDir}/game/g_nav.h"
 		"${SPDir}/game/g_public.h"
-		"${SPDir}/game/g_phys.cpp"
 		"${SPDir}/game/g_shared.h"
 		"${SPDir}/game/genericparser2.h"
 		"${SPDir}/game/statindex.h"
@@ -379,6 +379,17 @@ if(BuildSPEngine)
     list(APPEND SPEngineIncludeDirectories ${ZLIB_INCLUDE_DIR})
     list(APPEND SPEngineLibraries          ${ZLIB_LIBRARIES})
 
+    # Bullet Physics Libraries
+	set(OpenJKLibPhysDir "${OpenJKLibDir}/bullet3/lib")
+	
+	list(APPEND SPEngineLibraries
+		${OpenJKLibPhysDir}/BulletCollision_debug.lib	
+		${OpenJKLibPhysDir}/BulletDynamics_debug.lib
+		${OpenJKLibPhysDir}/BulletInverseDynamics_debug.lib
+		${OpenJKLibPhysDir}/BulletSoftBody_debug.lib	
+		${OpenJKLibPhysDir}/LinearMath_debug.lib
+		)
+	
 	# project macro so we can invoke it twice: for ja
 	function(add_sp_project ProjectName Label SPDirName InstallDir Component)
 		if(MakeApplicationBundles)

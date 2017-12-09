@@ -173,3 +173,5 @@ pip-log.txt
 #############
 *.o
 *.so
+
+lib/bullet3/project

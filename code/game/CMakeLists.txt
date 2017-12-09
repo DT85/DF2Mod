@@ -27,6 +27,7 @@ set(SPGameIncludeDirectories
 	${SPDir}
 	"${SPDir}/game"
 	"${GSLIncludeDirectory}"
+	"${OpenJKLibDir}/bullet3/include"
 	)
 
 if(WIN32)
@@ -87,6 +88,7 @@ set(SPGameGameFiles
 	"${SPDir}/game/g_navnew.cpp"
 	"${SPDir}/game/g_object.cpp"
 	"${SPDir}/game/g_objectives.cpp"
+	"${SPDir}/game/g_phys.cpp"
 	"${SPDir}/game/g_rail.cpp"
 	"${SPDir}/game/g_ref.cpp"
 	"${SPDir}/game/g_roff.cpp"
