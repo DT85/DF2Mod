@@ -35,6 +35,8 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #endif
 
+#include "phys/phys_public.hpp"
+
 // Because renderer.
 #include "../rd-common/tr_public.h"
 extern refexport_t re;

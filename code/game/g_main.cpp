@@ -704,6 +704,8 @@ void G_InitCvars( void ) {
 
 	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0 );
 
+	g_phys_resolution = gi.cvar("g_phys_resolution", "125", CVAR_SAVEGAME | CVAR_ROM);
+
 	gi.cvar( "tier_storyinfo", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
 	gi.cvar( "tiers_complete", "", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
 
@@ -746,6 +748,8 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 	G_InitCvars();
 
 	G_InitMemory();
+
+	G_Phys_Init();
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
@@ -832,6 +836,8 @@ void ShutdownGame( void )
 {
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
+
+	G_Phys_Shutdown();
 
 	// Destroy the Game Interface.
 	IGameInterface::Destroy();
@@ -2060,6 +2066,8 @@ void G_RunFrame( int levelTime ) {
 		ClearNPCGlobals();			//	but these 2 funcs are ok
 		//UpdateTeamCounters( ent );	//	   to call anyway on a freed ent.
 	}
+
+	G_Phys_Frame();
 
 	// perform final fixups on the player
 	ent = &g_entities[0];

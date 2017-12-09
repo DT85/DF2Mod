@@ -142,8 +142,10 @@ void G_Phys_Shutdown() {
 void G_Phys_Frame() {
 	gentity_t *gent = g_entities;
 	for (int i = 0; i < MAX_GENTITIES; i++, gent++) {
-		if (/*!gent->client->ps || */!gent->phys) continue;
-		gent->client->ps.eFlags &= ~EF_ON_PHYS;
+		//if (/*!gent->client->ps || */!gent->phys) continue;
+		//gent->playerState->eFlags &= ~EF_ON_PHYS;
+		//gent->client->ps.eFlags &= ~EF_ON_PHYS;
+		gent->s.eFlags &= ~EF_ON_PHYS;
 	}
 	
 	int delta = level.time - last_time;
