@@ -296,64 +296,6 @@ void SP_misc_model_ghoul( gentity_t *ent )
 	gi.linkentity( ent );
 }
 
-
-//------------------------------------------------------------
-/*QUAKED misc_model_phys (1 0 0) (-16 -16 -24) (16 16 32) ?
-*/
-//------------------------------------------------------------
-static phys_transform_t trans;
-static phys_properties_t props;
-void SP_misc_model_phys(gentity_t *ent)
-{
-	vec3_t pos;
-
-	// Model init
-	//**************************
-	//ent->phys = gi.Phys_Object_Create_From_Obj(gworld, ent->model, &trans, &props, 1);
-	ent->s.modelindex = G_ModelIndex(ent->model);
-
-	G_SetOrigin(ent, ent->s.origin);
-	G_SetAngles(ent, ent->s.angles);
-
-	//ent->s.eType = ET_GENERAL;
-	ent->contents = MASK_SOLID;
-	//physent->r.svFlags |= SVF_BROADCAST;
-
-	VectorCopy(pos, trans.origin);
-	VectorClear(trans.angles);
-
-	// Physics Properties
-	//**************************
-	props.mass = -1;
-	props.friction = 0.5;
-	props.restitution = 0.125;
-	props.dampening = 0.05;
-	props.actor = qfalse;
-	props.kinematic = qfalse;
-	props.disabled = qfalse;
-	props.contents = CONTENTS_SOLID;
-	props.token = ent;
-
-	// Scale
-	//**************************
-	/*phys_properties_t * nprops = gi.Phys_Object_Get_Properties(ent->phys);
-	VectorCopy(nprops->mins, ent->mins);
-	VectorCopy(nprops->maxs, ent->maxs);*/
-
-
-	G_SetOrigin(ent, pos);
-
-	// Register
-	//**************************
-	cgi_R_RegisterModel(ent->model);
-
-	gi.linkentity(ent);
-}
-
-
-
-
-
 #define RACK_BLASTER	1
 #define RACK_REPEATER	2
 #define RACK_ROCKET		4
