@@ -162,14 +162,12 @@ void G_Phys_Frame() {
 		vec3_t btorig;
 		if (gent->phys_is_crouched) {
 			gi.Phys_Object_Get_Origin(gent->phys2, btorig);
-			//VectorCopy(btorig, gent->client->ps.origin);
-			VectorCopy(btorig, gent->s.origin);
+			VectorCopy(btorig, gent->client->ps.origin);
 			VectorCopy(btorig, gent->currentOrigin);
 			gi.Phys_Obj_Get_Linear_Velocity(gent->phys2, gent->client->ps.velocity);
 		} else {
 			gi.Phys_Object_Get_Origin(gent->phys, btorig);
-			//VectorCopy(btorig, gent->client->ps.origin);
-			VectorCopy(btorig, gent->s.origin);
+			VectorCopy(btorig, gent->client->ps.origin);
 			VectorCopy(btorig, gent->currentOrigin);
 			gi.Phys_Obj_Get_Linear_Velocity(gent->phys, gent->client->ps.velocity);
 		}

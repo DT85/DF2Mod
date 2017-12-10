@@ -87,8 +87,12 @@ struct phys_object_s {
 	}
 	
 	~phys_object_s() {
-		if (body) delete body;
-		if (motion_state) delete motion_state;
+		if (body) 
+			delete body;
+
+		if (motion_state) 
+			delete motion_state;
+
 		if (shape) {
 			if (is_compound) {
 				btCompoundShape * cs = reinterpret_cast<btCompoundShape *>(shape);
@@ -120,8 +124,11 @@ struct phys_world_s {
 	
 	~phys_world_s() {
 		
-		if (map_static) delete map_static;
-		if (map_static_slick) delete map_static_slick;
+		if (map_static) 
+			delete map_static;
+
+		if (map_static_slick) 
+			delete map_static_slick;
 		
 		for (phys_object_t * obj : objects) {
 			delete obj;
@@ -129,11 +136,20 @@ struct phys_world_s {
 		
 		objects.clear();
 		
-		if (world) delete world;
-		if (solver) delete solver;
-		if (dispatcher) delete dispatcher;
-		if (config) delete config;
-		if (broadphase) delete broadphase;
+		if (world) 
+			delete world;
+
+		if (solver) 
+			delete solver;
+
+		if (dispatcher) 
+			delete dispatcher;
+
+		if (config) 
+			delete config;
+
+		if (broadphase) 
+			delete broadphase;
 	}
 };
 
@@ -142,17 +158,24 @@ static void bullet_world_substep_cb(btDynamicsWorld *world, btScalar timeStep) {
 	phys_world_t * this_world = nullptr;
 	{
 		auto iter = world_map.find(world);
-		if (iter == world_map.end()) return; 
+
+		if (iter == world_map.end()) 
+			return;
+
 		this_world = iter->second;
 	}
 	
-	if (!this_world->touch_cb) return;
+	if (!this_world->touch_cb) 
+		return;
 	
 	int numManifolds = world->getDispatcher()->getNumManifolds();
+
 	for (int i=0;i<numManifolds;i++) {
 		btPersistentManifold* contactManifold =  world->getDispatcher()->getManifoldByIndexInternal(i);
 		int numContacts = contactManifold->getNumContacts();
-		if (!numContacts) continue;
+
+		if (!numContacts) 
+			continue;
 		
 		btCollisionObject const * obA = static_cast<btCollisionObject const *>(contactManifold->getBody0());
 		btCollisionObject const * obB = static_cast<btCollisionObject const *>(contactManifold->getBody1());
@@ -167,7 +190,10 @@ static void bullet_world_substep_cb(btDynamicsWorld *world, btScalar timeStep) {
 				pA = this_world->map_static_slick;
 			} else {
 				auto iter = this_world->object_map.find(obA);
-				if (iter == this_world->object_map.end()) continue; 
+
+				if (iter == this_world->object_map.end()) 
+					continue; 
+
 				pA = iter->second;
 			}
 		}
@@ -178,15 +204,21 @@ static void bullet_world_substep_cb(btDynamicsWorld *world, btScalar timeStep) {
 				pB = this_world->map_static_slick;
 			} else {
 				auto iter = this_world->object_map.find(obB);
-				if (iter == this_world->object_map.end()) continue; 
+
+				if (iter == this_world->object_map.end()) 
+					continue; 
+
 				pB = iter->second;
 			}
 		}
 		
-		if (pA->properties.disabled || pB->properties.disabled) continue;
+		if (pA->properties.disabled || pB->properties.disabled) 
+			continue;
+
 		phys_collision_t col;
 		col.A = pA;
 		col.B = pB;
+
 		for (int i = 0; i < numContacts; i++) {
 			auto c = contactManifold->getContactPoint(i);
 			col.impulse = c.getAppliedImpulse();
@@ -261,27 +293,40 @@ void * gptp_brush_task(void * arg) {
 	int points_num;
 	
 	int content_mask = CONTENTS_SOLID;
+
 	if (phys_playerclip->integer) 
 		content_mask |= CONTENTS_PLAYERCLIP;
 	
 	while (true) {
 		int ib = data->brush_i--;
-		if (ib < 0) return nullptr;
+
+		if (ib < 0) 
+			return nullptr;
+
 		int i = data->brushes[ib];
+
 		if (CM_BrushContentFlags(i) & content_mask) {
 			points_num = CM_CalculateHull(i, points, BP_POINTS_SIZE);
-			if (points_num < 4) continue;
-			
+
+			if (points_num < 4) 
+				continue;			
 			
 			btConvexHullShape * chs = new btConvexHullShape();
+
 			for (int i = 0; i < points_num; i++) {
 				btVector3 vec { points[i][0], points[i][1], points[i][2] };
 				chs->addPoint(vec, false);
 			}
+
 			chs->recalcLocalAabb();
 			data->objmut.lock();
-			if (CM_BrushOverallFlags(i) & SURF_SLICK) data->css->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
-			else data->cs->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
+
+			if (CM_BrushOverallFlags(i) & SURF_SLICK) 
+				data->css->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
+
+			else 
+				data->cs->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
+
 			data->objmut.unlock();
 		}
 	}
@@ -293,16 +338,24 @@ void * gptp_surface_task(void * arg) {
 	vec3_t points [BP_POINTS_SIZE];
 	
 	int content_mask = CONTENTS_SOLID;
-	if (phys_playerclip->integer) content_mask |= CONTENTS_PLAYERCLIP;
+
+	if (phys_playerclip->integer) 
+		content_mask |= CONTENTS_PLAYERCLIP;
 	
 	while (true) {
 		int pi = data->patch_i--;
-		if (pi < 0) return nullptr;
+
+		if (pi < 0) 
+			return nullptr;
+
 		int i = data->patches[pi];
+
 		if (CM_PatchContentFlags(i) & content_mask) {
 			int width, height;
 			CM_PatchMeshPoints(i, points, BP_POINTS_SIZE, &width, &height);
-			if (width * height < 4) continue;
+
+			if (width * height < 4) 
+				continue;
 			
 			for (int x = 0; x < width - 1; x++) {
 				for (int y = 0; y < height - 1; y++) {
@@ -315,8 +368,12 @@ void * gptp_surface_task(void * arg) {
 					
 					chs->recalcLocalAabb();
 					data->objmut.lock();
-					if (CM_PatchSurfaceFlags(i) & SURF_SLICK) data->css->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
-					else data->cs->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
+
+					if (CM_PatchSurfaceFlags(i) & SURF_SLICK) 
+						data->css->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
+					else 
+						data->cs->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
+
 					data->objmut.unlock();
 				}
 			}
@@ -326,7 +383,8 @@ void * gptp_surface_task(void * arg) {
 
 void Phys_World_Add_Current_Map(phys_world_t * world, void * world_token) {
 	
-	if (world->map_static) delete world->map_static;
+	if (world->map_static) 
+		delete world->map_static;
 	
 	int brushes_max, surfaces_max;
 	gptp_brusurf_task_data btd;
@@ -347,16 +405,20 @@ void Phys_World_Add_Current_Map(phys_world_t * world, void * world_token) {
 	btd.css = new btCompoundShape;
 	
 	std::vector<void *> tasks;
+
 	for (unsigned int i = 0; i < GPTP_GetThreadCount(); i++) {
 		tasks.push_back(GPTP_TaskBegin(gptp_brush_task, &btd));
 	}
+
 	for (void * task : tasks) {
 		GPTP_TaskCollect(task);
 	}
+
 	tasks.clear();
 	for (unsigned int i = 0; i < GPTP_GetThreadCount(); i++) {
 		tasks.push_back(GPTP_TaskBegin(gptp_surface_task, &btd));
 	}
+
 	for (void * task : tasks) {
 		GPTP_TaskCollect(task);
 	}
@@ -552,7 +614,8 @@ phys_object_t * Phys_Object_Create_From_Obj(phys_world_t * world, char const * p
 	}
 
 	objModel_t * mod = CM_LoadObj(path);
-	if (!mod) return nullptr;
+	if (!mod) 
+		return nullptr;
 	
 	VectorCopy(mod->mins, no->properties.mins);
 	VectorCopy(mod->maxs, no->properties.maxs);
@@ -604,8 +667,7 @@ phys_object_t * Phys_Object_Create_From_Obj(phys_world_t * world, char const * p
 				mass += fabs(min.x() - max.x()) * fabs(min.y() - max.y()) * fabs(min.z() - max.z());
 				cps->addChildShape( btTransform { btQuaternion {0, 0, 0, 1}, btVector3 {0, 0, 0} }, chs );
 				
-			}
-			
+			}			
 		} else {
 		
 			for (int s = 0; s < mod->numSurfaces; s++) {
@@ -625,8 +687,7 @@ phys_object_t * Phys_Object_Create_From_Obj(phys_world_t * world, char const * p
 		}
 		cps->setLocalScaling({scale, scale, scale});
 		cps->recalculateLocalAabb();
-		no->shape = cps;
-		
+		no->shape = cps;		
 	} else {
 		
 		if (calc_mass) {
@@ -651,8 +712,7 @@ phys_object_t * Phys_Object_Create_From_Obj(phys_world_t * world, char const * p
 			chs->setLocalScaling({scale, scale, scale});
 			chs->recalcLocalAabb();
 			no->shape = chs;
-			mass += fabs(min.x() - max.x()) * fabs(min.y() - max.y()) * fabs(min.z() - max.z());
-			
+			mass += fabs(min.x() - max.x()) * fabs(min.y() - max.y()) * fabs(min.z() - max.z());			
 		} else {
 			
 			btConvexHullShape * chs = new btConvexHullShape;
@@ -698,7 +758,9 @@ phys_object_t * Phys_Object_Create_From_BModel(phys_world_t * world, int modeli,
 	btCompoundShape * cs = new btCompoundShape;
 	
 	for (int i = 0; i < brushes_num; i++) {
-		if (!(CM_BrushContentFlags(brushes[i]) & CONTENTS_SOLID)) continue;
+		if (!(CM_BrushContentFlags(brushes[i]) & CONTENTS_SOLID)) 
+			continue;
+
 		int n = CM_CalculateHull(brushes[i], points, BP_POINTS_SIZE);
 		
 		btConvexHullShape * chs = new btConvexHullShape();
@@ -715,7 +777,9 @@ phys_object_t * Phys_Object_Create_From_BModel(phys_world_t * world, int modeli,
 		if (CM_PatchContentFlags(patches[i]) & CONTENTS_SOLID) {
 			int width, height;
 			CM_PatchMeshPoints(patches[i], points, BP_POINTS_SIZE, &width, &height);
-			if (width * height < 4) continue;
+
+			if (width * height < 4) 
+				continue;
 			
 			for (int x = 0; x < width - 1; x++) {
 				for (int y = 0; y < height - 1; y++) {
@@ -816,14 +880,18 @@ void Phys_Object_Get_Transform(phys_object_t * obj, phys_transform_t * copyto) {
 
 void Phys_Object_Set_Transform(phys_object_t * obj, phys_transform_t * copyfrom) {
 	btTransform trans;
-	if (obj->properties.kinematic) obj->motion_state->getWorldTransform(trans);
-	else trans = obj->body->getWorldTransform();
+	if (obj->properties.kinematic) 
+		obj->motion_state->getWorldTransform(trans);
+	else 
+		trans = obj->body->getWorldTransform();
 	
 	trans.setOrigin( { copyfrom->origin[0], copyfrom->origin[1], copyfrom->origin[2] } );
 	trans.setRotation( btQuaternion {copyfrom->angles[0] * d2r_mult, copyfrom->angles[2] * d2r_mult, copyfrom->angles[1] * d2r_mult} );
 	
-	if (obj->properties.kinematic) obj->motion_state->setWorldTransform(trans);
-	else obj->body->setWorldTransform(trans);
+	if (obj->properties.kinematic) 
+		obj->motion_state->setWorldTransform(trans);
+	else 
+		obj->body->setWorldTransform(trans);
 }
 
 void Phys_Object_Force(phys_object_t * obj, float * lin, float * ang) {
