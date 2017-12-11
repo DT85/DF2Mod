@@ -751,6 +751,7 @@ typedef enum {
 	ET_THINKER,
 	ET_CLOUD, // dumb
 	ET_TERRAIN,
+	ET_PROP,
 
 	ET_EVENTS				// any of the EV_* events can be added freestanding
 							// by setting eType to ET_EVENTS + eventNum

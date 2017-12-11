@@ -224,6 +224,7 @@ void G_Phys_UpdateEnt(gentity_t * ent) {
 		return;
 
 	switch (ent->s.eType) {
+	case ET_PROP:
 	case ET_GENERAL:
 	default:
 		gi.Phys_Object_Get_Origin(ent->phys, trans.origin);
@@ -359,7 +360,7 @@ static size_t const testmodels_num = sizeof(testmodels) / sizeof(char const *);
 
 void G_TEST_PhysTestEnt(vec3_t pos) {
 	gentity_t * physent = G_Spawn();
-	physent->s.eType = ET_GENERAL;
+	physent->s.eType = ET_PROP;
 	physent->contents = MASK_SOLID;
 	//physent->r.svFlags |= SVF_BROADCAST;
 	
@@ -387,4 +388,49 @@ void G_TEST_PhysTestEnt(vec3_t pos) {
 	
 	G_SetOrigin(physent, pos);
 	gi.linkentity(physent);
+}
+
+/*QUAKED misc_model_phys (1 0 0) (-16 -16 0) (16 16 16)
+"model"		.md3 file to load
+*/
+void SP_misc_model_phys(gentity_t *ent)
+{
+	if (!ent || !ent->model || !ent->model[0])
+	{
+		Com_Error(ERR_DROP, "misc_model_phys with no model.");
+		return;
+	}
+
+	const size_t len = strlen(ent->model);
+	if (len < 4 || Q_stricmp(&ent->model[len - 4], ".obj") != 0)
+	{
+		Com_Error(ERR_DROP, "misc_model_phys model(%s) is not an obj.", ent->model);
+		return;
+	}
+
+	ent->s.eType = ET_PROP;
+	ent->contents = MASK_SOLID;
+
+	VectorCopy(ent->currentOrigin, trans.origin);
+	VectorClear(trans.angles);
+
+	props.mass = -1;
+	props.friction = 0.5;
+	props.restitution = 0.125;
+	props.dampening = 0.05;
+	props.actor = qfalse;
+	props.kinematic = qfalse;
+	props.disabled = qfalse;
+	props.contents = CONTENTS_SOLID;
+	props.token = ent;
+
+	ent->phys = gi.Phys_Object_Create_From_Obj(gworld, ent->model, &trans, &props, 1);
+	ent->s.modelindex = G_ModelIndex(ent->model);
+
+	phys_properties_t * nprops = gi.Phys_Object_Get_Properties(ent->phys);
+	VectorCopy(nprops->mins, ent->mins);
+	VectorCopy(nprops->maxs, ent->maxs);
+
+	G_SetOrigin(ent, ent->currentOrigin);
+	gi.linkentity(ent);
 }

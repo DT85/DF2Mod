@@ -6125,34 +6125,36 @@ void WP_SaberInFlightReflectCheck( gentity_t *self, usercmd_t *ucmd  )
 			continue;
 		if ( !(ent->inuse) )
 			continue;
-		if ( ent->s.eType != ET_MISSILE )
-		{
-			if ( ent->client || ent->s.weapon != WP_SABER )
-			{//FIXME: wake up bad guys?
-				continue;
-			}
-			if ( ent->s.eFlags & EF_NODRAW )
-			{
-				continue;
-			}
-			if ( Q_stricmp( "lightsaber", ent->classname ) != 0 )
-			{//not a lightsaber
-				continue;
-			}
-		}
-		else
-		{//FIXME: make exploding missiles explode?
-			if ( ent->s.pos.trType == TR_STATIONARY )
-			{//nothing you can do with a stationary missile
-				continue;
-			}
-			if ( ent->splashDamage || ent->splashRadius )
-			{//can't deflect exploding missiles
-				if ( DistanceSquared( ent->currentOrigin, center ) < 256 )//16 squared
-				{
-					G_MissileImpacted( ent, saberent, ent->currentOrigin, up );
+
+		if (ent->s.eType != ET_PROP) {
+			if (ent->s.eType != ET_MISSILE)	{
+				if (ent->client || ent->s.weapon != WP_SABER)
+				{//FIXME: wake up bad guys?
+					continue;
 				}
-				continue;
+				if (ent->s.eFlags & EF_NODRAW)
+				{
+					continue;
+				}
+				if (Q_stricmp("lightsaber", ent->classname) != 0)
+				{//not a lightsaber
+					continue;
+				}
+			}
+			else
+			{//FIXME: make exploding missiles explode?
+				if (ent->s.pos.trType == TR_STATIONARY)
+				{//nothing you can do with a stationary missile
+					continue;
+				}
+				if (ent->splashDamage || ent->splashRadius)
+				{//can't deflect exploding missiles
+					if (DistanceSquared(ent->currentOrigin, center) < 256)//16 squared
+					{
+						G_MissileImpacted(ent, saberent, ent->currentOrigin, up);
+					}
+					continue;
+				}
 			}
 		}
 
@@ -8727,16 +8729,19 @@ qboolean WP_ForceThrowable( gentity_t *ent, gentity_t *forwardEnt, gentity_t *se
 							{//not a force-usable func_static or, it is one, but it's solitary, so you only press it when looking right at it
 								if ( Q_stricmp( "limb", ent->classname ) )
 								{//not a limb
-									if ( ent->s.weapon == WP_TURRET && !Q_stricmp( "PAS", ent->classname ) && ent->s.apos.trType == TR_STATIONARY )
-									{//can knock over placed turrets
-										if ( !self->s.number || self->enemy != ent )
-										{//only NPCs who are actively mad at this turret can push it over
+									if ( !(ent->s.eType == ET_PROP && ent->phys) )
+									{//not a phys object
+										if (ent->s.weapon == WP_TURRET && !Q_stricmp("PAS", ent->classname) && ent->s.apos.trType == TR_STATIONARY)
+										{//can knock over placed turrets
+											if (!self->s.number || self->enemy != ent)
+											{//only NPCs who are actively mad at this turret can push it over
+												return qfalse;
+											}
+										}
+										else
+										{
 											return qfalse;
 										}
-									}
-									else
-									{
-										return qfalse;
 									}
 								}
 							}
@@ -9274,70 +9279,6 @@ void ForceThrow( gentity_t *self, qboolean pull, qboolean fake )
 						WP_ForcePowerStop( push_list[x], FP_DRAIN );
 					}
 				}
-				
-				// phys
-				if (push_list[x]->phys) 
-				{
-					float dirLen = 0;
-					int powerLevel, powerUse;
-					int pushPowerMod;
-					int pushPower;
-					vec3_t thispush_org;
-
-					if (pull)
-					{
-						powerLevel = self->client->ps.forcePowerLevel[FP_PULL];
-						pushPower = 256 * self->client->ps.forcePowerLevel[FP_PULL];
-						powerUse = FP_PULL;
-					}
-					else
-					{
-						powerLevel = self->client->ps.forcePowerLevel[FP_PUSH];
-						pushPower = 256 * self->client->ps.forcePowerLevel[FP_PUSH];
-						powerUse = FP_PUSH;
-					}
-
-					pushPower = 256 * powerLevel;
-
-					pushPowerMod = pushPower;
-					if (pull) {
-						VectorSubtract(self->client->ps.origin, thispush_org, pushDir);
-
-						if (VectorLength(pushDir) <= 256)
-						{
-							int randfact = 0;
-
-							if (powerLevel == FORCE_LEVEL_1)
-							{
-								randfact = 3;
-							}
-							else if (powerLevel == FORCE_LEVEL_2)
-							{
-								randfact = 7;
-							}
-							else if (powerLevel == FORCE_LEVEL_3)
-							{
-								randfact = 10;
-							}
-
-						}
-					}
-					else
-					{
-						VectorSubtract(thispush_org, self->client->ps.origin, pushDir);
-					}
-
-
-					dirLen = VectorLength(pushDir);
-					VectorNormalize(pushDir);
-
-					phys_properties_t * props = gi.Phys_Object_Get_Properties(push_list[x]->phys);
-
-					VectorScale(pushDir, pushPower * props->mass, pushDir);
-
-					gi.Phys_Object_Impulse(push_list[x]->phys, pushDir, NULL);
-				}
-				// /phys
 
 				if ( Rosh_BeingHealed( push_list[x] ) )
 				{
@@ -9763,6 +9704,59 @@ void ForceThrow( gentity_t *self, qboolean pull, qboolean fake )
 							GEntity_UseFunc( push_list[x], self, self );
 						}
 					}
+				}
+				else if (push_list[x]->s.eType == ET_PROP && push_list[x]->phys)
+				{//force-usable phys objects
+					int pushPower;
+					vec3_t	pushDir;
+					float dirLen = 0;
+					vec3_t thispush_org;
+
+					VectorCopy(push_list[x]->currentOrigin, thispush_org);
+
+					int modPowerLevel;
+
+					if (pull)
+					{
+						VectorSubtract(self->client->ps.origin, thispush_org, pushDir);
+
+						modPowerLevel = self->client->ps.forcePowerLevel[FP_PULL];
+
+						if (VectorLength(pushDir) <= 256)
+						{
+							int randfact = 0;
+
+							if (modPowerLevel >= FORCE_LEVEL_1)
+							{
+								randfact = 3;
+							}
+							else if (modPowerLevel >= FORCE_LEVEL_2)
+							{
+								randfact = 7;
+							}
+							else if (modPowerLevel >= FORCE_LEVEL_3)
+							{
+								randfact = 10;
+							}
+						}
+					}
+					else
+					{
+						VectorSubtract(thispush_org, self->client->ps.origin, pushDir);
+
+						modPowerLevel = self->client->ps.forcePowerLevel[FP_PUSH];
+					}
+
+					pushPower = 256 * modPowerLevel;
+
+					dirLen = VectorLength(pushDir);
+					VectorNormalize(pushDir);
+
+					phys_properties_t * props = gi.Phys_Object_Get_Properties(push_list[x]->phys);
+
+					VectorScale(pushDir, pushPower * props->mass, pushDir);
+
+					gi.Phys_Object_Impulse(push_list[x]->phys, pushDir, NULL);
 				}
 				else if ( !Q_stricmp( "func_door", push_list[x]->classname ) && (push_list[x]->spawnflags&2/*MOVER_FORCE_ACTIVATE*/) )
 				{//push/pull the door

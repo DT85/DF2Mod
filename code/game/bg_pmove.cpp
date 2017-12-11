@@ -14803,16 +14803,6 @@ void Pmove( pmove_t *pmove )
 
 	pm = pmove;
 
-//#ifdef _GAME // TODO -- prediction in CGAME
-	G_Phys_SetClientCrouched((gentity_t *)pm->gent, (qboolean)(pm->cmd.upmove < 0));
-	if (pm->cmd.forwardmove || pm->cmd.rightmove) {
-		G_Phys_Set_Friction((gentity_t *)pm->gent, bg_phys_clfric_move->value);
-	}
-	else {
-		G_Phys_Set_Friction((gentity_t *)pm->gent, bg_phys_clfric_stop->value);
-	}
-//#endif
-
 	// this counter lets us debug movement problems with a journal by setting a conditional breakpoint fot the previous frame
 	c_pmove++;
 
