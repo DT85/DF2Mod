@@ -391,7 +391,7 @@ void G_TEST_PhysTestEnt(vec3_t pos) {
 }
 
 /*QUAKED misc_model_phys (1 0 0) (-16 -16 0) (16 16 16)
-"model"		.md3 file to load
+"model"		.obj file to load
 */
 void SP_misc_model_phys(gentity_t *ent)
 {
