@@ -54,8 +54,6 @@ typedef struct {
 typedef struct cmodel_s {
 	vec3_t		mins, maxs;
 	cLeaf_t		leaf;			// submodels don't reference the main tree
-	//DT EDIT: FIXME! Doesn't belong in SP.
-	int			firstNode;		// only for cmodel[0] (for the main and bsp instances)
 } cmodel_t;
 
 typedef struct cbrushside_s {

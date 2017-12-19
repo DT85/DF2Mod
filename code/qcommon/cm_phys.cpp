@@ -107,15 +107,17 @@ void CM_SubmodelIndicies(int submodel, int * brushes, int * patches, int * brush
 	cmodel_t * wmod = &cmg.cmodels[submodel];
 	int brushes_num = 0;
 	int patches_num = 0;
-	if (wmod->firstNode < 0) {
+	int nodeNum = 0;
+	/*if (wmod->firstNode < 0) {
 		for (int j = 0; j < wmod->leaf.numLeafBrushes; j++, brushes_num++) {
 			brushes[brushes_num] = cmg.leafbrushes[wmod->leaf.firstLeafBrush + j];
 		}
 		for (int j = 0; j < wmod->leaf.numLeafSurfaces; j++, patches_num++) {
 			patches[patches_num] = cmg.leafsurfaces[wmod->leaf.firstLeafSurface + j];
 		}
-	} else {
-		cNode_t * node = &cmg.nodes[wmod->firstNode];
+	} else */{
+		//cNode_t * node = &cmg.nodes[wmod->firstNode];
+		cNode_t * node = &cmg.nodes[nodeNum];
 		CM_FWBRecurse(node, brushes, patches, brushes_num, patches_num);
 	}
 	*brushes_num_ptr = brushes_num;
@@ -189,5 +191,5 @@ void CM_PatchMeshPoints(int patchnum, vec3_t * points, int points_size, int * wi
 		*height = 0;
 		return;
 	}
-	CM_QuickSubdividePatch(patch, points, points_size, width, height);
+	//CM_QuickSubdividePatch(patch, points, points_size, width, height);
 }
