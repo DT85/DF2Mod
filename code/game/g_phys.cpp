@@ -301,7 +301,7 @@ void G_Phys_AddClientCapsule(gentity_t * ent) {
 	if (ent->phys) gi.Phys_World_Remove_Object(gworld, ent->phys);
 	if (ent->phys2) gi.Phys_World_Remove_Object(gworld, ent->phys2);
 	
-	//trap->Print("%s", ent->classname);
+	//gi.Printf("%s", ent->classname);
 	
 	props.mass = -1;
 	props.friction = bg_phys_clfric_stop->value;
@@ -311,7 +311,7 @@ void G_Phys_AddClientCapsule(gentity_t * ent) {
 	props.kinematic = qfalse;
 	props.disabled = qfalse;
 	props.contents = ent->contents;
-	props.token = ent;
+	props.token = ent->client;
 	
 	VectorCopy(ent->currentOrigin, trans.origin);
 	VectorClear(trans.angles);

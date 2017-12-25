@@ -1309,7 +1309,7 @@ void NPC_Begin (gentity_t *ent)
 		G_MatchPlayerWeapon( ent );
 	}
 
-	//G_Phys_AddClientCapsule(ent); //currently breaks shit
+	G_Phys_AddClientCapsule(ent); //currently roots the player in-place.
 
 	ClientThink( ent->s.number, &ucmd );
 
@@ -1789,7 +1789,7 @@ gentity_t *NPC_Spawn_Do( gentity_t *ent, qboolean fullSpawnNow )
 		NPC_Begin( newent );
 	}
 
-	//G_Phys_AddClientCapsule(newent); //currently breaks shit
+	G_Phys_AddClientCapsule(newent); //currently roots the player in-place.
 
 	return newent;
 }
