@@ -382,12 +382,17 @@ if(BuildSPEngine)
     # Bullet Physics Libraries
 	set(OpenJKLibPhysDir "${OpenJKLibDir}/bullet3/lib")
 	
-	list(APPEND SPEngineLibraries
-		${OpenJKLibPhysDir}/BulletCollision_debug.lib	
-		${OpenJKLibPhysDir}/BulletDynamics_debug.lib
-		${OpenJKLibPhysDir}/BulletInverseDynamics_debug.lib
-		${OpenJKLibPhysDir}/BulletSoftBody_debug.lib	
-		${OpenJKLibPhysDir}/LinearMath_debug.lib
+	set(BulletLibs 
+		optimized "${OpenJKLibPhysDir}/BulletCollision.lib"
+		optimized "${OpenJKLibPhysDir}/BulletDynamics.lib"
+		optimized "${OpenJKLibPhysDir}/BulletInverseDynamics.lib"
+		optimized "${OpenJKLibPhysDir}/BulletSoftBody.lib"
+		optimized "${OpenJKLibPhysDir}/LinearMath.lib"
+		debug "${OpenJKLibPhysDir}/BulletCollision_debug.lib"
+		debug "${OpenJKLibPhysDir}/BulletDynamics_debug.lib"
+		debug "${OpenJKLibPhysDir}/BulletInverseDynamics_debug.lib"
+		debug "${OpenJKLibPhysDir}/BulletSoftBody_debug.lib"
+		debug "${OpenJKLibPhysDir}/LinearMath_debug.lib"
 		)
 	
 	# project macro so we can invoke it twice: for ja
@@ -454,7 +459,10 @@ if(BuildSPEngine)
 		set_target_properties(${ProjectName} PROPERTIES INCLUDE_DIRECTORIES "${SPEngineIncludeDirectories}")
 		set_target_properties(${ProjectName} PROPERTIES PROJECT_LABEL ${Label})
 		if(SPEngineLibraries)
-			target_link_libraries(${ProjectName} ${SPEngineLibraries})
+			target_link_libraries(${ProjectName} 
+				${SPEngineLibraries}
+				${BulletLibs}
+				)
 		endif(SPEngineLibraries)
 	endfunction(add_sp_project)
 	if(BuildSPEngine)
