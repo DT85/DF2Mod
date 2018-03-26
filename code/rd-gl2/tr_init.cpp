@@ -242,6 +242,10 @@ cvar_t  *r_shadowCascadeZBias;
 cvar_t	*r_ambientScale;
 cvar_t	*r_directedScale;
 
+cvar_t  *gui_tooltipSize;
+cvar_t  *gui_tooltipCentered;
+
+
 int max_polys;
 int max_polyverts;
 
@@ -1510,6 +1514,9 @@ void R_Register(void)
 	sv_mapChecksum = ri.Cvar_Get("sv_mapChecksum", "", CVAR_ROM);
 	se_language = ri.Cvar_Get("se_language", "english", CVAR_ARCHIVE | CVAR_NORESTART);
 
+	gui_tooltipSize = ri.Cvar_Get("gui_tooltipSize", "2", CVAR_ARCHIVE);
+	gui_tooltipCentered = ri.Cvar_Get("gui_tooltipCentered", "0", CVAR_ARCHIVE);
+
 	for (size_t i = 0; i < numCommands; i++)
 		ri.Cmd_AddCommand(commands[i].cmd, commands[i].func);
 }
@@ -2120,6 +2127,11 @@ extern "C" Q_EXPORT refexport_t* QDECL GetRefAPI(int apiVersion, refimport_t *ri
 	G2EX(AddSkinGore);
 	G2EX(ClearSkinGore);
 #endif
+
+	re.KeyEvent = RE_KeyEvent;
+	re.CharEvent = RE_CharEvent;
+	re.MouseWheelEvent = RE_MouseWheelEvent;
+	re.MouseClickEvent = RE_MouseClickEvent;
 
 #ifdef G2_PERFORMANCE_ANALYSIS
 	re.G2Time_ReportTimers = G2Time_ReportTimers;

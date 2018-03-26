@@ -96,8 +96,10 @@ if(BuildSPRdGL2)
 
 	# main files
 	set(SPRDGL2MainFiles
+		"${SPDir}/rd-gl2/compose_models.cpp"  
+		"${SPDir}/rd-gl2/compose_models.h"
 		"${SPDir}/rd-gl2/glext.h"
-		"${SPDir}/rd-gl2/iqm.h"		
+		"${SPDir}/rd-gl2/iqm.h"	
 		"${SPDir}/rd-gl2/qgl.h"
 		"${SPDir}/rd-gl2/tr_allocator.cpp"
 		"${SPDir}/rd-gl2/tr_allocator.h"
@@ -119,6 +121,7 @@ if(BuildSPRdGL2)
 		"${SPDir}/rd-gl2/tr_glsl_parse.cpp"
 		"${SPDir}/rd-gl2/tr_image.cpp"
 		"${SPDir}/rd-gl2/tr_image_dds.cpp"
+		"${SPDir}/rd-gl2/tr_imgui.cpp"
 		"${SPDir}/rd-gl2/tr_init.cpp"
 		"${SPDir}/rd-gl2/tr_light.cpp"
 		"${SPDir}/rd-gl2/tr_local.h"
@@ -154,6 +157,95 @@ if(BuildSPRdGL2)
 	source_group("renderer\\glsl" FILES ${SPRDGL2GLSLFiles})
 	set(SPRDGL2Files ${SPRDGL2Files} ${SPRDGL2GLSLFiles})
 	
+	set(SPRDGL2ImGuiOpenJKFiles  
+		"${SPDir}/rd-gl2/imgui_openjk/imgui_openjk_default_docks.cpp"  
+		"${SPDir}/rd-gl2/imgui_openjk/imgui_openjk_default_docks.h"
+		)  
+	source_group("imgui_openjk" FILES ${SPRDGL2ImGuiOpenJKFiles})  
+	set(SPRDGL2Files ${SPRDGL2Files} ${SPRDGL2ImGuiOpenJKFiles})
+
+	set(SPRDGL2ImGuiFiles
+		"${SPDir}/rd-gl2/imgui/ccall/ccall.h"
+		"${SPDir}/rd-gl2/imgui/MagicFile/magicfile.cpp"
+		"${SPDir}/rd-gl2/imgui/MagicFile/magicfile.h"
+		"${SPDir}/rd-gl2/imgui/ffi.cpp"
+		"${SPDir}/rd-gl2/imgui/imconfig.h"
+		"${SPDir}/rd-gl2/imgui/imgui.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui.h"
+		"${SPDir}/rd-gl2/imgui/imgui_api.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_api.h"
+		"${SPDir}/rd-gl2/imgui/imgui_c_utils.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_c_utils.h"
+		"${SPDir}/rd-gl2/imgui/imgui_default_docks.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_default_docks.h"
+		"${SPDir}/rd-gl2/imgui/imgui_demo.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_dock.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_dock.h"
+		"${SPDir}/rd-gl2/imgui/imgui_draw.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_fixedarea.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_fixedarea.h"
+		"${SPDir}/rd-gl2/imgui/imgui_impl_idtech3_gles.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_impl_idtech3_gles.h"
+		"${SPDir}/rd-gl2/imgui/imgui_internal.h"
+		"${SPDir}/rd-gl2/imgui/imgui_utils.cpp"
+		"${SPDir}/rd-gl2/imgui/imgui_utils.h"
+		"${SPDir}/rd-gl2/imgui/include_imgui.h"
+		"${SPDir}/rd-gl2/imgui/include_quakegl.h"
+		"${SPDir}/rd-gl2/imgui/stb_rect_pack.h"
+		"${SPDir}/rd-gl2/imgui/stb_textedit.h"
+		"${SPDir}/rd-gl2/imgui/stb_truetype.h"
+		)
+	source_group("imgui" FILES ${SPRDGL2ImGuiFiles})
+	set(SPRDGL2Files ${SPRDGL2Files} ${SPRDGL2ImGuiFiles})
+
+	set(SPRDGL2ImGuiDockFiles
+		"${SPDir}/rd-gl2/imgui_docks/dock.cpp"
+		"${SPDir}/rd-gl2/imgui_docks/dock.h"
+		"${SPDir}/rd-gl2/imgui_docks/dock_console.cpp"
+		"${SPDir}/rd-gl2/imgui_docks/dock_console.h"
+		"${SPDir}/rd-gl2/imgui_docks/dock_julia.cpp"
+		"${SPDir}/rd-gl2/imgui_docks/dock_julia.h"
+		"${SPDir}/rd-gl2/imgui_docks/dock_node.cpp"
+		"${SPDir}/rd-gl2/imgui_docks/dock_node.h"
+		"${SPDir}/rd-gl2/imgui_docks/dock_repl.cpp"
+		"${SPDir}/rd-gl2/imgui_docks/dock_repl.h"
+		"${SPDir}/rd-gl2/imgui_docks/dock_skeleton.cpp"
+		"${SPDir}/rd-gl2/imgui_docks/dock_skeleton.h"
+		)
+	source_group("imgui_docks" FILES ${SPRDGL2ImGuiDockFiles})
+	set(SPRDGL2Files ${SPRDGL2Files} ${SPRDGL2ImGuiDockFiles})
+
+	set(SPRDGL2ImGuiOpenJKFiles
+		"${SPDir}/rd-gl2/imgui_openjk/imgui_openjk_default_docks.h"
+		"${SPDir}/rd-gl2/imgui_openjk/imgui_openjk_default_docks.cpp"
+		"${SPDir}/rd-gl2/imgui_openjk/gluecode.h"
+		"${SPDir}/rd-gl2/imgui_openjk/gluecode.cpp"
+		)
+	source_group("imgui_openjk" FILES ${SPRDGL2ImGuiOpenJKFiles})
+	set(SPRDGL2Files ${SPRDGL2Files} ${SPRDGL2ImGuiOpenJKFiles})
+
+	set(SPRDGL2ImGuiDockOpenJKFiles 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_shadereditor.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_shadereditor.h" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_mapinfo.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_mapinfo.h" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_perf.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_perf.h" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_controlflow.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_controlflow.h" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_models.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_models.h" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_all.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_all.h" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_mdxm.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_mdxm.h" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_mdxa.cpp" 
+		"${SPDir}/rd-gl2/imgui_docks_openjk/dock_mdxa.h" 
+		) 
+	source_group("imgui_docks_openjk" FILES ${SPRDGL2ImGuiDockOpenJKFiles}) 
+	set(SPRDGL2Files ${SPRDGL2Files} ${SPRDGL2ImGuiDockOpenJKFiles}) 
+
+
 	set(SPRDGL2RdCommonFiles
 		"${SPDir}/rd-common/mdx_format.h"
 		"${SPDir}/rd-common/tr_common.h"
