@@ -755,6 +755,7 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 
 	G_InitMemory();
 
+	//Init bullet physics
 	G_Phys_Init();
 
 	// set some level globals
@@ -843,6 +844,7 @@ void ShutdownGame( void )
 	// write all the client session data so we can get it back
 	G_WriteSessionData();
 
+	//Shutdown bullet physics
 	G_Phys_Shutdown();
 
 	// Destroy the Game Interface.
