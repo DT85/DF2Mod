@@ -384,12 +384,14 @@ void CL_Vid_Restart_f( void ) {
 	//rww - sof2mp does this here, but it seems to cause problems in this codebase.
 //	CM_ClearMap();
 
-	CL_InitRef();
-
 	cls.rendererStarted = qfalse;
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
 	cls.soundRegistered = qfalse;
+
+	CL_InitRef();
+
+	CL_StartHunkUsers();
 
 	// unpause so the cgame definately gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
@@ -936,7 +938,7 @@ void CL_InitRenderer( void ) {
 	cls.charSetShader = re.RegisterShaderNoMip("gfx/2d/charsgrid_med");
 	cls.whiteShader = re.RegisterShader( "white" );
 	cls.consoleShader = re.RegisterShader( "console" );
-	cls.ratioFix = (float)(SCREEN_WIDTH * cls.glconfig.vidHeight) / (float)(SCREEN_HEIGHT * cls.glconfig.vidWidth);
+	cls.widthRatioCoef = (float)(SCREEN_WIDTH * cls.glconfig.vidHeight) / (float)(SCREEN_HEIGHT * cls.glconfig.vidWidth);
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;
 }

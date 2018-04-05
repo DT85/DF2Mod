@@ -334,6 +334,7 @@ if(BuildSPEngine)
 		set(SPEngineWin32Files
 			"${SPDir}/win32/resource.h"
 			"${SPDir}/win32/winquake.rc"
+			"${SharedDir}/sys/win_manifest.manifest"
 			)
 		source_group("win32" FILES ${SPEngineWin32Files})
 		set(SPEngineFiles ${SPEngineFiles} ${SPEngineWin32Files})
@@ -442,14 +443,6 @@ if(BuildSPEngine)
 					COMPONENT ${Component})
 			endif()
 		endif(MakeApplicationBundles)
-
-		# add DPI awareness manifest
-		if(MSVC)
-			add_custom_command(TARGET ${ProjectName} POST_BUILD
-				COMMAND "mt.exe" -manifest \"${SharedDir}\\sys\\win_manifest.xml\" -inputresource:\"$<TARGET_FILE:${ProjectName}>\"\;\#1 -outputresource:\"$<TARGET_FILE:${ProjectName}>\"\;\#1
-				COMMENT "Adding manifest..." 
-			)
-		endif()
 
 		set_target_properties(${ProjectName} PROPERTIES COMPILE_DEFINITIONS "${SPEngineDefines}")
 

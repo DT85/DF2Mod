@@ -156,16 +156,13 @@ vec2 ModTexCoords(vec2 st, vec3 position, vec4 texMatrix, vec4 offTurb)
 
 float CalcLightAttenuation(float distance, float radius)
 {
-#if defined(USE_PBR)
-	float d = (distance*distance) / (radius*radius);
+	float d = pow(distance / radius, 4.0);
 	float attenuation = clamp(1.0 - d, 0.0, 1.0);
 	attenuation *= attenuation;
-	attenuation /= max(distance, 0.0001);
+	attenuation /= distance * distance + 1.0;
 	// don't attenuate directional light
 	attenuation = attenuation + float(radius < 1.0);
-#else
-	float attenuation = (0.5 * radius / distance - 1.5) * float(radius > 0.0) + 1.0;
-#endif
+
 	return clamp(attenuation, 0.0, 1.0);
 }
 
@@ -274,11 +271,11 @@ void main()
 		var_Color = u_VertColor * attr_Color + u_BaseColor;
 
 #if defined(USE_LIGHT_VECTOR) && defined(USE_FAST_LIGHT)
-		float sqrLightDist = dot(L, L);
-		float attenuation = CalcLightAttenuation(sqrLightDist, u_LightRadius * u_LightRadius);
-		float NL = clamp(dot(normalize(normal), L) / sqrt(sqrLightDist), 0.0, 1.0);
+		float lightDist = length(L);
+		float attenuation = CalcLightAttenuation(lightDist, u_LightRadius);
+		float NL = clamp(dot(normalize(normal), L) / lightDist, 0.0, 1.0);
 
-		var_Color.rgb *= u_DirectedLight * (attenuation * NL) + u_AmbientLight;
+		var_Color.rgb *= u_DirectedLight * (u_LightRadius + float(u_LightRadius < 1.0)) * (attenuation * NL) + u_AmbientLight;
 #endif
 	}
 
@@ -289,7 +286,7 @@ void main()
 
 #if defined(PER_PIXEL_LIGHTING)
   #if defined(USE_LIGHT_VECTOR)
-	var_LightDir = vec4(L, u_LightRadius * u_LightRadius);
+	var_LightDir = vec4(L, u_LightRadius);
   #else
 	var_LightDir = vec4(L, 0.0);
   #endif
@@ -340,7 +337,7 @@ uniform samplerCube u_CubeMap;
 #endif
 
 #if defined(USE_NORMALMAP) || defined(USE_DELUXEMAP) || defined(USE_SPECULARMAP) || defined(USE_CUBEMAP)
-// y = deluxe, w = cube
+// x = sphericalHarmonics, y = deluxe, z = specular, w = cube
 uniform vec4      u_EnableTextures; 
 #endif
 
@@ -362,6 +359,7 @@ uniform vec4      u_SpecularScale;
 #if defined(PER_PIXEL_LIGHTING)
 #if defined(USE_CUBEMAP)
 uniform vec4      u_CubeMapInfo;
+uniform vec3      u_SphericalHarmonic[9];
 uniform sampler2D u_EnvBrdfMap;
 #endif
 #endif
@@ -550,22 +548,19 @@ vec3 CalcSpecular(
 	float distrib = spec_D(NH,roughness);
 	vec3 fresnel = spec_F(EH,specular);
 	float vis = spec_G(NL, NE, roughness);
-	return (distrib * fresnel * vis);
+	float denominator = max((4.0 * max(NE,0.0) * max(NL,0.0)),0.001);
+	return (distrib * fresnel * vis) / denominator;
 }
 
 float CalcLightAttenuation(float distance, float radius)
 {
-#if defined(USE_PBR)
-	float d = (distance*distance) / (radius*radius);
+	float d = pow(distance / radius, 4.0);
 	float attenuation = clamp(1.0 - d, 0.0, 1.0);
 	attenuation *= attenuation;
-	attenuation /= max(distance , 0.0001);
-	attenuation *= sqrt(radius);
+	attenuation /= distance * distance + 1.0;
 	// don't attenuate directional light
 	attenuation = attenuation + float(radius < 1.0);
-#else
-	float attenuation = (0.5 * radius / distance - 1.5) * float(radius > 0.0) + 1.0;
-#endif
+
 	return clamp(attenuation, 0.0, 1.0);
 }
 
@@ -588,6 +583,40 @@ vec3 CalcNormal( in vec3 vertexNormal, in vec2 texCoords, in mat3 tangentToWorld
 	return normalize(N);
 }
 
+#if defined(USE_CUBEMAP)
+vec3 CalcSHColor(in vec3 normal)
+{
+	float Y00	= 0.282095;
+	float Y11	= 0.488603 * normal.x;
+	float Y10	= 0.488603 * normal.z;
+	float Y1_1	= 0.488603 * normal.y;
+	float Y21	= 1.092548 * normal.x * normal.z;
+	float Y2_1	= 1.092548 * normal.y * normal.z;
+	float Y2_2	= 1.092548 * normal.y * normal.x;
+	float Y20	= 0.946176 * normal.z * normal.z - 0.315392;
+	float Y22	= 0.546274 * (normal.x * normal.x - normal.y * normal.y);
+
+	float A0 = M_PI;
+	float A1 = (2.0/3.0) * M_PI;
+	float A2 = M_PI / 4.0;
+
+	vec3 L00	= u_SphericalHarmonic[0];
+	vec3 L11	= u_SphericalHarmonic[1];
+	vec3 L10	= u_SphericalHarmonic[2];
+	vec3 L1_1	= u_SphericalHarmonic[3];
+	vec3 L21	= u_SphericalHarmonic[4];
+	vec3 L2_1	= u_SphericalHarmonic[5];
+	vec3 L2_2	= u_SphericalHarmonic[6];
+	vec3 L20	= u_SphericalHarmonic[7];
+	vec3 L22	= u_SphericalHarmonic[8];
+
+	vec3 color = A0*Y00*L00
+		+ A1*Y1_1*L1_1 + A1*Y10*L10 + A1*Y11*L11
+		+ A2*Y2_2*L2_2 + A2*Y2_1*L2_1 + A2*Y20*L20 + A2*Y21*L21 + A2*Y22*L22;
+
+	return color;
+}
+#endif
 
 void main()
 {
@@ -641,27 +670,30 @@ void main()
 #if defined(PER_PIXEL_LIGHTING)
 	float isLightgrid = float(var_LightDir.w < 1.0);
 	L = var_LightDir.xyz;
-  #if defined(USE_DELUXEMAP)
-	L = (texture(u_DeluxeMap, var_TexCoords.zw).xyz - vec3(0.5)) * u_EnableTextures.y;
+  #if defined(USE_LIGHT_VERTEX)
+	L = -normalize(texture(u_LightGridDirectionMap, gridCell).rgb * 2.0 - vec3(1.0)) * (1.0 - u_EnableTextures.y);
   #endif
-	float sqrLightDist = dot(L, L);
-	L /= sqrt(sqrLightDist);
+  #if defined(USE_DELUXEMAP)
+	L = -normalize(texture(u_LightGridDirectionMap, gridCell).rgb  * 2.0 - vec3(1.0)) * (1.0 - u_EnableTextures.y);
+	L += (texture(u_DeluxeMap, var_TexCoords.zw).xyz - vec3(0.5)) * u_EnableTextures.y;
+  #endif
+	float lightDist = length(L);
+	L /= lightDist;
 
 	vec3 ambientLight = texture(u_LightGridAmbientLightMap, gridCell).rgb * isLightgrid;
   #if defined(USE_PBR)
 	vertexColor = var_Color.rgb * var_Color.rgb;
 	ambientLight *= ambientLight;
 	#if defined(USE_LIGHT_VECTOR)
-	  L += -normalize(texture(u_LightGridDirectionMap, gridCell).rgb * 2.0 - vec3(1.0)) * isLightgrid;
+	  L -= normalize(texture(u_LightGridDirectionMap, gridCell).rgb * 2.0 - vec3(1.0)) * isLightgrid;
 	  vec3 directedLight = texture(u_LightGridDirectionalLightMap, gridCell).rgb * isLightgrid;
 	  directedLight *= directedLight;
 	  directedLight += u_DirectedLight * u_DirectedLight;
 	#endif
   #else
-	vertexColor = var_Color.rgb
+	vertexColor = var_Color.rgb;
 	#if defined(USE_LIGHT_VECTOR)
-	  float isLightgrid = float(var_LightDir.w < 1.0);
-	  L += -normalize(texture(u_LightGridDirectionMap, gridCell).rgb * 2.0 - vec3(1.0)) * isLightgrid;
+	  L -= normalize(texture(u_LightGridDirectionMap, gridCell).rgb * 2.0 - vec3(1.0)) * isLightgrid;
 	  vec3 directedLight = texture(u_LightGridDirectionalLightMap, gridCell).rgb * isLightgrid;
 	  directedLight += u_DirectedLight;
 	#endif
@@ -671,8 +703,8 @@ void main()
 	lightColor	 = lightmapColor.rgb * vertexColor;
 	attenuation  = 1.0;
   #elif defined(USE_LIGHT_VECTOR)
-	lightColor	 = directedLight * vertexColor;
-	attenuation  = CalcLightAttenuation(sqrLightDist, var_LightDir.w);
+	lightColor = directedLight * vertexColor * (var_LightDir.w + float(var_LightDir.w < 1.0));
+	attenuation  = CalcLightAttenuation(lightDist, var_LightDir.w);
   #elif defined(USE_LIGHT_VERTEX)
 	lightColor	 = vertexColor;
 	attenuation  = 1.0;
@@ -693,41 +725,28 @@ void main()
   #endif
 
   #if defined(USE_LIGHTMAP) || defined(USE_LIGHT_VERTEX)
-	float surfNL = clamp(dot(N, L), 0.0, 1.0);
-	ambientColor = mix(ambientColor, lightColor, surfNL);
+	float surfNL = clamp(dot(N, L), 0.0, 1.0) * 0.25;
+	ambientColor = max(lightColor - lightColor * surfNL, vec3(0.0));
   #endif
 
   #if defined(USE_SPECULARMAP)
 	vec4 specular = texture(u_SpecularMap, texCoords);
   #else
-	vec4 specular = vec4(0.5);
+	vec4 specular = vec4(1.0);
   #endif
 	specular *= u_SpecularScale;
 
-  #if defined(USE_PBR)
+#if defined(USE_PBR)
 	diffuse.rgb *= diffuse.rgb;
-  #endif
+	specular.rgb *= specular.rgb;
+	// energy conservation, requires specular workflow to use an albedo texture too
+	diffuse.rgb *= vec3(1.0) - specular.rgb;
+#endif
 
-  float ao = 1.0;
-  #if defined(USE_PBR)
-	// diffuse rgb is base color
-	// specular red is gloss
-	// specular green is metallicness
-	// specular blue is ao
-	float roughness = max(specular.r, 0.04);
-	float metal		= specular.g;
-	ao				= specular.b;
-	specular.rgb	= metal * diffuse.rgb + vec3(0.04 - 0.04 * metal);
-	diffuse.rgb    *= 1.0 - metal;
-  #else
 	// diffuse rgb is diffuse
 	// specular rgb is specular reflectance at normal incidence
 	// specular alpha is gloss
-	float roughness = = max(specular.a, 0.04);
-
-	// adjust diffuse by specular reflectance, to maintain energy conservation
-	diffuse.rgb *= vec3(1.0) - specular.rgb;
-  #endif
+	float roughness = 1.0 - specular.a;
 
     H  = normalize(L + E);
     EH = max(1e-8, dot(E, H));
@@ -738,7 +757,7 @@ void main()
 
   #if defined(USE_LIGHTMAP) || defined(USE_LIGHT_VERTEX)
 	NE = abs(dot(N, E)) + 1e-5;
-	reflectance += CalcSpecular(specular.rgb, NH, NL, NE, EH, roughness) * 0.25;
+	reflectance += CalcSpecular(specular.rgb, NH, NL, NE, EH, roughness) * 1.0;
   #endif
   #if defined(USE_LIGHT_VECTOR)
 	NE = abs(dot(N, E)) + 1e-5;
@@ -746,8 +765,8 @@ void main()
   #endif
 
 	out_Color.rgb  = lightColor   * reflectance * (attenuation * NL);
-	out_Color.rgb += ambientColor * ao * diffuse.rgb;
-
+	if (u_EnableTextures.x == 0.0)
+		out_Color.rgb += ambientColor * diffuse.rgb;
 
   #if defined(USE_CUBEMAP)
 	NE = clamp(dot(N, E), 0.0, 1.0);
@@ -760,19 +779,21 @@ void main()
 	vec3 parallax = u_CubeMapInfo.xyz + u_CubeMapInfo.w * viewDir;
 
 	vec3 cubeLightColor = textureLod(u_CubeMap, R + parallax, ROUGHNESS_MIPS * roughness).rgb * u_EnableTextures.w;
+	vec3 shColor = CalcSHColor(-N) * u_EnableTextures.x;
 
 	float horiz = 1.0;
 	// from http://marmosetco.tumblr.com/post/81245981087
 	#if defined(HORIZON_FADE)
 		const float horizonFade = HORIZON_FADE;
-		horiz = clamp( 1.0 + horizonFade * dot(-(R + parallax),var_Normal.xyz), 0.0, 1.0 );
+		horiz = clamp( 1.0 + horizonFade * dot(-R,var_Normal.xyz), 0.0, 1.0 );
 		horiz *= horiz;
 	#endif
 
     #if defined(USE_PBR)
 		cubeLightColor *= cubeLightColor;
     #endif
-
+	if (u_EnableTextures.x == 1.0)
+		out_Color.rgb += shColor * diffuse.rgb;
 	out_Color.rgb += cubeLightColor * (specular.rgb * EnvBRDF.x + EnvBRDF.y) * horiz;
   #endif
 
@@ -804,6 +825,15 @@ void main()
 	out_Color.rgb += lightColor * reflectance * NL2;
   #endif
 
+  #if defined(USE_DEBUG)
+	if (USE_DEBUG == 1)
+		out_Color.rgb = diffuse.rgb;
+	if (USE_DEBUG == 2)
+		out_Color.rgb = specular.rgb;
+	if (USE_DEBUG == 3)
+		out_Color.rgb = N.rgb * 0.5 + 0.5;
+  #endif
+
   #if defined(USE_PBR)
 	out_Color.rgb = sqrt(out_Color.rgb);
   #endif
@@ -817,10 +847,6 @@ void main()
 
 #if defined(USE_GLOW_BUFFER)
 	out_Glow = out_Color;
-#elif defined(GLOW_THRESHOLD)
-	out_Glow.r = max(0.0, (out_Color.r - GLOW_THRESHOLD));
-	out_Glow.g = max(0.0, (out_Color.g - GLOW_THRESHOLD));
-	out_Glow.b = max(0.0, (out_Color.b - GLOW_THRESHOLD));
 #else
 	out_Glow = vec4(0.0);
 #endif

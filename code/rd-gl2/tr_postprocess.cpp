@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-void RB_ToneMap(FBO_t *hdrFbo, vec4i_t hdrBox, FBO_t *ldrFbo, vec4i_t ldrBox, int autoExposure)
+void RB_ToneMap(FBO_t *hdrFbo, vec4i_t hdrBox, FBO_t *ldrFbo, vec4i_t ldrBox, qboolean autoExposure)
 {
 	vec4i_t srcBox, dstBox;
 	vec4_t color;
@@ -308,7 +308,7 @@ void RB_SunRays(FBO_t *srcFbo, vec4i_t srcBox, FBO_t *dstFbo, vec4i_t dstBox)
 	qboolean colorize = qtrue;
 
 //	float w, h, w2, h2;
-	matrix_t mvp;
+	matrix_t mvp,trans,model;
 	vec4_t pos, hpos;
 
 	dot = DotProduct(tr.sunDirection, backEnd.viewParms.ori.axis[0]);
@@ -325,7 +325,9 @@ void RB_SunRays(FBO_t *srcFbo, vec4i_t srcBox, FBO_t *dstFbo, vec4i_t dstBox)
 	VectorScale( tr.sunDirection, dist, pos );
 
 	// project sun point
-	Matrix16Multiply(backEnd.viewParms.projectionMatrix, backEnd.viewParms.world.modelViewMatrix, mvp);
+	Matrix16Translation(backEnd.viewParms.ori.origin, trans);
+	Matrix16Multiply(backEnd.viewParms.world.modelViewMatrix, trans, model);
+	Matrix16Multiply(backEnd.viewParms.projectionMatrix, model, mvp);
 	Matrix16Transform(mvp, pos, hpos);
 
 	// transform to UV coords

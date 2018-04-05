@@ -48,7 +48,7 @@ void R_DrawElementsVBO( int numIndexes, glIndex_t firstIndex, glIndex_t minIndex
 	int offset = firstIndex * sizeof(glIndex_t) +
 		(tess.useInternalVBO ? backEndData->currentFrame->dynamicIboCommitOffset : 0);
 
-	GL_DrawIndexed(GL_TRIANGLES, numIndexes, offset, 1, 0);
+	GL_DrawIndexed(GL_TRIANGLES, numIndexes, GL_INDEX_TYPE, offset, 1, 0);
 }
 
 
@@ -832,6 +832,7 @@ void RB_FillDrawCommand(
 		if ( input->multiDrawPrimitives == 1 )
 		{
 			drawCmd.type = DRAW_COMMAND_INDEXED;
+			drawCmd.params.indexed.indexType = GL_INDEX_TYPE;
 			drawCmd.params.indexed.firstIndex = (glIndex_t)(size_t)(input->multiDrawFirstIndex[0]);
 			drawCmd.params.indexed.numIndices = input->multiDrawNumIndexes[0];
 		}
@@ -859,6 +860,7 @@ void RB_FillDrawCommand(
 			(input->useInternalVBO ? backEndData->currentFrame->dynamicIboCommitOffset : 0);
 
 		drawCmd.type = DRAW_COMMAND_INDEXED;
+		drawCmd.params.indexed.indexType = GL_INDEX_TYPE;
 		drawCmd.params.indexed.firstIndex = offset;
 		drawCmd.params.indexed.numIndices = input->numIndexes;
 	}
@@ -1164,7 +1166,7 @@ static void RB_FogPass( shaderCommands_t *input, const fog_t *fog, const VertexA
 
 	ComputeDeformValues(&deformType, &deformGen, deformParams);
 
-	cullType_t cullType = RB_GetCullType(&backEnd.viewParms, backEnd.currentEntity, input->shader->cullType);
+	cullType_t cullType = CT_FRONT_SIDED;
 
 	vertexAttribute_t attribs[ATTR_INDEX_MAX] = {};
 	GL_VertexArraysToAttribs(attribs, ARRAY_LEN(attribs), vertexArrays);
@@ -1516,31 +1518,28 @@ void RB_StageIteratorLiquid( void )
 		uniformDataWriter.SetUniformVec4(UNIFORM_PRIMARYLIGHTORIGIN, backEnd.refdef.sunDir);
 	}
 
-	LiquidBlock data = {};
+	LiquidBlock *data = ojkAlloc<LiquidBlock>(*backEndData->perFrameMemory);
+	*data = {};
 
-	data.isLiquid = 1.0;
-	data.height = tess.shader->liquid.height;
-	data.choppy = tess.shader->liquid.choppy;
-	data.speed = tess.shader->liquid.speed;
-	data.freq = tess.shader->liquid.freq;
-	data.depth = tess.shader->liquid.depth;
-	data.time = tess.shaderTime;
-	
-	RB_UpdateUniformBlock(UNIFORM_BLOCK_LIQUID, &data);
+	data->isLiquid = 1.0;
+	data->height = tess.shader->liquid.height;
+	data->choppy = tess.shader->liquid.choppy;
+	data->speed = tess.shader->liquid.speed;
+	data->freq = tess.shader->liquid.freq;
+	data->depth = tess.shader->liquid.depth;
+	data->time = tess.shaderTime;
 
-	LiquidBlock2 data2 = {};
+	LiquidBlock2 *data2 = ojkAlloc<LiquidBlock2>(*backEndData->perFrameMemory);
+	*data2 = {};
 
-	data2.water_color_r = tess.shader->liquid.water_color[0];
-	data2.water_color_g = tess.shader->liquid.water_color[1];
-	data2.water_color_b = tess.shader->liquid.water_color[2];
-	data2.fog_color_r = tess.shader->liquid.fog_color[0];
-	data2.fog_color_g = tess.shader->liquid.fog_color[1];
-	data2.fog_color_b = tess.shader->liquid.fog_color[2];
+	data2->water_color_r = tess.shader->liquid.water_color[0];
+	data2->water_color_g = tess.shader->liquid.water_color[1];
+	data2->water_color_b = tess.shader->liquid.water_color[2];
+	data2->fog_color_r = tess.shader->liquid.fog_color[0];
+	data2->fog_color_g = tess.shader->liquid.fog_color[1];
+	data2->fog_color_b = tess.shader->liquid.fog_color[2];
 	//ri.Printf(PRINT_ALL, "water_color should be: %f %f %f\n", tess.shader->liquid.water_color[0], tess.shader->liquid.water_color[1], tess.shader->liquid.water_color[2]);
 	//ri.Printf(PRINT_ALL, "water_color is: %f %f %f\n", data2.water_color_r, data2.water_color_g, data2.water_color_b);
-
-	RB_UpdateUniformBlock(UNIFORM_BLOCK_LIQUID2, &data2);
-
 
 	DrawItem item = {};
 	item.stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
@@ -1553,6 +1552,13 @@ void RB_StageIteratorLiquid( void )
 	item.attributes = ojkAllocArray<vertexAttribute_t>(
 		*backEndData->perFrameMemory, vertexArrays.numVertexArrays);
 	memcpy(item.attributes, attribs, sizeof(*item.attributes)*vertexArrays.numVertexArrays);
+
+	item.numUniformBlockBindings = 2;
+	item.uniformBlockBindings = ojkAllocArray<UniformBlockBinding>(*backEndData->perFrameMemory, item.numUniformBlockBindings);
+	item.uniformBlockBindings[0].data = data;
+	item.uniformBlockBindings[0].block = UNIFORM_BLOCK_LIQUID;
+	item.uniformBlockBindings[1].data = data2;
+	item.uniformBlockBindings[1].block = UNIFORM_BLOCK_LIQUID2;
 
 	item.uniformData = uniformDataWriter.Finish(*backEndData->perFrameMemory);
 	// FIXME: This is a bit ugly with the casting
@@ -1766,13 +1772,6 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input, const VertexArrays
 		{
 			vec4_t specularScale;
 			VectorCopy4(pStage->specularScale, specularScale);
-
-			if (renderToCubemap)
-			{
-				// force specular to nonmetal if rendering cubemaps
-				if (r_pbr->integer)
-					specularScale[1] = 0.0f;
-			}
 			uniformDataWriter.SetUniformVec4(UNIFORM_SPECULARSCALE, specularScale);
 		}
 
@@ -1784,6 +1783,8 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input, const VertexArrays
 		//
 		bool enableCubeMaps =
 			(r_cubeMapping->integer && !(tr.viewParms.flags & VPF_NOCUBEMAPS) && input->cubemapIndex);
+		bool enableShpericalHarmonics = 
+			(r_cubeMapping->integer && !(tr.viewParms.flags & VPF_NOCUBEMAPS) && input->cubemapIndex && tr.numfinishedSphericalHarmonics == tr.numSphericalHarmonics);
 
 		if ( backEnd.depthFill )
 		{
@@ -1854,18 +1855,16 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input, const VertexArrays
 					lightScales[0] = r_ambientScale->value;
 					lightScales[1] = r_directedScale->value;
 
-					uniformDataWriter.SetUniformVec3(UNIFORM_LIGHTGRIDORIGIN, tr.world->lightGridOrigin);
-					uniformDataWriter.SetUniformVec3(UNIFORM_LIGHTGRIDCELLINVERSESIZE, tr.world->lightGridInverseSize);
-					uniformDataWriter.SetUniformVec3(UNIFORM_LIGHTGRIDLIGHTSCALE, lightScales);
-
-					samplerBindingsWriter.AddStaticImage(tr.world->ambientLightImages[0], TB_LGAMBIENT);
-					samplerBindingsWriter.AddStaticImage(tr.world->directionImages, TB_LGDIRECTION);
-					samplerBindingsWriter.AddStaticImage(tr.world->directionalLightImages[0], TB_LGLIGHTCOLOR);
+					if (tr.world)
+					{
+						uniformDataWriter.SetUniformVec3(UNIFORM_LIGHTGRIDORIGIN, tr.world->lightGridOrigin);
+						uniformDataWriter.SetUniformVec3(UNIFORM_LIGHTGRIDCELLINVERSESIZE, tr.world->lightGridInverseSize);
+						uniformDataWriter.SetUniformVec3(UNIFORM_LIGHTGRIDLIGHTSCALE, lightScales);
+					}
 
 					if (pStage->bundle[TB_NORMALMAP].image[0])
 					{
 						samplerBindingsWriter.AddAnimatedImage(&pStage->bundle[TB_NORMALMAP], TB_NORMALMAP);
-						enableTextures[0] = 1.0f;
 					}
 					else if (r_normalMapping->integer)
 					{
@@ -1892,6 +1891,9 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input, const VertexArrays
 						samplerBindingsWriter.AddStaticImage(tr.whiteImage, TB_SPECULARMAP);
 					}
 				}
+
+				if (enableShpericalHarmonics)
+					enableTextures[0] = 1.0f;
 
 				if ( enableCubeMaps )
 				{
@@ -1930,8 +1932,22 @@ static void RB_IterateStagesGeneric( shaderCommands_t *input, const VertexArrays
 			VectorScale4(vec, 1.0f / cubemap->parallaxRadius, vec);
 
 			uniformDataWriter.SetUniformVec4(UNIFORM_CUBEMAPINFO, vec);
+
+			if (tr.numfinishedSphericalHarmonics == tr.numSphericalHarmonics) {
+				//TODO: speed up this process, maybe ambient pre pass
+				int index = R_SHForPoint(backEnd.currentEntity->e.lightingOrigin);
+				sphericalHarmonic_t *sh = &tr.sphericalHarmonicsCoefficients[
+					index
+				];
+				float coefficients[27];
+				for (int i = 0; i < 9; i++) {
+					coefficients[i * 3 + 0] = sh->coefficents[i][0];
+					coefficients[i * 3 + 1] = sh->coefficents[i][1];
+					coefficients[i * 3 + 2] = sh->coefficents[i][2];
+				}
+				uniformDataWriter.SetUniformVec3(UNIFORM_SPHERICAL_HARMONIC, coefficients, 9);
+			}
 		}
-		samplerBindingsWriter.AddStaticImage(tr.envBrdfImage, TB_ENVBRDFMAP);
 
 		CaptureDrawData(input, pStage, index, stage);
 
@@ -2095,8 +2111,8 @@ void RB_StageIteratorGeneric( void )
 		// 
 		// now do any dynamic lighting needed
 		//
-		if ( tess.dlightBits &&
-			 tess.shader->lightingStage >= 0 &&
+		if ( r_debugVisuals->integer == 0 &&
+			 tess.dlightBits &&
 			 r_dlightMode->integer)
 		{
 			ForwardDlight(input, &vertexArrays);

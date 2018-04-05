@@ -30,8 +30,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <algorithm>
 
 static size_t FRAME_UNIFORM_BUFFER_SIZE = 8 * 1024 * 1024;
-static size_t FRAME_VERTEX_BUFFER_SIZE = 8 * 1024 * 1024;
-static size_t FRAME_INDEX_BUFFER_SIZE = 2 * 1024 * 1024;
+static size_t FRAME_VERTEX_BUFFER_SIZE = 12 * 1024 * 1024;
+static size_t FRAME_INDEX_BUFFER_SIZE = 4 * 1024 * 1024;
 
 glconfig_t  glConfig;
 glconfigExt_t glConfigExt;
@@ -115,6 +115,7 @@ cvar_t	*r_portalOnly;
 cvar_t	*r_subdivisions;
 cvar_t	*r_lodCurveError;
 cvar_t  *r_srgb;
+cvar_t	*r_debugVisuals;
 cvar_t	*r_debugLight;
 cvar_t	*r_debugSort;
 cvar_t	*r_ignoreGLErrors;
@@ -240,8 +241,6 @@ cvar_t  *r_shadowCascadeZFar;
 cvar_t  *r_shadowCascadeZBias;
 cvar_t	*r_ambientScale;
 cvar_t	*r_directedScale;
-cvar_t	*r_bloom_threshold;
-
 
 int max_polys;
 int max_polyverts;
@@ -1019,6 +1018,33 @@ void R_ExportCubemaps_f(void)
 	R_ExportCubemaps();
 }
 
+/*
+==================
+R_BuildSphericalHarmonics
+==================
+*/
+void R_BuildSphericalHarmonics(void)
+{
+	startBuildingSphericalHarmonicsCommand_t	*cmd;
+
+	cmd = (startBuildingSphericalHarmonicsCommand_t	*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd) {
+		return;
+	}
+	cmd->commandId = RC_START_BUILDING_SPHERICAL_HARMONICS;
+}
+
+
+/*
+==================
+R_ExportCubemaps_f
+==================
+*/
+void R_BuildSphericalHarmonics_f(void)
+{
+	R_BuildSphericalHarmonics();
+}
+
 //============================================================================
 
 /*
@@ -1246,19 +1272,20 @@ typedef struct consoleCommand_s {
 } consoleCommand_t;
 
 static consoleCommand_t	commands[] = {
-	{ "imagelist",			R_ImageList_f },
-	{ "shaderlist",			R_ShaderList_f },
-	{ "skinlist",			R_SkinList_f },
-	{ "fontlist",			R_FontList_f },
-	{ "screenshot",			R_ScreenShotJPEG_f },
-	{ "screenshot_png",		R_ScreenShotPNG_f },
-	{ "screenshot_tga",		R_ScreenShotTGA_f },
-	{ "gfxinfo",			GfxInfo_f },
-	{ "gfxmeminfo",			GfxMemInfo_f },
-	{ "modellist",			R_Modellist_f },
-	{ "vbolist",			R_VBOList_f },
-	{ "capframes",			R_CaptureFrameData_f },
-	{ "exportCubemaps",		R_ExportCubemaps_f },
+	{ "imagelist",						R_ImageList_f },
+	{ "shaderlist",						R_ShaderList_f },
+	{ "skinlist",						R_SkinList_f },
+	{ "fontlist",						R_FontList_f },
+	{ "screenshot",						R_ScreenShotJPEG_f },
+	{ "screenshot_png",					R_ScreenShotPNG_f },
+	{ "screenshot_tga",					R_ScreenShotTGA_f },
+	{ "gfxinfo",						GfxInfo_f },
+	{ "gfxmeminfo",						GfxMemInfo_f },
+	{ "modellist",						R_Modellist_f },
+	{ "vbolist",						R_VBOList_f },
+	{ "capframes",						R_CaptureFrameData_f },
+	{ "exportCubemaps",					R_ExportCubemaps_f },
+	{ "buildSphericalHarmonics",		R_BuildSphericalHarmonics_f },
 };
 
 static const size_t numCommands = ARRAY_LEN(commands);
@@ -1297,7 +1324,6 @@ void R_Register(void)
 	r_dynamicGlowSoft = ri.Cvar_Get("r_dynamicGlowSoft", "1", CVAR_ARCHIVE);
 	r_dynamicGlowWidth = ri.Cvar_Get("r_dynamicGlowWidth", "320", CVAR_ARCHIVE | CVAR_LATCH);
 	r_dynamicGlowHeight = ri.Cvar_Get("r_dynamicGlowHeight", "240", CVAR_ARCHIVE | CVAR_LATCH);
-	r_bloom_threshold = ri.Cvar_Get("r_bloom_threshold", "0.85", CVAR_ARCHIVE);
 	r_debugContext = ri.Cvar_Get("r_debugContext", "0", CVAR_LATCH);
 	r_picmip = ri.Cvar_Get("r_picmip", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	ri.Cvar_CheckRange(r_picmip, 0, 16, qtrue);
@@ -1328,7 +1354,7 @@ void R_Register(void)
 	r_forceAutoExposureMax = ri.Cvar_Get("r_forceAutoExposureMax", "2.0", CVAR_CHEAT);
 	r_cameraExposure = ri.Cvar_Get("r_cameraExposure", "0", CVAR_CHEAT);
 	r_srgb = ri.Cvar_Get("r_srgb", "0", CVAR_ARCHIVE | CVAR_LATCH);
-	r_refraction = ri.Cvar_Get("r_refraction", "1", CVAR_ARCHIVE | CVAR_LATCH);
+	r_refraction = ri.Cvar_Get("r_refraction", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_depthPrepass = ri.Cvar_Get("r_depthPrepass", "1", CVAR_ARCHIVE);
 	r_ssao = ri.Cvar_Get("r_ssao", "0", CVAR_LATCH | CVAR_ARCHIVE);
 	r_normalMapping = ri.Cvar_Get("r_normalMapping", "1", CVAR_ARCHIVE | CVAR_LATCH);
@@ -1347,7 +1373,7 @@ void R_Register(void)
 	r_baseGloss = ri.Cvar_Get("r_baseGloss", "0.45", CVAR_ARCHIVE | CVAR_LATCH);
 	r_dlightMode = ri.Cvar_Get("r_dlightMode", "1", CVAR_ARCHIVE | CVAR_LATCH);
 	r_pshadowDist = ri.Cvar_Get("r_pshadowDist", "128", CVAR_ARCHIVE);
-	r_mergeLightmaps = ri.Cvar_Get("r_mergeLightmaps", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	r_mergeLightmaps = ri.Cvar_Get("r_mergeLightmaps", "1", CVAR_ARCHIVE | CVAR_LATCH);
 	r_imageUpsample = ri.Cvar_Get("r_imageUpsample", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_imageUpsampleMaxSize = ri.Cvar_Get("r_imageUpsampleMaxSize", "1024", CVAR_ARCHIVE | CVAR_LATCH);
 	r_imageUpsampleType = ri.Cvar_Get("r_imageUpsampleType", "1", CVAR_ARCHIVE | CVAR_LATCH);
@@ -1408,6 +1434,7 @@ void R_Register(void)
 
 	r_debugLight = ri.Cvar_Get("r_debuglight", "0", CVAR_TEMP);
 	r_debugSort = ri.Cvar_Get("r_debugSort", "0", CVAR_CHEAT);
+	r_debugVisuals = ri.Cvar_Get("r_debugVisuals", "0", CVAR_CHEAT);
 	r_printShaders = ri.Cvar_Get("r_printShaders", "0", 0);
 	r_saveFontData = ri.Cvar_Get("r_saveFontData", "0", 0);
 	r_nocurves = ri.Cvar_Get("r_nocurves", "0", CVAR_CHEAT);
@@ -1808,24 +1835,6 @@ void RE_SetLightStyle(int style, int color)
 	}
 }
 
-// STUBS, REPLACEME
-void stub_RE_GetBModelVerts(int bModel, vec3_t *vec, float *normal) {}
-void stub_RE_WorldEffectCommand(const char *cmd) {}
-void stub_RE_AddWeatherZone(vec3_t mins, vec3_t maxs) {}
-//static void RE_SetRefractionProperties(float distortionAlpha, float distortionStretch, qboolean distortionPrePost, qboolean distortionNegate) { }
-qboolean stub_RE_ProcessDissolve(void) { return qfalse; }
-qboolean stub_RE_InitDissolve(qboolean bForceCircularExtroWipe) { return qfalse; }
-bool stub_R_IsShaking(vec3_t pos) { return qfalse; }
-void stub_R_InitWorldEffects(void){}
-bool stub_R_GetWindVector(vec3_t windVector, vec3_t atpoint) { return qfalse; }
-bool stub_R_GetWindGusting(vec3_t atpoint){ return qfalse; }
-bool stub_R_IsOutside(vec3_t pos) { return qfalse; }
-float stub_R_IsOutsideCausingPain(vec3_t pos) { return qfalse; }
-float stub_R_GetChanceOfSaberFizz(){return qfalse;}
-qboolean stub_RE_GetLighting(const vec3_t origin, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir) { return qfalse; }
-bool stub_R_SetTempGlobalFogColor(vec3_t color) { return qfalse; }
-void stub_RE_GetScreenShot(byte *buffer, int w, int h){}
-
 void C_LevelLoadBegin(const char *psMapName, ForceReload_e eForceReload, qboolean bAllowScreenDissolve)
 {
 	static char sPrevMapName[MAX_QPATH] = { 0 };
@@ -1870,6 +1879,31 @@ void RE_SVModelInit(void)
 	//inServer = false;
 	R_ModelInit();
 }
+
+// STUBS, REPLACEME
+void stub_RE_GetBModelVerts(int bModel, vec3_t *vec, float *normal) {}
+void stub_RE_WorldEffectCommand(const char *cmd) {}
+void stub_RE_AddWeatherZone(vec3_t mins, vec3_t maxs) {}
+qboolean stub_RE_ProcessDissolve(void) { return qfalse; }
+qboolean stub_RE_InitDissolve(qboolean bForceCircularExtroWipe) { return qfalse; }
+bool stub_R_IsShaking(vec3_t pos) { return qfalse; }
+void stub_R_InitWorldEffects(void) {}
+bool stub_R_GetWindVector(vec3_t windVector, vec3_t atpoint) { return qfalse; }
+bool stub_R_GetWindGusting(vec3_t atpoint) { return qfalse; }
+bool stub_R_IsOutside(vec3_t pos) { return qfalse; }
+float stub_R_IsOutsideCausingPain(vec3_t pos) { return qfalse; }
+float stub_R_GetChanceOfSaberFizz() { return qfalse; }
+bool stub_R_SetTempGlobalFogColor(vec3_t color) { return qfalse; }
+void stub_RE_GetScreenShot(byte *buffer, int w, int h) {}
+
+float tr_distortionAlpha = 1.0f; //opaque
+float tr_distortionStretch = 0.0f; //no stretch override
+qboolean tr_distortionPrePost = qfalse; //capture before postrender phase?
+qboolean tr_distortionNegate = qfalse; //negative blend mode
+float *stub_get_tr_distortionAlpha(void) { return &tr_distortionAlpha; }
+float *stub_get_tr_distortionStretch(void) { return &tr_distortionStretch; }
+qboolean *stub_get_tr_distortionPrePost(void) { return &tr_distortionPrePost; }
+qboolean *stub_get_tr_distortionNegate(void) { return &tr_distortionNegate; }
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -1931,14 +1965,14 @@ extern "C" Q_EXPORT refexport_t* QDECL GetRefAPI(int apiVersion, refimport_t *ri
 	REX(ClearScene);
 	REX(ClearDecals);
 	REX(AddRefEntityToScene);
-	re.GetLighting = stub_RE_GetLighting;
+	REX(GetLighting);
 	REX(AddPolyToScene);
 	re.LightForPoint = R_LightForPoint;
 	REX(AddDecalToScene);
 	REX(AddLightToScene);
 	REX(AddAdditiveLightToScene);
 	REX(RenderScene);
-	re.GetLighting = stub_RE_GetLighting;
+	REX(GetLighting);
 
 	REX(SetColor);
 	re.DrawStretchPic = RE_StretchPic;
@@ -1986,6 +2020,11 @@ extern "C" Q_EXPORT refexport_t* QDECL GetRefAPI(int apiVersion, refimport_t *ri
 	re.R_InitWorldEffects = stub_R_InitWorldEffects;
 	re.R_ClearStuffToStopGhoul2CrashingThings = R_ClearStuffToStopGhoul2CrashingThings;
 	re.R_inPVS = R_inPVS;
+
+	re.tr_distortionAlpha = stub_get_tr_distortionAlpha;
+	re.tr_distortionStretch = stub_get_tr_distortionStretch;
+	re.tr_distortionPrePost = stub_get_tr_distortionPrePost;
+	re.tr_distortionNegate = stub_get_tr_distortionNegate;
 
 	re.GetWindVector = stub_R_GetWindVector;
 	re.GetWindGusting = stub_R_GetWindGusting;

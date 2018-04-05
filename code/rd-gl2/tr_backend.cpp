@@ -382,7 +382,13 @@ void GL_VertexAttribPointers(
 				attrib.stride,
 				BUFFER_OFFSET(attrib.offset));
 		}
-		qglVertexAttribDivisor(attrib.index, attrib.stepRate);
+
+		if (attrib.stepRate != glState.attrStepRate)
+		{
+			glState.attrIndex = attrib.index;
+			glState.attrStepRate = attrib.stepRate;
+			qglVertexAttribDivisor(attrib.index, attrib.stepRate);
+		}
 
 		glState.currentVaoAttribs[attrib.index] = attrib;
 	}
@@ -409,6 +415,7 @@ void GL_VertexAttribPointers(
 void GL_DrawIndexed(
 		GLenum primitiveType,
 		int numIndices,
+		GLenum indexType,
 		int offset,
 		int numInstances,
 		int baseVertex)
@@ -417,7 +424,7 @@ void GL_DrawIndexed(
 	qglDrawElementsInstancedBaseVertex(
 			primitiveType,
 			numIndices,
-			GL_INDEX_TYPE,
+			indexType,
 			BUFFER_OFFSET(offset),
 			numInstances,
 			baseVertex);
@@ -527,7 +534,7 @@ void RB_BeginDrawingView (void) {
 		// FIXME: hack for cubemap testing
 		if (tr.renderCubeFbo != NULL && backEnd.viewParms.targetFbo == tr.renderCubeFbo)
 		{
-			cubemap_t *cubemap = &tr.cubemaps[backEnd.viewParms.targetFboCubemapIndex];
+			cubemap_t *cubemap = &backEnd.viewParms.cubemapSelection[backEnd.viewParms.targetFboCubemapIndex];
 			qglFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + backEnd.viewParms.targetFboLayer, cubemap->image->texnum, 0);
 		}
 	}
@@ -974,6 +981,18 @@ static void RB_BindTextures( size_t numBindings, const SamplerBinding *bindings 
 	}
 }
 
+static void RB_BindAndUpdateUniformBlocks( size_t numBindings, const UniformBlockBinding *bindings )
+{
+	for (size_t i = 0; i < numBindings; ++i)
+	{
+		const UniformBlockBinding& binding = bindings[i];
+		if (binding.data)
+			RB_BindAndUpdateUniformBlock(binding.block, binding.data);
+		else
+			RB_BindUniformBlock(binding.block);
+	}
+}
+
 static void RB_DrawItems( int numDrawItems, const DrawItem *drawItems, uint32_t *drawOrder )
 {
 	for ( int i = 0; i < numDrawItems; ++i )
@@ -985,12 +1004,12 @@ static void RB_DrawItems( int numDrawItems, const DrawItem *drawItems, uint32_t 
 		GL_DepthRange(drawItem.depthRange.minDepth, drawItem.depthRange.maxDepth);
 		if (drawItem.ibo != nullptr)
 			R_BindIBO(drawItem.ibo);
+
 		GLSL_BindProgram(drawItem.program);
 
-		// FIXME: There was a reason I didn't have const on attributes. Can't remember at the moment
-		// what the reason was though.
 		GL_VertexAttribPointers(drawItem.numAttributes, drawItem.attributes);
 		RB_BindTextures(drawItem.numSamplerBindings, drawItem.samplerBindings);
+		RB_BindAndUpdateUniformBlocks(drawItem.numUniformBlockBindings, drawItem.uniformBlockBindings);
 
 		GLSL_SetUniforms(drawItem.program, drawItem.uniformData);
 
@@ -1009,6 +1028,7 @@ static void RB_DrawItems( int numDrawItems, const DrawItem *drawItems, uint32_t 
 			{
 				GL_DrawIndexed(drawItem.draw.primitiveType,
 					drawItem.draw.params.indexed.numIndices,
+					drawItem.draw.params.indexed.indexType,
 					drawItem.draw.params.indexed.firstIndex,
 					drawItem.draw.numInstances, 0);
 				break;
@@ -1155,9 +1175,8 @@ static void RB_SubmitDrawSurfsForDepthFill(
 		int postRender;
 		int entityNum;
 
-		R_DecomposeSort(drawSurf->sort, &shader, &cubemapIndex, &postRender);
+		R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &cubemapIndex, &postRender);
 		assert(shader != nullptr);
-		entityNum = drawSurf->entityNum;
 
 		if (shader == oldShader &&	entityNum == oldEntityNum)
 		{
@@ -1233,10 +1252,9 @@ static void RB_SubmitDrawSurfs(
 		int fogNum;
 		int dlighted;
 
-		R_DecomposeSort(drawSurf->sort, &shader, &cubemapIndex, &postRender);
+		R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &cubemapIndex, &postRender);
 		assert(shader != nullptr);
 		fogNum = drawSurf->fogIndex;
-		entityNum = drawSurf->entityNum;
 		dlighted = drawSurf->dlightBits;
 
 		if (shader == oldShader &&
@@ -1366,7 +1384,7 @@ static void RB_RenderDrawSurfList(drawSurf_t *drawSurfs, int numDrawSurfs)
 	void *allocMark = backEndData->perFrameMemory->Mark();
 	assert(backEndData->currentPass == nullptr);
 	backEndData->currentPass = RB_CreatePass(
-		*backEndData->perFrameMemory, numDrawSurfs * 4);
+		*backEndData->perFrameMemory, numDrawSurfs * 5);
 
 	// save original time for entity shader offsets
 	float originalTime = backEnd.refdef.floatTime;
@@ -1909,9 +1927,9 @@ static const void *RB_PrefilterEnvMap(const void *data) {
 
 	RB_SetGL2D();
 
-	cubemap_t *cubemap = &tr.cubemaps[cmd->cubemap];
+	cubemap_t *cubemap = &cmd->cubemaps[cmd->cubemap];
 
-	if (!cubemap)
+	if (!cubemap || !cmd)
 		return (const void *)(cmd + 1);
 
 	int cubeMipSize = cubemap->image->width;
@@ -1938,7 +1956,7 @@ static const void *RB_PrefilterEnvMap(const void *data) {
 		cubeMipSize >>= 1;
 		numMips++;
 	}
-	numMips = MAX(1, numMips - 4);
+	numMips = MAX(1, numMips - 2);
 
 	FBO_Bind(tr.preFilterEnvMapFbo);
 	GL_BindToTMU(cubemap->image, TB_CUBEMAP);
@@ -1951,14 +1969,12 @@ static const void *RB_PrefilterEnvMap(const void *data) {
 		height = height / 2.0;
 		qglViewport(0, 0, width, height);
 		qglScissor(0, 0, width, height);
-		for (int cubemapSide = 0; cubemapSide < 6; cubemapSide++) 
-		{
-			vec4_t viewInfo;
-			VectorSet4(viewInfo, cubemapSide, level, numMips, 0.0);
-			GLSL_SetUniformVec4(&tr.prefilterEnvMapShader, UNIFORM_VIEWINFO, viewInfo);
-			RB_InstantQuad2(quadVerts, texCoords);
-			qglCopyTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + cubemapSide, level, 0, 0, 0, 0, width, height);
-		}
+
+		vec4_t viewInfo;
+		VectorSet4(viewInfo, cmd->cubeSide, level, numMips - 2, 0.0f);
+		GLSL_SetUniformVec4(&tr.prefilterEnvMapShader, UNIFORM_VIEWINFO, viewInfo);
+		RB_InstantQuad2(quadVerts, texCoords);
+		qglCopyTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + cmd->cubeSide, level, 0, 0, 0, 0, width, height);
 	}
 
 	GL_SelectTexture(0);
@@ -2166,6 +2182,14 @@ static void RB_RenderMainPass(drawSurf_t *drawSurfs, int numDrawSurfs)
 	if (backEnd.viewParms.flags & VPF_DEPTHSHADOW)
 	{
 		return;
+	}
+
+	if (tr.world)
+	{
+		GL_BindToTMU(tr.envBrdfImage, TB_ENVBRDFMAP);
+		GL_BindToTMU(tr.world->ambientLightImages[0], TB_LGAMBIENT);
+		GL_BindToTMU(tr.world->directionImages, TB_LGDIRECTION);
+		GL_BindToTMU(tr.world->directionalLightImages[0], TB_LGLIGHTCOLOR);
 	}
 
 	RB_RenderDrawSurfList(drawSurfs, numDrawSurfs);
@@ -2880,6 +2904,150 @@ const void *RB_ExportCubemaps(const void *data)
 	return (const void *)(cmd + 1);
 }
 
+/*
+=============
+RB_StartBuildingSphericalHarmonics
+
+=============
+*/
+const void *RB_StartBuildingSphericalHarmonics(const void *data)
+{
+	const startBuildingSphericalHarmonicsCommand_t *cmd = (startBuildingSphericalHarmonicsCommand_t *)data;
+
+	tr.numfinishedSphericalHarmonics = 0;
+	tr.buildingSphericalHarmonics = qtrue;
+
+	return (const void *)(cmd + 1);
+}
+
+/*
+=============
+RB_BuildSphericalHarmonics
+
+=============
+*/
+const void *RB_BuildSphericalHarmonics(const void *data)
+{
+	const buildSphericalHarmonicsCommand_t *cmd = (buildSphericalHarmonicsCommand_t *)data;
+
+	// finish any 2D drawing if needed
+	if (tess.numIndexes)
+		RB_EndSurface();
+
+	if (!tr.world || tr.numSphericalHarmonics == 0 || !r_cubeMapping->integer)
+	{
+		// do nothing
+		ri.Printf(PRINT_ALL, "No world or no cubemapping enabled!\n");
+		return (const void *)(cmd + 1);
+	}
+
+	if (cmd)
+	{
+		const int shSize = 32;
+		const int sideSize = shSize * shSize * 4;
+		const int batchSize = 32;
+
+		GLenum cubemapFormat = GL_RGBA8;
+
+		if (r_hdr->integer)
+		{
+			cubemapFormat = GL_RGBA16F;
+		}
+		image_t *bufferImage = R_FindImageFile("*sphericalHarmonic_buffer_image", IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE | IMGFLAG_MIPMAP | IMGFLAG_CUBEMAP);
+		if (!bufferImage)
+			bufferImage = R_CreateImage("*sphericalHarmonic_buffer_image", NULL, shSize, shSize, IMGTYPE_COLORALPHA, IMGFLAG_NO_COMPRESSION | IMGFLAG_CLAMPTOEDGE | IMGFLAG_MIPMAP | IMGFLAG_CUBEMAP, cubemapFormat);
+		cubemap_t *currentSH = (cubemap_t *)R_Malloc(sizeof(*tr.cubemaps), TAG_TEMP_WORKSPACE);
+		currentSH[0].image = bufferImage;
+		int buildedSphericalHarmonics = 0;
+
+		float *cubemapPixels = (float *)R_Malloc(sideSize * sizeof(float), TAG_TEMP_WORKSPACE);
+
+		for (int i = tr.numfinishedSphericalHarmonics; i < (tr.numfinishedSphericalHarmonics + batchSize); i++)
+		{
+			if (i == tr.numSphericalHarmonics)
+				break;
+
+			VectorCopy(tr.sphericalHarmonicsCoefficients[i].origin, currentSH[0].origin);
+			
+			for (int j = 0; j < 6; j++)
+			{
+				RE_ClearScene();
+				R_RenderCubemapSide(currentSH, 0, j, qfalse, qtrue);
+				R_IssuePendingRenderCommands();
+				R_InitNextFrame();
+			}
+
+			//Convolve the cubemaps & build SH Coefficients
+			//paper: http://www.graphics.stanford.edu/papers/envmap/envmap.pdf
+			cubemap_t *sh = currentSH;
+			sphericalHarmonic_t *shC = &tr.sphericalHarmonicsCoefficients[i];
+
+			int numSamples = 0;
+			for (int j = 0; j < 6; j++)
+			{
+				//read pixels into byte buffer
+				float *p = cubemapPixels;
+				qglFramebufferTexture2D(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, sh[0].image->texnum, 0);
+				qglReadPixels(0, 0, shSize, shSize, GL_RGBA, GL_FLOAT, p);
+
+				//build coefficients for current face
+				for (int u = 0; u < shSize; u++)
+				{
+					for (int v = 0; v < shSize; v++)
+					{
+						vec2_t uv;
+						vec3_t colorSample;
+						vec3_t normal;
+						float shBasis[9];
+
+						VectorSet2(uv, (float)u / (float)shSize, (float)v / (float)shSize);
+						VectorSet(colorSample,
+							pow((p[0]), 2.f),
+							pow((p[1]), 2.f),
+							pow((p[2]), 2.f)
+							);
+
+						//TODO: weight with solid angle!
+						GetTextureAngle(uv, j, normal);
+						GetSHBasis(normal, shBasis);
+
+						vec3_t sample;
+						for (int k = 0; k < 9; k++)
+						{
+							VectorScale(colorSample, shBasis[k], sample);
+							VectorAdd(shC->coefficents[k], sample, shC->coefficents[k]);
+						}
+						numSamples++;
+						p += 4;
+					}
+				}
+			}
+			// scale spherical harmonics coefficients by number of samples
+			for (int i = 0; i < 9; i++)
+			{
+				VectorScale(shC->coefficents[i], M_PI/(float)numSamples, shC->coefficents[i]);
+			}
+			buildedSphericalHarmonics++;
+		}
+		tr.numfinishedSphericalHarmonics += buildedSphericalHarmonics;
+		//TODO: Export them somehow. json file?
+		if (tr.numfinishedSphericalHarmonics == tr.numSphericalHarmonics)
+		{
+			ri.Printf(PRINT_ALL, "Finished building all spherical harmonics for this level.\n");
+			tr.buildingSphericalHarmonics = qfalse;
+		}
+		else
+			ri.Printf(PRINT_ALL, "Finished building %i of %i spherical harmonics for this level. (%3.2f%%)\n", 
+				tr.numfinishedSphericalHarmonics, 
+				tr.numSphericalHarmonics, 
+				((float)tr.numfinishedSphericalHarmonics / (float)tr.numSphericalHarmonics) * 100.f);
+
+		R_Free(cubemapPixels);
+		R_Free(currentSH);
+	}
+
+	return (const void *)(cmd + 1);
+}
 
 /*
 ====================
@@ -2945,6 +3113,12 @@ void RB_ExecuteRenderCommands( const void *data ) {
 			break;
 		case RC_EXPORT_CUBEMAPS:
 			data = RB_ExportCubemaps(data);
+			break;
+		case RC_BUILD_SPHERICAL_HARMONICS:
+			data = RB_BuildSphericalHarmonics(data);
+			break;
+		case RC_START_BUILDING_SPHERICAL_HARMONICS:
+			data = RB_StartBuildingSphericalHarmonics(data);
 			break;
 		case RC_BEGIN_TIMED_BLOCK:
 			data = RB_BeginTimedBlock(data);

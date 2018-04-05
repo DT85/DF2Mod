@@ -458,6 +458,31 @@ void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent ) {
 	ent->modelLightDir[2] = DotProduct( lightDir, ent->e.axis[2] );
 }
 
+//pass in origin
+qboolean RE_GetLighting(const vec3_t origin, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir) {
+	trRefEntity_t tr_ent;
+
+	if (!tr.world || !tr.world->lightGridData) {
+		ambientLight[0] = ambientLight[1] = ambientLight[2] = 255.0;
+		directedLight[0] = directedLight[1] = directedLight[2] = 255.0;
+		VectorCopy(tr.sunDirection, lightDir);
+		return qfalse;
+	}
+	memset(&tr_ent, 0, sizeof(tr_ent));
+
+	if (ambientLight[0] == 666)
+	{//HAX0R
+		tr_ent.e.hModel = -1;
+	}
+
+	VectorCopy(origin, tr_ent.e.origin);
+	R_SetupEntityLightingGrid(&tr_ent, tr.world);
+	VectorCopy(tr_ent.ambientLight, ambientLight);
+	VectorCopy(tr_ent.directedLight, directedLight);
+	VectorCopy(tr_ent.lightDir, lightDir);
+	return qtrue;
+}
+
 /*
 =================
 R_LightForPoint
@@ -515,6 +540,34 @@ int R_CubemapForPoint( vec3_t point )
 			float length;
 
 			VectorSubtract(point, tr.cubemaps[i].origin, diff);
+			length = DotProduct(diff, diff);
+
+			if (shortest > length)
+			{
+				shortest = length;
+				cubemapIndex = i;
+			}
+		}
+	}
+
+	return cubemapIndex + 1;
+}
+
+int R_SHForPoint(vec3_t point)
+{
+	int cubemapIndex = -1;
+
+	if (r_cubeMapping->integer && tr.numSphericalHarmonics)
+	{
+		int i;
+		float shortest = (float)WORLD_SIZE * (float)WORLD_SIZE;
+
+		for (i = 0; i < tr.numSphericalHarmonics; i++)
+		{
+			vec3_t diff;
+			float length;
+
+			VectorSubtract(point, tr.sphericalHarmonicsCoefficients[i].origin, diff);
 			length = DotProduct(diff, diff);
 
 			if (shortest > length)
