@@ -21,8 +21,8 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
 #include <btBulletDynamicsCommon.h>
 
-#include "qcommon/cm_public.h"
-#include "bg_local.h"
+//#include "qcommon/cm_public.h"
+//#include "bg_local.h"
 #include "bg_physics.h"
 
 struct physics_world_t::impl_t 

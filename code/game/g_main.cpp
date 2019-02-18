@@ -144,12 +144,7 @@ static void ValidateInUseBits(void)
 
 gentity_t		*player;
 
-//Phys
 cvar_t  *g_physics;
-cvar_t  *g_phys_resolution;
-
-cvar_t  *bg_phys_clfric_move;
-cvar_t  *bg_phys_clfric_stop;
 
 cvar_t	*g_speed;
 cvar_t	*g_gravity;
@@ -709,10 +704,6 @@ void G_InitCvars( void ) {
 	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0 );
 
 	g_physics = gi.cvar("g_physics", "0", CVAR_ARCHIVE);
-	g_phys_resolution = gi.cvar("g_phys_resolution", "125", CVAR_ARCHIVE);
-
-	bg_phys_clfric_move = gi.cvar("bg_phys_clfric_move", "0.3", CVAR_SYSTEMINFO|CVAR_ARCHIVE);
-	bg_phys_clfric_stop = gi.cvar("bg_phys_clfric_stop", "2.5", CVAR_SYSTEMINFO | CVAR_ARCHIVE);
 
 	gi.cvar( "tier_storyinfo", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
 	gi.cvar( "tiers_complete", "", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);

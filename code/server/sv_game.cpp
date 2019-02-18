@@ -34,8 +34,6 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 /*#include "..\renderer\tr_local.h"
 #include "..\renderer\tr_WorldEffects.h"*/
 
-#include "phys/phys_public.hpp"
-
 /*
 Ghoul2 Insert Start
 */
@@ -1050,35 +1048,6 @@ void SV_InitGameProgs (void) {
 	import.WE_IsShaking = SV_WE_IsShaking;
 	import.WE_AddWeatherZone = SV_WE_AddWeatherZone;
 	import.WE_SetTempGlobalFogColor = SV_WE_SetTempGlobalFogColor;
-
-	import.Phys_World_Create = Phys_World_Create;
-	import.Phys_World_Destroy = Phys_World_Destroy;
-	import.Phys_World_Advance = Phys_World_Advance;
-	import.Phys_World_Set_Resolution = Phys_World_Set_Resolution;
-	import.Phys_World_Set_Gravity = Phys_World_Set_Gravity;
-	import.Phys_World_Add_Current_Map = Phys_World_Add_Current_Map;
-	import.Phys_World_Remove_Object = Phys_World_Remove_Object;
-	import.Phys_World_Trace = Phys_World_Trace;
-	import.Phys_Object_Create_Box = Phys_Object_Create_Box;
-	import.Phys_Object_Create_From_Obj = Phys_Object_Create_From_Obj;
-	import.Phys_Object_Create_From_BModel = Phys_Object_Create_From_BModel;
-	import.Phys_Object_Create_Capsule = Phys_Object_Create_Capsule;
-	import.Phys_Object_Create_Cylinder = Phys_Object_Create_Cylinder;
-	import.Phys_Object_Get_Origin = Phys_Object_Get_Origin;
-	import.Phys_Object_Set_Origin = Phys_Object_Set_Origin;
-	import.Phys_Object_Get_Rotation = Phys_Object_Get_Rotation;
-	import.Phys_Object_Set_Rotation = Phys_Object_Set_Rotation;
-	import.Phys_Object_Get_Properties = Phys_Object_Get_Properties;
-	import.Phys_Object_Set_Properties = Phys_Object_Set_Properties;
-	import.Phys_Object_Get_Transform = Phys_Object_Get_Transform;
-	import.Phys_Object_Set_Transform = Phys_Object_Set_Transform;
-	import.Phys_Object_Force = Phys_Object_Force;
-	import.Phys_Object_Impulse = Phys_Object_Impulse;
-	import.Phys_Obj_Set_Linear_Velocity = Phys_Obj_Set_Linear_Velocity;
-	import.Phys_Obj_Get_Linear_Velocity = Phys_Obj_Get_Linear_Velocity;
-	import.Phys_Obj_Set_Angular_Velocity = Phys_Obj_Set_Angular_Velocity;
-	import.Phys_Obj_Get_Angular_Velocity = Phys_Obj_Get_Angular_Velocity;
-	import.Phys_Obj_Weld = Phys_Obj_Weld;
 
 #ifdef JK2_MODE
 	const char *gamename = "jospgame";

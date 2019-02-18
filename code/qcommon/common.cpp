@@ -35,8 +35,6 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #endif
 
-#include "phys/phys_public.hpp"
-
 // Because renderer.
 #include "../rd-common/tr_public.h"
 extern refexport_t re;
@@ -1144,8 +1142,6 @@ void Com_Init( char *commandLine ) {
 		Sys_Init();	// this also detects CPU type, so I can now do this CPU check below...
 
 		Sys_SetProcessorAffinity();
-
-		Com_Phys_Init();
 
 		Netchan_Init( Com_Milliseconds() & 0xffff );	// pick a port value that should be nice and random
 //	VM_Init();

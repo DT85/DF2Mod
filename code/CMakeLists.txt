@@ -98,13 +98,6 @@ if(BuildSPEngine)
 
 	#    Source Files
 
-	# Physics files
-	set(SPEnginePhysFiles
-		"${SPDir}/phys/phys_bullet.cpp"
-		)
-	source_group("phys" FILES ${SPEnginePhysFiles})
-	set(SPEngineFiles ${SPEngineFiles} ${SPEnginePhysFiles})
-	
 	# Client files
 	set(SPEngineClientFiles
 		"${SPDir}/client/keys.h"
@@ -153,7 +146,6 @@ if(BuildSPEngine)
 		"${SPDir}/qcommon/cm_patch.h"
 		"${SPDir}/qcommon/cm_polylib.h"
 		"${SPDir}/qcommon/cm_public.h"
-		"${SPDir}/qcommon/cm_phys.cpp"
 
 		"${SPDir}/qcommon/cmd.cpp"
 		"${SPDir}/qcommon/common.cpp"
@@ -384,11 +376,21 @@ if(BuildSPEngine)
 	set(OpenJKLibPhysDir "${OpenJKLibDir}/bullet3/lib")
 	
 	set(BulletLibs 
+		optimized "${OpenJKLibPhysDir}/Bullet3Collision.lib"
+		optimized "${OpenJKLibPhysDir}/Bullet3Common.lib"
+		optimized "${OpenJKLibPhysDir}/Bullet3Dynamics.lib"
+		optimized "${OpenJKLibPhysDir}/Bullet3Geometry.lib"
+		optimized "${OpenJKLibPhysDir}/Bullet3OpenCL_clew.lib"
 		optimized "${OpenJKLibPhysDir}/BulletCollision.lib"
 		optimized "${OpenJKLibPhysDir}/BulletDynamics.lib"
 		optimized "${OpenJKLibPhysDir}/BulletInverseDynamics.lib"
 		optimized "${OpenJKLibPhysDir}/BulletSoftBody.lib"
-		optimized "${OpenJKLibPhysDir}/LinearMath.lib"
+		optimized "${OpenJKLibPhysDir}/LinearMath.lib"		
+		debug "${OpenJKLibPhysDir}/Bullet3Collision_debug.lib"
+		debug "${OpenJKLibPhysDir}/Bullet3Common_debug.lib"
+		debug "${OpenJKLibPhysDir}/Bullet3Dynamics_debug.lib"
+		debug "${OpenJKLibPhysDir}/Bullet3Geometry_debug.lib"
+		debug "${OpenJKLibPhysDir}/Bullet3OpenCL_clew_debug.lib"
 		debug "${OpenJKLibPhysDir}/BulletCollision_debug.lib"
 		debug "${OpenJKLibPhysDir}/BulletDynamics_debug.lib"
 		debug "${OpenJKLibPhysDir}/BulletInverseDynamics_debug.lib"

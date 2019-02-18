@@ -725,32 +725,9 @@ void		TIMER_Remove( gentity_t *ent, const char *identifier );
 float NPC_GetHFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float hFOV );
 float NPC_GetVFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float vFOV );
 
-// g_physics.c
+// g_physics.cpp
 void G_Physics_Init();
 void G_Physics_Shutdown();
 extern std::unique_ptr<physics_world_t> g_phys;
-
-/*extern phys_world_t * gworld;
-
-void G_Phys_Init();
-void G_Phys_Shutdown();
-void G_Phys_Frame();
-
-void G_Phys_Upd_Res();
-void G_Phys_Upd_Grav();
-//void G_Phys_Upd_ClF();
-
-void G_Phys_Set_Friction(gentity_t * ent, float f);
-
-void G_Phys_UpdateEnt(gentity_t * ent);
-
-void G_Phys_AddBMover(gentity_t * mover);
-void G_Phys_AddClientCapsule(gentity_t * ent);
-
-void G_Phys_SetClientCrouched(gentity_t * ent, qboolean);
-
-void G_Phys_Remove(gentity_t * ent);
-
-void G_TEST_PhysTestEnt(vec3_t pos);*/
 
 #endif//#ifndef __G_LOCAL_H__
