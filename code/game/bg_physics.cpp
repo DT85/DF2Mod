@@ -21,13 +21,10 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
 #include <btBulletDynamicsCommon.h>
 
-//#include "qcommon/cm_public.h"
-//#include "bg_local.h"
 #include "bg_physics.h"
 
 struct physics_world_t::impl_t 
-{
-	
+{	
 	btBroadphaseInterface * broadphase = nullptr;
 	btDefaultCollisionConfiguration * config = nullptr;
 	btCollisionDispatcher * dispatch = nullptr;
@@ -50,14 +47,13 @@ struct physics_world_t::impl_t
 		if (dispatch) delete dispatch;
 		if (config) delete config;
 		if (broadphase) delete broadphase;
-	}
-	
+	}	
 };
 
-physics_world_t::physics_world_t() : impl { std::make_unique<impl_t>() } {
-	
+physics_world_t::physics_world_t() : impl { std::make_unique<impl_t>() } 
+{	
 }
 
-physics_world_t::~physics_world_t() {
-	
+physics_world_t::~physics_world_t() 
+{	
 }
