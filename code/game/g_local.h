@@ -33,6 +33,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "g_shared.h"
 #include "anims.h"
 #include "dmstates.h"
+#include "bg_physics.h"
 
 //==================================================================
 
@@ -349,6 +350,7 @@ public:
 extern	level_locals_t	level;
 extern	game_export_t	globals;
 
+extern	cvar_t	*g_physics;
 extern	cvar_t	*g_phys_resolution;
 
 extern	cvar_t  *phys_playerclip;
@@ -723,8 +725,12 @@ void		TIMER_Remove( gentity_t *ent, const char *identifier );
 float NPC_GetHFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float hFOV );
 float NPC_GetVFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float vFOV );
 
-// g_phys.c
-extern phys_world_t * gworld;
+// g_physics.c
+void G_Physics_Init();
+void G_Physics_Shutdown();
+extern std::unique_ptr<physics_world_t> g_phys;
+
+/*extern phys_world_t * gworld;
 
 void G_Phys_Init();
 void G_Phys_Shutdown();
@@ -745,6 +751,6 @@ void G_Phys_SetClientCrouched(gentity_t * ent, qboolean);
 
 void G_Phys_Remove(gentity_t * ent);
 
-void G_TEST_PhysTestEnt(vec3_t pos);
+void G_TEST_PhysTestEnt(vec3_t pos);*/
 
 #endif//#ifndef __G_LOCAL_H__

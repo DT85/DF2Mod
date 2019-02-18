@@ -1377,10 +1377,6 @@ void Cmd_SaberDrop_f( gentity_t *ent, int saberNum )
 	}
 }
 
-static void Cmd_Testbox_f(gentity_t * ent) {
-	G_TEST_PhysTestEnt(ent->currentOrigin);
-}
-
 static phys_object_t * weld_A = NULL;
 static phys_object_t * weld_B = NULL;
 
@@ -1392,7 +1388,8 @@ void Cmd_PhysWeld_f(gentity_t * ent) { // FIXME -- if object is deleted before w
 	dir[1] = cos(ent->client->ps.viewangles[PITCH] * (M_PI * 2 / 360)) * sin(ent->client->ps.viewangles[YAW] * (M_PI * 2 / 360));
 	dir[2] = -sin(ent->client->ps.viewangles[PITCH] * (M_PI * 2 / 360));
 	VectorMA(ent->currentOrigin, 1000, dir, end);
-	gi.Phys_World_Trace(gworld, ent->currentOrigin, end, &tr);
+	//bullet physics
+	//gi.Phys_World_Trace(gworld, ent->currentOrigin, end, &tr);
 	if (!tr.hit_object) {
 		gi.SendServerCommand(ent - g_entities, "print \"weld: object not found in trace.\n\"");
 		return;
@@ -1667,10 +1664,6 @@ void ClientCommand( int clientNum ) {
 		{//drop either left or right
 			Cmd_SaberDrop_f( ent, saberNum );
 		}
-	}
-	else if (Q_stricmp(cmd, "testbox") == 0)
-	{
-		Cmd_Testbox_f(ent);
 	}
 	else if (Q_stricmp(cmd, "weld") == 0)
 	{

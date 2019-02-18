@@ -145,6 +145,7 @@ static void ValidateInUseBits(void)
 gentity_t		*player;
 
 //Phys
+cvar_t  *g_physics;
 cvar_t  *g_phys_resolution;
 
 cvar_t  *bg_phys_clfric_move;
@@ -707,6 +708,7 @@ void G_InitCvars( void ) {
 
 	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0 );
 
+	g_physics = gi.cvar("g_physics", "0", CVAR_ARCHIVE);
 	g_phys_resolution = gi.cvar("g_phys_resolution", "125", CVAR_ARCHIVE);
 
 	bg_phys_clfric_move = gi.cvar("bg_phys_clfric_move", "0.3", CVAR_SYSTEMINFO|CVAR_ARCHIVE);
@@ -756,7 +758,10 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 	G_InitMemory();
 
 	//Init bullet physics
-	G_Phys_Init();
+	if (g_physics->integer)
+	{
+		G_Physics_Init();
+	}
 
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
@@ -771,7 +776,6 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 	{
 		level.spawntarget[0] = 0;
 	}
-
 
 	G_InitWorldSession();
 
@@ -845,7 +849,7 @@ void ShutdownGame( void )
 	G_WriteSessionData();
 
 	//Shutdown bullet physics
-	G_Phys_Shutdown();
+	G_Physics_Shutdown();
 
 	// Destroy the Game Interface.
 	IGameInterface::Destroy();
@@ -2028,7 +2032,6 @@ void G_RunFrame( int levelTime ) {
 				TieFighterThink( ent );
 			}
 			G_RunMover( ent );
-			G_Phys_UpdateEnt(ent);
 			continue;
 		}
 
@@ -2072,12 +2075,9 @@ void G_RunFrame( int levelTime ) {
 		}
 
 		G_RunThink( ent );	// be aware that ent may be free after returning from here, at least one func frees them
-		G_Phys_UpdateEnt(ent);
 		ClearNPCGlobals();			//	but these 2 funcs are ok
 		//UpdateTeamCounters( ent );	//	   to call anyway on a freed ent.
 	}
-
-	G_Phys_Frame();
 
 	// perform final fixups on the player
 	ent = &g_entities[0];

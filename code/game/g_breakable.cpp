@@ -319,8 +319,6 @@ static void InitBBrush ( gentity_t *ent )
 
 	ent->s.pos.trType = TR_STATIONARY;
 	VectorCopy( ent->pos1, ent->s.pos.trBase );
-
-	G_Phys_AddBMover(ent);
 }
 
 void funcBBrushTouch( gentity_t *ent, gentity_t *other, trace_t *trace )
