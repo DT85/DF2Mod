@@ -144,12 +144,6 @@ static void ValidateInUseBits(void)
 
 gentity_t		*player;
 
-//Phys
-cvar_t  *g_phys_resolution;
-
-cvar_t  *bg_phys_clfric_move;
-cvar_t  *bg_phys_clfric_stop;
-
 cvar_t	*g_speed;
 cvar_t	*g_gravity;
 cvar_t	*g_stepSlideFix;
@@ -707,11 +701,6 @@ void G_InitCvars( void ) {
 
 	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0 );
 
-	g_phys_resolution = gi.cvar("g_phys_resolution", "125", CVAR_ARCHIVE);
-
-	bg_phys_clfric_move = gi.cvar("bg_phys_clfric_move", "0.3", CVAR_SYSTEMINFO|CVAR_ARCHIVE);
-	bg_phys_clfric_stop = gi.cvar("bg_phys_clfric_stop", "2.5", CVAR_SYSTEMINFO | CVAR_ARCHIVE);
-
 	gi.cvar( "tier_storyinfo", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
 	gi.cvar( "tiers_complete", "", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
 
@@ -736,6 +725,8 @@ SavedGameJustLoaded_e g_eSavedGameJustLoaded;
 qboolean g_qbLoadTransition = qfalse;
 void InitGame(  const char *mapname, const char *spawntarget, int checkSum, const char *entities, int levelTime, int randomSeed, int globalTime, SavedGameJustLoaded_e eSavedGameJustLoaded, qboolean qbLoadTransition )
 {
+	char mapName[128];
+
 	//rww - default this to 0, we will auto-set it to 1 if we run into a terrain ent
 	gi.cvar_set("RMG", "0");
 
@@ -755,14 +746,12 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 
 	G_InitMemory();
 
-	//Init bullet physics
-	G_Phys_Init();
-
 	// set some level globals
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;
 	level.globalTime = globalTime;
 	Q_strncpyz( level.mapname, mapname, sizeof(level.mapname) );
+
 	if ( spawntarget != NULL && spawntarget[0] )
 	{
 		Q_strncpyz( level.spawntarget, spawntarget, sizeof(level.spawntarget) );
@@ -771,7 +760,6 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 	{
 		level.spawntarget[0] = 0;
 	}
-
 
 	G_InitWorldSession();
 
@@ -815,13 +803,17 @@ void InitGame(  const char *mapname, const char *spawntarget, int checkSum, cons
 	// general initialization
 	G_FindTeams();
 
+	//Init bullet physics
+	gi.Cvar_VariableStringBuffer("mapname", mapName, sizeof(mapName));
+	G_InitBullet();
+	G_LoadMap(mapName);
+
 //	SaveRegisteredItems();
 
 	gi.Printf ("-----------------------------------\n");
 
 	Rail_Initialize();
 	Troop_Initialize();
-
 
 	player = &g_entities[0];
 
@@ -845,7 +837,7 @@ void ShutdownGame( void )
 	G_WriteSessionData();
 
 	//Shutdown bullet physics
-	G_Phys_Shutdown();
+	G_ShudownBullet();
 
 	// Destroy the Game Interface.
 	IGameInterface::Destroy();
@@ -1928,23 +1920,21 @@ void G_RunFrame( int levelTime ) {
 	level.previousTime = level.time;
 	level.time = levelTime;
 
+	//Run bullet physics
+	G_RunPhysics();
+
 	//ResetTeamCounters();
 	NAV::DecayDangerSenses();
 	Rail_Update();
 	Troop_Update();
 	Pilot_Update();
 
-
 	if (player && gi.WE_IsShaking(player->currentOrigin))
 	{
  	  	CGCam_Shake(0.45f, 100);
 	}
 
-
 	AI_UpdateGroups();
-
-
-
 
 	//Look to clear out old events
 	ClearPlayerAlertEvents();
@@ -2028,7 +2018,6 @@ void G_RunFrame( int levelTime ) {
 				TieFighterThink( ent );
 			}
 			G_RunMover( ent );
-			G_Phys_UpdateEnt(ent);
 			continue;
 		}
 
@@ -2072,12 +2061,9 @@ void G_RunFrame( int levelTime ) {
 		}
 
 		G_RunThink( ent );	// be aware that ent may be free after returning from here, at least one func frees them
-		G_Phys_UpdateEnt(ent);
 		ClearNPCGlobals();			//	but these 2 funcs are ok
 		//UpdateTeamCounters( ent );	//	   to call anyway on a freed ent.
 	}
-
-	G_Phys_Frame();
 
 	// perform final fixups on the player
 	ent = &g_entities[0];

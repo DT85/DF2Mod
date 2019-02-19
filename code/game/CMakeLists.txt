@@ -34,6 +34,18 @@ if(WIN32)
 	set(SPGameLibraries "winmm")
 endif(WIN32)
 
+# Bullet Physics Libraries
+set(OpenJKLibPhysDir "${OpenJKLibDir}/bullet3/lib")
+
+set(BulletLibs 
+	optimized "${OpenJKLibPhysDir}/BulletCollision.lib"
+	optimized "${OpenJKLibPhysDir}/BulletDynamics.lib"
+	optimized "${OpenJKLibPhysDir}/LinearMath.lib"
+	debug "${OpenJKLibPhysDir}/BulletCollision_debug.lib"
+	debug "${OpenJKLibPhysDir}/BulletDynamics_debug.lib"
+	debug "${OpenJKLibPhysDir}/LinearMath_debug.lib"
+	)
+
 set(SPGameGameFiles
 	"${SPDir}/game/AI_Animal.cpp"
 	"${SPDir}/game/AI_AssassinDroid.cpp"
@@ -409,5 +421,8 @@ set_target_properties(${SPGame} PROPERTIES INCLUDE_DIRECTORIES "${SPGameIncludeD
 set_target_properties(${SPGame} PROPERTIES PROJECT_LABEL "SP Game Library")
 # no libraries used
 if(SPGameLibraries)
-	target_link_libraries(${SPGame} ${SPGameLibraries})
+	target_link_libraries(${SPGame} 
+	${SPGameLibraries}
+	${BulletLibs}
+	)
 endif(SPGameLibraries)

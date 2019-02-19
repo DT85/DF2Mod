@@ -1128,8 +1128,6 @@ void InitMover( gentity_t *ent )
 	gi.linkentity( ent );
 
 	InitMoverTrData( ent );
-
-	G_Phys_AddBMover(ent);
 }
 
 

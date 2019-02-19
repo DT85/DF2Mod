@@ -346,15 +346,18 @@ public:
 	}
 }; // level_locals_t
 
+
+//
+// g_phys.cpp
+//
+void G_InitBullet();
+void G_ShudownBullet();
+void G_RunPhysics();
+void G_LoadMap(const char *mapName);
+
+
 extern	level_locals_t	level;
 extern	game_export_t	globals;
-
-extern	cvar_t	*g_phys_resolution;
-
-extern	cvar_t  *phys_playerclip;
-
-extern  cvar_t  *bg_phys_clfric_move;
-extern  cvar_t  *bg_phys_clfric_stop;
 
 extern	cvar_t	*g_gravity;
 extern	cvar_t	*g_speed;
@@ -722,29 +725,5 @@ void		TIMER_Remove( gentity_t *ent, const char *identifier );
 
 float NPC_GetHFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float hFOV );
 float NPC_GetVFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float vFOV );
-
-// g_phys.c
-extern phys_world_t * gworld;
-
-void G_Phys_Init();
-void G_Phys_Shutdown();
-void G_Phys_Frame();
-
-void G_Phys_Upd_Res();
-void G_Phys_Upd_Grav();
-//void G_Phys_Upd_ClF();
-
-void G_Phys_Set_Friction(gentity_t * ent, float f);
-
-void G_Phys_UpdateEnt(gentity_t * ent);
-
-void G_Phys_AddBMover(gentity_t * mover);
-void G_Phys_AddClientCapsule(gentity_t * ent);
-
-void G_Phys_SetClientCrouched(gentity_t * ent, qboolean);
-
-void G_Phys_Remove(gentity_t * ent);
-
-void G_TEST_PhysTestEnt(vec3_t pos);
 
 #endif//#ifndef __G_LOCAL_H__

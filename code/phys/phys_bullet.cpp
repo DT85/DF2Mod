@@ -1,4 +1,5 @@
-#include "phys_public.hpp"
+#if 0
+
 #include "qcommon/cm_public.h"
 #include "qcommon/qcommon.h"
 
@@ -930,3 +931,4 @@ void Phys_Obj_Weld(phys_object_t * A, phys_object_t * B) {
 	btFixedConstraint * cons = new btFixedConstraint(*A->body, *B->body, tA, tB);
 	A->parent->addConstraint(cons, true);
 }
+#endif

@@ -2466,8 +2466,6 @@ qboolean ClientSpawn(gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded 
 		ent->client->ps.saberStylesKnown |= (1<<SS_MEDIUM);
 	}
 
-	//G_Phys_AddClientCapsule(ent); //currently roots the player in-place.
-
 	return beamInEffect;
 }
 
