@@ -700,6 +700,8 @@ public:
 	clientPersistant_t	pers;
 	clientSession_t		sess;
 
+	class btKinematicCharacterController *characterController;
+
 	int			lastCmdTime;		// level.time of last usercmd_t, for EF_CONNECTION
 
 	usercmd_t	usercmd;			// most recent usercmd

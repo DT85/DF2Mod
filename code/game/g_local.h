@@ -726,4 +726,8 @@ void		TIMER_Remove( gentity_t *ent, const char *identifier );
 float NPC_GetHFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float hFOV );
 float NPC_GetVFOVPercentage( vec3_t spot, vec3_t from, vec3_t facing, float vFOV );
 
+
+void G_RunCharacterController(vec3_t dir, class btKinematicCharacterController *ch, vec3_t newPos);
+class btKinematicCharacterController* BT_CreateCharacter(float stepHeight, vec3_t pos, float characterHeight, float characterWidth);
+
 #endif//#ifndef __G_LOCAL_H__

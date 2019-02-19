@@ -14879,6 +14879,15 @@ void Pmove( pmove_t *pmove )
 
 	AngleVectors ( pm->ps->viewangles, pml.forward, pml.right, pml.up );
 
+	vec3_t dir = { 0,0,0 };
+	VectorAdd(dir, pml.forward, dir);
+	VectorAdd(dir, pml.right, dir);
+	VectorAdd(dir, pml.up, dir);
+
+	G_RunCharacterController(dir, client->characterController, pm->ps->origin);
+	
+	ri.Printf(PRINT_ALL, "at %f %f %f\n", pm->ps->origin[0], pm->ps->origin[1], pm->ps->origin[2]);
+
 	if ( pm->cmd.upmove < 10 ) {
 		// not holding jump
 		pm->ps->pm_flags &= ~PMF_JUMP_HELD;
