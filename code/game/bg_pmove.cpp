@@ -14886,12 +14886,18 @@ void Pmove( pmove_t *pmove )
 
 	if (0)
 	{
+		//VectorAdd(ent->client->ps.origin,dir,ent->client->ps.origin);
 	}
 	else
 	{
 		dir[2] = 0;
 		VectorScale(dir, 0.75f, dir);
-		G_RunCharacterController(dir, client->characterController, pm->ps->origin);
+		G_RunCharacterController(dir, client->characterController, client->ps.origin);
+
+		if (pm->cmd.upmove)
+		{
+			G_TryToJump(client->characterController);
+		}
 	}
 	
 	ri.Printf(PRINT_ALL, "at %f %f %f\n", pm->ps->origin[0], pm->ps->origin[1], pm->ps->origin[2]);
