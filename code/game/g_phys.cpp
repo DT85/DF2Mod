@@ -57,6 +57,9 @@ void G_InitBullet()
 	// The world.
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 	dynamicsWorld->setGravity(btVector3(0, 0, -800));
+
+	// add ghostPairCallback for character controller collision detection
+	dynamicsWorld->getPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 }
 
 void G_ShudownBullet() 
@@ -131,7 +134,6 @@ void G_RunCharacterController(vec3_t dir, btKinematicCharacterController *ch, ve
 	newPos[2] = c.z();
 }
 
-
 void G_TryToJump(btKinematicCharacterController *ch) 
 {
 	if (ch->onGround() == false)
@@ -140,6 +142,18 @@ void G_TryToJump(btKinematicCharacterController *ch)
 	}
 
 	ch->jump();
+}
+
+void BT_FreeCharacter(btKinematicCharacterController *c) 
+{
+	if (c == 0)
+	{
+		return;
+	}
+
+	dynamicsWorld->removeCharacter(c);
+
+	delete c;
 }
 
 btKinematicCharacterController* BT_CreateCharacter(float stepHeight,
@@ -161,8 +175,6 @@ btKinematicCharacterController* BT_CreateCharacter(float stepHeight,
 	dynamicsWorld->addCollisionObject(ghostObject, btBroadphaseProxy::CharacterFilter,
 		btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
 	dynamicsWorld->addCharacter(character);
-
-	dynamicsWorld->getPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
 	return character;
 };
