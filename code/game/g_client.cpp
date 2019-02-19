@@ -2334,8 +2334,8 @@ qboolean ClientSpawn(gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded 
 		client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		client->ps.pm_time = 100;
 
-		BT_FreeCharacter(client->characterController);
-		client->characterController = BT_CreateCharacter(8.f, client->ps.origin, 8, 30);
+		BT_FreeCharacter(client->ps.characterController);
+		client->ps.characterController = BT_CreateCharacter(8.f, client->ps.origin, 8, 30);
 
 		client->respawnTime = level.time;
 		client->latched_buttons = 0;

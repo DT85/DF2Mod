@@ -803,6 +803,7 @@ public:
 		saved_game.write<>(ps);
 		saved_game.write<>(pers);
 		saved_game.write<>(sess);
+		//saved_game.write<>(characterController);
 		saved_game.write<int32_t>(lastCmdTime);
 		saved_game.write<>(usercmd);
 		saved_game.write<int32_t>(buttons);
@@ -869,6 +870,7 @@ public:
 		saved_game.read<>(ps);
 		saved_game.read<>(pers);
 		saved_game.read<>(sess);
+		//saved_game.read<>(characterController);
 		saved_game.read<int32_t>(lastCmdTime);
 		saved_game.read<>(usercmd);
 		saved_game.read<int32_t>(buttons);

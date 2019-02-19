@@ -14892,15 +14892,15 @@ void Pmove( pmove_t *pmove )
 	{
 		dir[2] = 0;
 		VectorScale(dir, 0.75f, dir);
-		G_RunCharacterController(dir, client->characterController, client->ps.origin);
+		G_RunCharacterController(dir, pm->gent->client->characterController, pm->gent->client->ps.origin);
 
 		if (pm->cmd.upmove)
 		{
-			G_TryToJump(client->characterController);
+			G_TryToJump(pm->gent->client->characterController);
 		}
 	}
 	
-	ri.Printf(PRINT_ALL, "at %f %f %f\n", pm->ps->origin[0], pm->ps->origin[1], pm->ps->origin[2]);
+	Com_Printf("at %f %f %f\n", pm->gent->client->ps.origin[0], pm->gent->client->ps.origin[1], pm->gent->client->ps.origin[2]);
 
 	if ( pm->cmd.upmove < 10 ) {
 		// not holding jump
