@@ -2320,6 +2320,7 @@ qboolean ClientSpawn(gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded 
 
 		VectorCopy( spawn_origin, client->ps.origin );
 		VectorCopy( spawn_origin, ent->currentOrigin );
+		client->ps.viewheight = 26;
 
 		// the respawned flag will be cleared after the attack and jump keys come up
 		client->ps.pm_flags |= PMF_RESPAWNED;
@@ -2333,7 +2334,7 @@ qboolean ClientSpawn(gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded 
 		client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 		client->ps.pm_time = 100;
 
-		client->characterController = BT_CreateCharacter(8.f, client->ps.origin, 15, 24);
+		client->characterController = BT_CreateCharacter(8.f, client->ps.origin, 8, 24);
 
 		client->respawnTime = level.time;
 		client->latched_buttons = 0;

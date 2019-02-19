@@ -142,14 +142,12 @@ btKinematicCharacterController* BT_CreateCharacter(float stepHeight,
 	trans.setOrigin(vPos);
 	ghostObject->setWorldTransform(trans);
 	ghostObject->setCollisionShape(characterShape);
-	btKinematicCharacterController *character = new btKinematicCharacterController(ghostObject,
-		characterShape, stepHeight, 1);
-	character->setUpAxis(2);
-
+	btKinematicCharacterController *character = new btKinematicCharacterController(ghostObject, characterShape, stepHeight, 2);
+	character->setMaxSlope(DEG2RAD(70));
 	dynamicsWorld->addCollisionObject(ghostObject, btBroadphaseProxy::CharacterFilter,
 		btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
-
 	dynamicsWorld->addCharacter(character);
+
 	dynamicsWorld->getPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
 	return character;

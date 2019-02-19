@@ -14884,7 +14884,15 @@ void Pmove( pmove_t *pmove )
 	VectorAdd(dir, pml.right, dir);
 	VectorAdd(dir, pml.up, dir);
 
-	G_RunCharacterController(dir, client->characterController, pm->ps->origin);
+	if (0)
+	{
+	}
+	else
+	{
+		dir[2] = 0;
+		VectorScale(dir, 0.75f, dir);
+		G_RunCharacterController(dir, client->characterController, pm->ps->origin);
+	}
 	
 	ri.Printf(PRINT_ALL, "at %f %f %f\n", pm->ps->origin[0], pm->ps->origin[1], pm->ps->origin[2]);
 
