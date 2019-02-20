@@ -2335,7 +2335,7 @@ qboolean ClientSpawn(gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded 
 		client->ps.pm_time = 100;
 
 		BT_FreeCharacter(client->characterController);
-		client->characterController = BT_CreateCharacter(8.f, client->ps.origin, 8, 30);
+		client->characterController = BT_CreateCharacter(8.f, client->ps.origin, 48, 16);
 
 		client->respawnTime = level.time;
 		client->latched_buttons = 0;
