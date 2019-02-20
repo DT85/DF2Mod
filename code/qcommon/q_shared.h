@@ -1897,8 +1897,6 @@ public:
 	int			electrifyTime;
 #endif // !JK2_MODE
 
-	class btKinematicCharacterController *characterController;
-
 	void sg_export(
 		ojk::SavedGameHelper& saved_game) const
 	{
