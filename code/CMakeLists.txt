@@ -44,7 +44,7 @@ if(BuildSPEngine)
 		${SharedDir}
 		${SPDir}
 		"${GSLIncludeDirectory}"
-		"${OpenJKLibDir}/bullet3/include")
+		)
 		
 	#    Dependencies
 	# OpenAL (is optionally included for Windows)
@@ -372,32 +372,6 @@ if(BuildSPEngine)
     list(APPEND SPEngineIncludeDirectories ${ZLIB_INCLUDE_DIR})
     list(APPEND SPEngineLibraries          ${ZLIB_LIBRARIES})
 
-    # Bullet Physics Libraries
-	set(OpenJKLibPhysDir "${OpenJKLibDir}/bullet3/lib")
-	
-	set(BulletLibs 
-		optimized "${OpenJKLibPhysDir}/Bullet3Collision.lib"
-		optimized "${OpenJKLibPhysDir}/Bullet3Common.lib"
-		optimized "${OpenJKLibPhysDir}/Bullet3Dynamics.lib"
-		optimized "${OpenJKLibPhysDir}/Bullet3Geometry.lib"
-		optimized "${OpenJKLibPhysDir}/Bullet3OpenCL_clew.lib"
-		optimized "${OpenJKLibPhysDir}/BulletCollision.lib"
-		optimized "${OpenJKLibPhysDir}/BulletDynamics.lib"
-		optimized "${OpenJKLibPhysDir}/BulletInverseDynamics.lib"
-		optimized "${OpenJKLibPhysDir}/BulletSoftBody.lib"
-		optimized "${OpenJKLibPhysDir}/LinearMath.lib"		
-		debug "${OpenJKLibPhysDir}/Bullet3Collision_debug.lib"
-		debug "${OpenJKLibPhysDir}/Bullet3Common_debug.lib"
-		debug "${OpenJKLibPhysDir}/Bullet3Dynamics_debug.lib"
-		debug "${OpenJKLibPhysDir}/Bullet3Geometry_debug.lib"
-		debug "${OpenJKLibPhysDir}/Bullet3OpenCL_clew_debug.lib"
-		debug "${OpenJKLibPhysDir}/BulletCollision_debug.lib"
-		debug "${OpenJKLibPhysDir}/BulletDynamics_debug.lib"
-		debug "${OpenJKLibPhysDir}/BulletInverseDynamics_debug.lib"
-		debug "${OpenJKLibPhysDir}/BulletSoftBody_debug.lib"
-		debug "${OpenJKLibPhysDir}/LinearMath_debug.lib"
-		)
-	
 	# project macro so we can invoke it twice: for ja
 	function(add_sp_project ProjectName Label SPDirName InstallDir Component)
 		if(MakeApplicationBundles)
@@ -456,7 +430,6 @@ if(BuildSPEngine)
 		if(SPEngineLibraries)
 			target_link_libraries(${ProjectName} 
 				${SPEngineLibraries}
-				${BulletLibs}
 				)
 		endif(SPEngineLibraries)
 	endfunction(add_sp_project)

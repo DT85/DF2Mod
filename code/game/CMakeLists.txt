@@ -34,6 +34,32 @@ if(WIN32)
 	set(SPGameLibraries "winmm")
 endif(WIN32)
 
+# Bullet Physics Libraries
+set(OpenJKLibPhysDir "${OpenJKLibDir}/bullet3/lib")
+
+set(BulletLibs 
+	optimized "${OpenJKLibPhysDir}/Bullet3Collision.lib"
+	optimized "${OpenJKLibPhysDir}/Bullet3Common.lib"
+	optimized "${OpenJKLibPhysDir}/Bullet3Dynamics.lib"
+	optimized "${OpenJKLibPhysDir}/Bullet3Geometry.lib"
+	optimized "${OpenJKLibPhysDir}/Bullet3OpenCL_clew.lib"
+	# optimized "${OpenJKLibPhysDir}/BulletCollision.lib"
+	# optimized "${OpenJKLibPhysDir}/BulletDynamics.lib"
+	# optimized "${OpenJKLibPhysDir}/BulletInverseDynamics.lib"
+	# optimized "${OpenJKLibPhysDir}/BulletSoftBody.lib"
+	optimized "${OpenJKLibPhysDir}/LinearMath.lib"
+	debug "${OpenJKLibPhysDir}/Bullet3Collision_debug.lib"
+	debug "${OpenJKLibPhysDir}/Bullet3Common_debug.lib"
+	debug "${OpenJKLibPhysDir}/Bullet3Dynamics_debug.lib"
+	debug "${OpenJKLibPhysDir}/Bullet3Geometry_debug.lib"
+	debug "${OpenJKLibPhysDir}/Bullet3OpenCL_clew_debug.lib"
+	# debug "${OpenJKLibPhysDir}/BulletCollision_debug.lib"
+	# debug "${OpenJKLibPhysDir}/BulletDynamics_debug.lib"
+	# debug "${OpenJKLibPhysDir}/BulletInverseDynamics_debug.lib"
+	# debug "${OpenJKLibPhysDir}/BulletSoftBody_debug.lib"
+	debug "${OpenJKLibPhysDir}/LinearMath_debug.lib"
+	)
+
 set(SPGameGameFiles
 	"${SPDir}/game/AI_Animal.cpp"
 	"${SPDir}/game/AI_AssassinDroid.cpp"
@@ -411,5 +437,8 @@ set_target_properties(${SPGame} PROPERTIES INCLUDE_DIRECTORIES "${SPGameIncludeD
 set_target_properties(${SPGame} PROPERTIES PROJECT_LABEL "SP Game Library")
 # no libraries used
 if(SPGameLibraries)
-	target_link_libraries(${SPGame} ${SPGameLibraries})
+	target_link_libraries(${SPGame} 
+	${SPGameLibraries}
+	${BulletLibs}
+	)
 endif(SPGameLibraries)
