@@ -707,7 +707,7 @@ void G_InitCvars( void ) {
 
 	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0 );
 
-	g_phys_resolution = gi.cvar("g_phys_resolution", "125", CVAR_ARCHIVE);
+	g_phys_resolution = gi.cvar("g_phys_resolution", "120", CVAR_ARCHIVE);
 
 	bg_phys_clfric_move = gi.cvar("bg_phys_clfric_move", "0.3", CVAR_SYSTEMINFO|CVAR_ARCHIVE);
 	bg_phys_clfric_stop = gi.cvar("bg_phys_clfric_stop", "2.5", CVAR_SYSTEMINFO | CVAR_ARCHIVE);
