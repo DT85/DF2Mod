@@ -1,4 +1,4 @@
-#include "phys_public.hpp"
+#include "phys_public.h"
 #include "qcommon/cm_public.h"
 #include "qcommon/qcommon.h"
 

@@ -35,7 +35,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #endif
 
-#include "phys/phys_public.hpp"
+#include "phys/phys_public.h"
 
 // Because renderer.
 #include "../rd-common/tr_public.h"

@@ -34,7 +34,7 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 /*#include "..\renderer\tr_local.h"
 #include "..\renderer\tr_WorldEffects.h"*/
 
-#include "phys/phys_public.hpp"
+#include "phys/phys_public.h"
 
 /*
 Ghoul2 Insert Start
