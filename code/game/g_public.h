@@ -364,6 +364,7 @@ Ghoul2 Insert Start
 
 	const char	*(*SetActiveSubBSP)(int index);
 
+	void const	*(*CM_Get)(void);
 
 	int			(*RE_RegisterSkin)(const char *name);
 	int			(*RE_GetAnimationCFG)(const char *psCFGFilename, char *psDest, int iDestSize);
@@ -382,19 +383,19 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 		
-	phys_world_t * 	(*Phys_World_Create) 				( phys_touch_callback touch_cb );
-	void 			(*Phys_World_Destroy)				( phys_world_t * );
-	void			(*Phys_World_Advance)				( phys_world_t *, int time );
-	void 			(*Phys_World_Set_Resolution)		( phys_world_t * world, unsigned int resolution );
-	void 			(*Phys_World_Set_Gravity)			( phys_world_t * world, float gravity );
-	void			(*Phys_World_Add_Current_Map)		( phys_world_t * world, void * world_token);
-	void 			(*Phys_World_Remove_Object)			( phys_world_t * w, phys_object_t * obj );
-	void 			(*Phys_World_Trace)					( phys_world_t * w, vec3_t start, vec3_t end, phys_trace_t * tr );
-	phys_object_t * (*Phys_Object_Create_Box)			( phys_world_t * w, vec3_t mins, vec3_t maxs, phys_transform_t * initial_transform, phys_properties_t * properties );
-	phys_object_t * (*Phys_Object_Create_From_Obj)		( phys_world_t * world, char const * path, phys_transform_t * initial_transform, phys_properties_t * properties, float scale );
-	phys_object_t * (*Phys_Object_Create_From_BModel)	( phys_world_t * world, int modeli, phys_transform_t * initial_transform, phys_properties_t * properties );
-	phys_object_t * (*Phys_Object_Create_Capsule)		( phys_world_t * w, float cylinder_height, float radius, float v_center_offs, phys_transform_t * initial_transform, phys_properties_t * properties );
-	phys_object_t * (*Phys_Object_Create_Cylinder)		( phys_world_t * w, float cylinder_height, float radius, float v_center_offs, phys_transform_t * initial_transform, phys_properties_t * properties );
+	physics_world_t *(*Phys_World_Create) 				( phys_touch_callback touch_cb );
+	void 			(*Phys_World_Destroy)				( physics_world_t * );
+	void			(*Phys_World_Advance)				( physics_world_t *, int time );
+	void 			(*Phys_World_Set_Resolution)		( physics_world_t * world, unsigned int resolution );
+	void 			(*Phys_World_Set_Gravity)			( physics_world_t * world, float gravity );
+	void			(*Phys_World_Add_Current_Map)		( physics_world_t * world, void * world_token);
+	void 			(*Phys_World_Remove_Object)			( physics_world_t * w, phys_object_t * obj );
+	void 			(*Phys_World_Trace)					( physics_world_t * w, vec3_t start, vec3_t end, phys_trace_t * tr );
+	phys_object_t * (*Phys_Object_Create_Box)			( physics_world_t * w, vec3_t mins, vec3_t maxs, phys_transform_t * initial_transform, phys_properties_t * properties );
+	phys_object_t * (*Phys_Object_Create_From_Obj)		( physics_world_t * world, char const * path, phys_transform_t * initial_transform, phys_properties_t * properties, float scale );
+	phys_object_t * (*Phys_Object_Create_From_BModel)	( physics_world_t * world, int modeli, phys_transform_t * initial_transform, phys_properties_t * properties );
+	phys_object_t * (*Phys_Object_Create_Capsule)		( physics_world_t * w, float cylinder_height, float radius, float v_center_offs, phys_transform_t * initial_transform, phys_properties_t * properties );
+	phys_object_t * (*Phys_Object_Create_Cylinder)		( physics_world_t * w, float cylinder_height, float radius, float v_center_offs, phys_transform_t * initial_transform, phys_properties_t * properties );
 	void 			(*Phys_Object_Get_Origin)			( phys_object_t *, vec3_t origin );
 	void 			(*Phys_Object_Set_Origin)			( phys_object_t *, vec3_t origin );
 	void 			(*Phys_Object_Get_Rotation)			( phys_object_t *, vec3_t angles );

@@ -174,6 +174,8 @@ if(BuildSPEngine)
 		"${SPDir}/qcommon/stringed_ingame.h"
 		"${SPDir}/qcommon/stringed_interface.h"
 
+		"${SPDir}/qcommon/sync.h"
+		
 		"${SPDir}/qcommon/strip.cpp"
 		"${SPDir}/qcommon/persistence.cpp"
 		"${SPDir}/qcommon/tags.h"

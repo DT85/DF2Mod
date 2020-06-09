@@ -218,7 +218,7 @@ typedef enum {
 #define	EF_VEH_BOARDING			0x00000400	// Whether a vehicle is being boarded or not.
 #define	EF_AUTO_SIZE			0x00000800	// CG_Ents will create the mins & max itself based on model bounds
 #define	EF_BOUNCE_SHRAPNEL		0x00001000	// special shrapnel flag
-#define EF_USE_ANGLEDELTA		0x00002000	// Not used.
+#define EF_USE_ANGLEDELTA		0x00002000	// 
 #define EF_ANIM_ALLFAST			0x00004000	// automatically cycle through all frames at 10hz
 #define EF_ANIM_ONCE			0x00008000	// cycle through all frames just once then stop
 #define EF_HELD_BY_WAMPA		0x00010000	// being held by the Wampa
@@ -231,17 +231,18 @@ typedef enum {
 #define EF_SPOTLIGHT			0x00100000	// Your lights are on...
 #define EF_PLANTED_CHARGE		0x00200000	// For detpack charge
 #define EF_POWERING_ROSH		0x00400000	// Only for Twins powering up Rosh
-//Won't be using anything Rosh-related in DF2, so should be safe to do this?
-#define EF_ON_PHYS				0x00400000	// entity is on a physics object (stand override)
 #define EF_FORCE_VISIBLE		0x00800000	// Always visible with force sight
 #define EF_IN_ATST				0x01000000	// Driving an ATST
 #define EF_DISINTEGRATION		0x02000000	// Disruptor effect
 #define EF_LESS_ATTEN			0x04000000	// Use less sound attenuation (louder even when farther).
-#define EF_JETPACK_ACTIVE		0x08000000	// Not used
+#define EF_JETPACK_ACTIVE		0x08000000	// 
 #define EF_DISABLE_SHADER_ANIM	0x10000000	// Normally shader animation chugs along, but movers can force shader animation to be on frame 1
 #define EF_FORCE_GRIPPED		0x20000000	// Force gripped effect
 #define EF_FORCE_DRAINED		0x40000000	// Force drained effect
 #define EF_BLOCKED_MOVER		0x80000000	// for movers that are blocked - shared with previous
+
+//entityState_t->eFlags2
+#define EF2_PHYSICS				0x00000001	// entity uses modern physics simulation
 
 typedef enum {
 	PW_NONE,

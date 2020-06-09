@@ -78,6 +78,12 @@ void	CM_FloodAreaConnections (clipMap_t &cm);
 clipMap_t	SubBSP[MAX_SUB_BSP];
 int			NumSubBSP = 0, TotalSubModels = 0;
 
+
+clipMap_t const *CM_Get() 
+{
+	return &cmg;
+}
+
 /*
 ===============================================================================
 

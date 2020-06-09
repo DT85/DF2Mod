@@ -150,6 +150,8 @@ typedef struct {
 	int			checkcount;					// incremented on each trace
 } clipMap_t;
 
+clipMap_t const *CM_Get();
+
 // keep 1/8 unit away to keep the position valid before network snapping
 // and to avoid various numeric issues
 #define	SURFACE_CLIP_EPSILON	(0.125)

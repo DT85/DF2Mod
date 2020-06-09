@@ -970,6 +970,12 @@ public:
 #define MAX_INHAND_WEAPONS	2
 
 
+struct GEntityComponent 
+{
+	GEntityComponent() = default;
+	virtual ~GEntityComponent() = default;
+};
+
 typedef struct centity_s centity_t;
 // !!!!!!!!!!! LOADSAVE-affecting struct !!!!!!!!!!!!!
 struct gentity_s {
@@ -1286,14 +1292,51 @@ Ghoul2 Insert End
 	int			forcePushTime;
 	int			forcePuller;	//who force-pulled me (so we don't damage them if we hit them)
 
-	// Phys
-	phys_object_t * phys;
-	phys_object_t * phys2; // used for ducking clients
-	qboolean phys_is_crouched;
-	/*
-	qboolean phys_post_do_vellerp;
-	vec3_t phys_post_target_velocity;
-	*/
+	//Bullet Physics
+	bool add_obj_physics(char const * model_name, qm::vec3_t const & position = { 0, 0, 0 });
+
+	std::vector<std::unique_ptr<GEntityComponent>> components;
+
+	template <typename T>
+
+	T * get_component() 
+	{
+		for (auto & uptr : components) 
+		{
+			T * cptr = dynamic_cast<T *>(uptr.get());
+
+			if (cptr)
+				return cptr;
+
+		}
+		return nullptr;
+	}
+
+	template <typename T, typename ... Args>
+
+	T * set_component(Args && ... args) 
+	{
+		std::unique_ptr<GEntityComponent> * carrier = nullptr;
+
+		for (auto & uptr : components) 
+		{
+			T * cptr = dynamic_cast<T *>(uptr.get());
+
+			if (cptr) 
+			{
+				carrier = &uptr;
+			}
+		}
+
+		if (!carrier) 
+			carrier = &components.emplace_back();
+
+		T * c = new T{ std::forward<Args>(args) ... };
+		carrier->reset(c);
+
+		return c;
+	}
+	//
 
 	void sg_export(
 		ojk::SavedGameHelper& saved_game) const
@@ -1482,10 +1525,9 @@ Ghoul2 Insert End
 		saved_game.write<float>(lightLevel);
 		saved_game.write<int32_t>(forcePushTime);
 		saved_game.write<int32_t>(forcePuller);
-		// Phys
-		saved_game.write<int32_t>(phys);
-		saved_game.write<int32_t>(phys2);
-		saved_game.write<int32_t>(phys_is_crouched);
+		// Bullet Physics
+		//saved_game.write<int32_t>(get_component);
+		//saved_game.write<int32_t>(set_component);
 	}
 
 	void sg_import(
@@ -1675,10 +1717,9 @@ Ghoul2 Insert End
 		saved_game.read<float>(lightLevel);
 		saved_game.read<int32_t>(forcePushTime);
 		saved_game.read<int32_t>(forcePuller);
-		// Phys
-		saved_game.read<int32_t>(phys);
-		saved_game.read<int32_t>(phys2);
-		saved_game.read<int32_t>(phys_is_crouched);
+		// Bullet Physics
+		//saved_game.read<int32_t>(get_component);
+		//saved_game.read<int32_t>(set_component);
 	}
 };
 #endif //#ifdef GAME_INCLUDE

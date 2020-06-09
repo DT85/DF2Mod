@@ -2378,6 +2378,7 @@ typedef struct entityState_s {// !!!!!!!!!!! LOADSAVE-affecting struct !!!!!!!!!
 	int		number;			// entity index
 	int		eType;			// entityType_t
 	int		eFlags;
+	int		eFlags2;		// added for bullet physics because eFlags defines are full...
 
 	trajectory_t	pos;	// for calculating position
 	trajectory_t	apos;	// for calculating angles
@@ -2457,6 +2458,7 @@ Ghoul2 Insert End
 		saved_game.write<int32_t>(number);
 		saved_game.write<int32_t>(eType);
 		saved_game.write<int32_t>(eFlags);
+		saved_game.write<int32_t>(eFlags2);
 		saved_game.write<>(pos);
 		saved_game.write<>(apos);
 		saved_game.write<int32_t>(time);
@@ -2513,6 +2515,7 @@ Ghoul2 Insert End
 		saved_game.read<int32_t>(number);
 		saved_game.read<int32_t>(eType);
 		saved_game.read<int32_t>(eFlags);
+		saved_game.read<int32_t>(eFlags2);
 		saved_game.read<>(pos);
 		saved_game.read<>(apos);
 		saved_game.read<int32_t>(time);
@@ -2766,7 +2769,7 @@ Bullet Physics
 ========================================================================
 */
 
-typedef struct phys_world_s phys_world_t;
+typedef struct physics_world_s physics_world_t;
 typedef struct phys_object_s phys_object_t;
 
 typedef struct phys_properties_s {
