@@ -2632,10 +2632,17 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		return;
 	}
 
-	//DF2Mod - disabled crosshair draw on a few weapons
-	if ( cg.snap->ps.weapon == WP_NONE || cg.snap->ps.weapon == WP_SABER )
+	//DF2Mod - disabled crosshair draw
+	if ( cg.snap->ps.weapon == WP_NONE )
 	{
-		//not while using a saber or no weapon
+		//not while without a weapon
+		return;
+	}
+
+	//DF2Mod - disable crosshair draw on saber cvar
+	if ( !cg_crosshairSaber.integer && cg.snap->ps.weapon == WP_SABER )
+	{
+		//not while using a saber
 		return;
 	}
 

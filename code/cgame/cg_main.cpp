@@ -272,6 +272,7 @@ vmCvar_t	cg_crosshairForceHint;
 vmCvar_t	cg_crosshairX;
 vmCvar_t	cg_crosshairY;
 vmCvar_t	cg_crosshairSize;
+vmCvar_t	cg_crosshairSaber;
 vmCvar_t	cg_draw2D;
 vmCvar_t	cg_drawStatus;
 vmCvar_t	cg_drawHUD;
@@ -388,6 +389,7 @@ static cvarTable_t cvarTable[] = {
 	// NOTE : I also create this in UI_Init()
 	{ &cg_crosshairIdentifyTarget, "cg_crosshairIdentifyTarget", "1", CVAR_ARCHIVE },
 	{ &cg_crosshairForceHint, "cg_crosshairForceHint", "1", CVAR_ARCHIVE|CVAR_SAVEGAME|CVAR_NORESTART },
+	{ &cg_crosshairSaber, "cg_crosshairSaber", "1", CVAR_ARCHIVE },
 	{ &cg_endcredits, "cg_endcredits", "0", 0},
 	{ &cg_updatedDataPadForcePower1, "cg_updatedDataPadForcePower1", "0", 0},
 	{ &cg_updatedDataPadForcePower2, "cg_updatedDataPadForcePower2", "0", 0},
