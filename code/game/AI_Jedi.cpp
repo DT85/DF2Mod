@@ -47,6 +47,7 @@ extern void ForceHeal( gentity_t *self );
 extern void ForceRage( gentity_t *self );
 extern void ForceProtect( gentity_t *self );
 extern void ForceAbsorb( gentity_t *self );
+extern void ForceTelepathy( gentity_t *self );
 extern qboolean ForceDrain2( gentity_t *self );
 extern int WP_MissileBlockForBlock( int saberBlock );
 extern qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
@@ -610,7 +611,7 @@ void Jedi_CheckCloak( void )
 		&& NPC->client
 		&& NPC->client->NPC_class == CLASS_SHADOWTROOPER
 		&& Q_stricmpn("shadowtrooper", NPC->NPC_type, 13 )
-		&& Q_stricmpn("gorc", NPC->NPC_type, 4 ) == 0 )
+		&& Q_stricmpn("pic", NPC->NPC_type, 3 ) == 0 )
 	{
 		if ( NPC->client->ps.SaberActive() ||
 			NPC->health <= 0 ||
