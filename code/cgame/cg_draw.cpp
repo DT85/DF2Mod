@@ -2632,6 +2632,13 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		return;
 	}
 
+	//DF2Mod - disabled crosshair draw on a few weapons
+	if ( cg.snap->ps.weapon == WP_NONE || cg.snap->ps.weapon == WP_SABER )
+	{
+		//not while using a saber or no weapon
+		return;
+	}
+
 	//set color based on what kind of ent is under crosshair
 	if ( g_crosshairEntNum >= ENTITYNUM_WORLD )
 	{
@@ -3113,7 +3120,8 @@ static void CG_ScanForCrosshairEntity( qboolean scanAll )
 				VectorCopy( cg_entities[pVeh->m_pParentEntity->s.number].lerpOrigin, start );
 				AngleVectors( cg_entities[pVeh->m_pParentEntity->s.number].lerpAngles, d_f, d_rt, d_up );
 			}
-			else if ( cg.snap->ps.weapon == WP_NONE || cg.snap->ps.weapon == WP_SABER || cg.snap->ps.weapon == WP_STUN_BATON )
+			//DF2Mod - No point if I've disabled crosshair draw on these weapons
+			else if ( /*cg.snap->ps.weapon == WP_NONE || cg.snap->ps.weapon == WP_SABER ||*/ cg.snap->ps.weapon == WP_STUN_BATON )
 			{
 				if ( cg.snap->ps.viewEntity > 0 && cg.snap->ps.viewEntity < ENTITYNUM_WORLD )
 				{//in camera ent view
