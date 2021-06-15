@@ -808,7 +808,7 @@ static void CG_OffsetThirdPersonView( void )
 	}
 
 	//DF2Mod - removed WP_MELEE from this for no 3P auto switch
-	if (!cg.renderingThirdPerson && (cg.snap->ps.weapon == WP_SABER))
+	if ( !cg.renderingThirdPerson && (cg.snap->ps.weapon == WP_SABER /*||cg.snap->ps.weapon == WP_MELEE*/) )
 	{// First person saber
 		// FIXME: use something network-friendly
 		vec3_t	org, viewDir;
@@ -1667,7 +1667,7 @@ static qboolean CG_CalcViewValues( void ) {
 	}
 
 	//DF2Mod - removed WP_MELEE from this for no 3P auto switch
-	if ((cg.renderingThirdPerson || cg.snap->ps.weapon == WP_SABER)
+	if ( (cg.renderingThirdPerson||cg.snap->ps.weapon == WP_SABER /*||cg.snap->ps.weapon == WP_MELEE*/)
 		&& !cg.zoomMode
 		&& !viewEntIsCam )
 	{
@@ -1682,7 +1682,7 @@ static qboolean CG_CalcViewValues( void ) {
 		if ( !cg.renderingThirdPerson )
 		{
 			//DF2Mod - removed WP_MELEE from this for no 3P auto switch
-			if (cg.snap->ps.weapon == WP_SABER)
+			if (cg.snap->ps.weapon == WP_SABER /*|| cg.snap->ps.weapon == WP_MELEE*/)
 			{
 				vec3_t dir;
 				CG_OffsetFirstPersonView( qtrue );
@@ -2090,12 +2090,13 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView ) {
 		cg.zoomMode = 0;
 	}
 	// decide on third person view
-	cg.renderingThirdPerson = (qboolean)(cg_thirdPerson.integer
-											|| (cg.snap->ps.stats[STAT_HEALTH] <= 0)
-											|| (cg.snap->ps.eFlags&EF_HELD_BY_SAND_CREATURE)
-											|| ((g_entities[0].client&&g_entities[0].client->NPC_class==CLASS_ATST)
-											//DF2Mod - removed WP_MELEE from this for no 3P auto switch
-											|| (cg.snap->ps.weapon == WP_SABER)));
+	cg.renderingThirdPerson = (qboolean)(
+		cg_thirdPerson.integer
+		|| (cg.snap->ps.stats[STAT_HEALTH] <= 0)
+		|| (cg.snap->ps.eFlags&EF_HELD_BY_SAND_CREATURE)
+		|| ((g_entities[0].client&&g_entities[0].client->NPC_class==CLASS_ATST)
+		//DF2Mod - removed WP_MELEE from this for no 3P auto switch
+		|| (cg.snap->ps.weapon == WP_SABER /*|| cg.snap->ps.weapon == WP_MELEE*/)));
 
 	if ( cg.zoomMode )
 	{
