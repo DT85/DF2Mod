@@ -9062,15 +9062,17 @@ static void PM_FinishWeaponChange( void ) {
 		{
 			// remove the sabre if we had it.
 			G_RemoveWeaponModels(pm->gent);
+
 			//Ghoul2 viewmodels - START
+			//might be NONE, so check if it has a model
 			if (weaponData[weapon].worldModel[0])
 			{
-				//might be NONE, so check if it has a model
+				//G2 viewmodel
 				G_CreateG2AttachedWeaponModel(pm->gent, weaponData[weapon].worldModel, pm->gent->handRBolt, 0);
 			}
 			else
 			{
-				//might be NONE, so check if it has a model
+				//MD3 viewmodel
 				G_CreateG2AttachedWeaponModel(pm->gent, weaponData[weapon].weaponMdl, pm->gent->handRBolt, 0);
 			}
 			//Ghoul2 viewmodels - END

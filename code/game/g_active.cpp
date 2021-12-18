@@ -1665,7 +1665,12 @@ void G_MatchPlayerWeapon( gentity_t *ent )
 			else
 			{
 				//Ghoul2 viewmodels - START
-				G_CreateG2AttachedWeaponModel(ent, weaponData[newWeap].worldModel, ent->handRBolt, 0);
+				if (weaponData[ent->client->ps.weapon].worldModel[0]) {
+					G_CreateG2AttachedWeaponModel(ent, weaponData[newWeap].worldModel, ent->handRBolt, 0);
+				}
+				else {
+					G_CreateG2AttachedWeaponModel(ent, weaponData[newWeap].weaponMdl, ent->handRBolt, 0);
+				}
 				//Ghoul2 viewmodels - END
 			}
 		}

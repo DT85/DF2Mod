@@ -581,7 +581,7 @@ void NPC_SetMiscDefaultData( gentity_t *ent )
 					{//dual blaster pistols, so add the left-hand one, too
 						//Ghoul2 viewmodels - START
 						if (weaponData[ent->client->ps.weapon].worldModel[0]) {
-							G_CreateG2AttachedWeaponModel(ent, weaponData[ent->client->ps.weapon].worldModel, ent->handRBolt, 1);
+							G_CreateG2AttachedWeaponModel(ent, weaponData[ent->client->ps.weapon].worldModel, ent->handLBolt, 1);
 						}
 						else {
 							G_CreateG2AttachedWeaponModel(ent, weaponData[ent->client->ps.weapon].weaponMdl, ent->handLBolt, 1);
@@ -694,7 +694,7 @@ void NPC_SetMiscDefaultData( gentity_t *ent )
 		{//we have the scepter, so put it in our left hand if we don't already have a second weapon
 			//Ghoul2 viewmodels - START
 			if (weaponData[WP_SCEPTER].worldModel[0]) {
-				G_CreateG2AttachedWeaponModel(ent, weaponData[WP_SCEPTER].worldModel, ent->handRBolt, 1);
+				G_CreateG2AttachedWeaponModel(ent, weaponData[WP_SCEPTER].worldModel, ent->handLBolt, 1);
 			}
 			else {
 				G_CreateG2AttachedWeaponModel(ent, weaponData[WP_SCEPTER].weaponMdl, ent->handLBolt, 1);
