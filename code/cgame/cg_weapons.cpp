@@ -87,9 +87,10 @@ void CG_RegisterWeapon(int weaponNum) {
 		CG_Error("Couldn't find item for weapon %s\nNeed to update Items.dat!", weaponData[weaponNum].classname);
 	}
 	CG_RegisterItemVisuals(item - bg_itemlist);
-	Q_strncpyz(path, weaponData[weaponNum].weaponMdl, sizeof(path));
 
 	//Ghoul2 viewmodels - START
+	Q_strncpyz(path, weaponData[weaponNum].weaponMdl, sizeof(path));
+
 	// set up in view weapon model
 	if (Q_stristr(path, ".glm")) {
 		weaponInfo->bUsesGhoul2 = true;
@@ -134,7 +135,7 @@ void CG_RegisterWeapon(int weaponNum) {
 		weaponInfo->ammoModel = cgi_R_RegisterModel( ammo->world_model );
 	}
 
-	
+	//Ghoul2 viewmodels - START
 	if (!weaponInfo->bUsesGhoul2) {
 		for (i = 0; i < weaponData[weaponNum].numBarrels; i++) {
 			Q_strncpyz(path, weaponData[weaponNum].weaponMdl, sizeof(path));
@@ -148,6 +149,7 @@ void CG_RegisterWeapon(int weaponNum) {
 			weaponInfo->barrelModel[i] = cgi_R_RegisterModel(path);
 		}
 	}
+	//Ghoul2 viewmodels - END
 
 	// set up the world model for the weapon
 	weaponInfo->weaponWorldModel = cgi_R_RegisterModel( item->world_model );
