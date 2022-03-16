@@ -1953,6 +1953,10 @@ extern qboolean G2API_RagPCJConstraint(CGhoul2Info_v &ghoul2, const char *boneNa
 extern qboolean G2API_RagPCJGradientSpeed(CGhoul2Info_v &ghoul2, const char *boneName, const float speed);
 extern qboolean G2API_SetBoneIKState(CGhoul2Info_v &ghoul2, int time, const char *boneName, int ikState, sharedSetBoneIKStateParams_t *params);
 extern void G2API_SetRagDoll(CGhoul2Info_v &ghoul2, CRagDollParams *parms);
+#ifdef G2_PERFORMANCE_ANALYSIS
+extern void G2Time_ResetTimers(void);
+extern void G2Time_ReportTimers(void);
+#endif
 extern IGhoul2InfoArray &TheGhoul2InfoArray();
 
 #ifdef JK2_MODE
