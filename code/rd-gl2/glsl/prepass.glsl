@@ -373,7 +373,7 @@ out vec4   fs_Bitangent;
 
 out vec4   fs_TexCoords;
 out vec3   fs_Position;
-out int	   gl_Layer;
+//out int	   gl_Layer;
 
 void main()
 {
