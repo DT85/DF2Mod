@@ -118,6 +118,8 @@ if(BuildSPRdVulkan)
 		"${SPDir}/rd-vulkan/tr_shadows.cpp"
 		"${SPDir}/rd-vulkan/tr_skin.cpp"
 		"${SPDir}/rd-vulkan/tr_sky.cpp"
+		"${SPDir}/rd-vulkan/tr_stl.cpp"
+		"${SPDir}/rd-vulkan/tr_stl.h"
 		"${SPDir}/rd-vulkan/tr_subs.cpp"
 		"${SPDir}/rd-vulkan/tr_surface.cpp"
 		"${SPDir}/rd-vulkan/tr_surfacesprites.cpp"

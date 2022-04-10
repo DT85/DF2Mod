@@ -2029,6 +2029,8 @@ void R_LoadEntities( lump_t *l, world_t &worldData ) {
 	}
 	//both default to 1 so no harm if not present.
 	VectorScale( tr.sunAmbient, ambient, tr.sunAmbient);
+
+	COM_EndParseSession();
 }
 
 /*

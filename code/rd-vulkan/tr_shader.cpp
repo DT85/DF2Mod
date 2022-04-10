@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "tr_local.h"
+#include "tr_stl.h"
 
 // tr_shader.c -- this file deals with the parsing and definition of shaders
 
@@ -2155,50 +2156,51 @@ Scans the combined text description of all the shader files for the given
 shader name. If found, it will return a valid shader, return NULL if not found.
 =====================
 */
-static const char *FindShaderInShaderText( const char *shadername ) {
-	char		*token;
-	const char	*p;
-
-	int i, hash;
-
-	hash = generateHashValue(shadername, MAX_SHADERTEXT_HASH);
-
-	if (shaderTextHashTable[hash]) {
-		for (i = 0; shaderTextHashTable[hash][i]; i++) {
-			p = shaderTextHashTable[hash][i];
-			token = COM_ParseExt(&p, qtrue);
-			if (!Q_stricmp(token, shadername))
-				return p;
-		}
-	}
-
-	p = s_shaderText;
+static const char* FindShaderInShaderText(const char* shadername) {
+	char* p = s_shaderText;
 
 	if (!p) {
 		return NULL;
 	}
 
-	COM_BeginParseSession("FindShaderInShaderText");
+#ifdef USE_STL_FOR_SHADER_LOOKUPS
+
+	char sLowerCaseName[MAX_QPATH];
+	Q_strncpyz(sLowerCaseName, shadername, sizeof(sLowerCaseName));
+	Q_strlwr(sLowerCaseName);	// Q_strlwr is pretty gay, so I'm not using it
+
+	return ShaderEntryPtrs_Lookup(sLowerCaseName);
+
+#else
+
+	char* token;
 
 	// look for label
+	// note that this could get confused if a shader name is used inside
+	// another shader definition
 	while (1) {
+
 		token = COM_ParseExt(&p, qtrue);
 		if (token[0] == 0) {
 			break;
 		}
 
-		if (!Q_stricmp(token, shadername)) {
-			return p;
-		}
-		else {
+		if (token[0] == '{') {
 			// skip the definition
 			SkipBracedSection(&p);
 		}
+		else if (!Q_stricmp(token, shadername)) {
+			return p;
+		}
+		else {
+			// skip to end of line
+			SkipRestOfLine(&p);
+		}
 	}
 
-	COM_EndParseSession();
-
 	return NULL;
+
+#endif
 }
 
 /*
@@ -2849,6 +2851,50 @@ int COM_CompressShader( char *data_p )
 	return out - data_p;
 }
 
+#ifdef USE_STL_FOR_SHADER_LOOKUPS
+// setup my STL shortcut list as to where all the shaders are, saves re-parsing every line for every .TGA request.
+//
+static void SetupShaderEntryPtrs(void)
+{
+	const char* p = s_shaderText;
+	char* token;
+
+	ShaderEntryPtrs_Clear();	// extra safe, though done elsewhere already
+
+	if (!p)
+		return;
+
+	// FIXED this nasty little bugger --eez
+	COM_BeginParseSession();
+
+	while (1)
+	{
+		token = COM_ParseExt(&p, qtrue);
+		if (token[0] == 0)
+			break;				// EOF
+
+		if (token[0] == '{')	// '}'	// counterbrace for matching
+		{
+			SkipBracedSection(&p);
+		}
+		else
+		{
+			Q_strlwr(token);	// token is always a ptr to com_token here, not the original buffer.
+							//	(Not that it matters, except for reasons of speed by not strlwr'ing the whole buffer)
+
+			// token = a string of this shader name, p = ptr within s_shadertext it's found at, so store it...
+			//
+			ShaderEntryPtrs_Insert(token, p);
+			SkipRestOfLine(&p);		// now legally skip over this name and go get the next one
+		}
+	}
+
+	COM_EndParseSession();
+
+	//ri.Printf( PRINT_DEVELOPER, "SetupShaderEntryPtrs(): Stored %d shader ptrs\n",ShaderEntryPtrs_Size() );
+}
+#endif
+
 /*
 ====================
 ScanAndLoadShaderFiles
@@ -2917,6 +2963,10 @@ static void ScanAndLoadShaderFiles(void)
 
 	// free up memory
 	ri.FS_FreeFileList(shaderFiles);
+
+#ifdef USE_STL_FOR_SHADER_LOOKUPS
+	SetupShaderEntryPtrs();
+#endif
 }
 
 /*
