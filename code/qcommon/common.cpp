@@ -1106,7 +1106,7 @@ void Com_Init( char *commandLine ) {
 		com_speeds = Cvar_Get ("com_speeds", "0", 0, "");
 
 #ifdef G2_PERFORMANCE_ANALYSIS
-		com_G2Report = Cvar_Get("com_G2Report", "0", 0);
+		com_G2Report = Cvar_Get("com_G2Report", "0", 0, "");
 #endif
 
 		cl_paused	   = Cvar_Get ("cl_paused", "0", CVAR_ROM, "");

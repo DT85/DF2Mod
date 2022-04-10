@@ -942,7 +942,7 @@ void Com_InitZoneMemoryVars( void)
 	Cmd_AddCommand("zone_details",	Z_Details_f, NULL);
 
 #ifdef _DEBUG
-	Cmd_AddCommand("zone_memrecovertest", Z_MemRecoverTest_f);
+	Cmd_AddCommand("zone_memrecovertest", Z_MemRecoverTest_f, NULL);
 #endif
 
 #ifdef DEBUG_ZONE_ALLOCS
