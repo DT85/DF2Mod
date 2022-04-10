@@ -277,7 +277,7 @@ This world effect will spawn snow globally into the level.
 */
 void SP_CreateSnow( gentity_t *ent )
 {
-	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE );
+	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE, "" );
 	if ( r_weatherScale->value == 0.0f )
 	{
 		return;
@@ -326,7 +326,7 @@ SWIRLING  causes random swirls of wind
 */
 void SP_CreateWind( gentity_t *ent )
 {
-	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE );
+	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE, "");
 	if ( r_weatherScale->value <= 0.0f )
 	{
 		return;
@@ -392,7 +392,7 @@ Generates local wind forces
 */
 void SP_CreateWindZone( gentity_t *ent )
 {
-	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE );
+	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE, "");
 	if ( r_weatherScale->value <= 0.0f )
 	{
 		return;
@@ -679,7 +679,7 @@ void SP_CreatePuffSystem( gentity_t *ent )
 
 	// Initialize the puff system to either 1000 particles or whatever they choose.
 	G_SpawnInt( "count", "1000", &ent->count );
-	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE );
+	cvar_t *r_weatherScale = gi.cvar( "r_weatherScale", "1", CVAR_ARCHIVE, "");
 
 	// See which puff system to use.
 	int iPuffSystem = 0;

@@ -465,7 +465,8 @@ typedef struct cvar_s {
 	char		*string;
 	char		*resetString;		// cvar_restart will reset to this value
 	char		*latchedString;		// for CVAR_LATCH vars
-	int			flags;
+	char		*description;
+	uint32_t	flags;
 	qboolean	modified;			// set each time the cvar is changed
 	int			modificationCount;	// incremented each time the cvar is changed
 	float		value;				// atof( string )
@@ -2577,6 +2578,8 @@ typedef enum {
 	CA_ACTIVE,			// game views should be displayed
 	CA_CINEMATIC		// playing a cinematic or a static pic, not connected to a server
 } connstate_t;
+
+#define Square(x) ((x)*(x))
 
 typedef struct SSkinGoreData_s
 {

@@ -151,19 +151,19 @@ are initialized
 ================
 */
 void Sys_Init( void ) {
-	Cmd_AddCommand ("in_restart", IN_Restart);
-	Cvar_Get( "arch", OS_STRING " " ARCH_STRING, CVAR_ROM );
-	Cvar_Get( "username", Sys_GetCurrentUser(), CVAR_ROM );
+	Cmd_AddCommand ("in_restart", IN_Restart, NULL);
+	Cvar_Get( "arch", OS_STRING " " ARCH_STRING, CVAR_ROM, "");
+	Cvar_Get( "username", Sys_GetCurrentUser(), CVAR_ROM, "");
 
-	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
-	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
+	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM, "");
+	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM, "");
 #ifdef _JK2EXE
-	com_maxfps = Cvar_Get ("com_maxfps", "125", CVAR_ARCHIVE );
+	com_maxfps = Cvar_Get ("com_maxfps", "125", CVAR_ARCHIVE, "");
 #else
-	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE, "Maximum frames per second" );
+	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE, "Maximum frames per second", "");
 #endif
-	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "0", CVAR_ARCHIVE_ND );
-	com_maxfpsMinimized = Cvar_Get( "com_maxfpsMinimized", "50", CVAR_ARCHIVE_ND );
+	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "0", CVAR_ARCHIVE_ND, "");
+	com_maxfpsMinimized = Cvar_Get( "com_maxfpsMinimized", "50", CVAR_ARCHIVE_ND, "");
 }
 
 static void NORETURN Sys_Exit( int ex ) {

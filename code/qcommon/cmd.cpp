@@ -344,6 +344,7 @@ typedef struct cmd_function_s
 {
 	struct cmd_function_s	*next;
 	char					*name;
+	char					*description;
 	xcommand_t				function;
 	completionFunc_t		complete;
 } cmd_function_t;
@@ -606,22 +607,26 @@ void Cmd_TokenizeStringIgnoreQuotes( const char *text_in ) {
 Cmd_AddCommand
 ============
 */
-void	Cmd_AddCommand( const char *cmd_name, xcommand_t function ) {
-	cmd_function_t	*cmd;
+void	Cmd_AddCommand(const char* cmd_name, xcommand_t function, const char* cmd_desc) {
+	cmd_function_t* cmd;
 
 	// fail if the command already exists
-	if( Cmd_FindCommand( cmd_name ) )
+	if (Cmd_FindCommand(cmd_name))
 	{
 		// allow completion-only commands to be silently doubled
-		if ( function != NULL ) {
-			Com_Printf ("Cmd_AddCommand: %s already defined\n", cmd_name);
+		if (function != NULL) {
+			Com_Printf("Cmd_AddCommand: %s already defined\n", cmd_name);
 		}
 		return;
 	}
 
 	// use a small malloc to avoid zone fragmentation
-	cmd = (struct cmd_function_s *)S_Malloc (sizeof(cmd_function_t));
-	cmd->name = CopyString( cmd_name );
+	cmd = (struct cmd_function_s*)S_Malloc(sizeof(cmd_function_t));
+	cmd->name = CopyString(cmd_name);
+	if (VALIDSTRING(cmd_desc))
+		cmd->description = CopyString(cmd_desc);
+	else
+		cmd->description = NULL;
 	cmd->function = function;
 	cmd->complete = NULL;
 	cmd->next = cmd_functions;
@@ -802,13 +807,13 @@ Cmd_Init
 ============
 */
 void Cmd_Init (void) {
-	Cmd_AddCommand ("cmdlist",Cmd_List_f);
-	Cmd_AddCommand ("exec",Cmd_Exec_f);
-	Cmd_AddCommand ("execq",Cmd_Exec_f);
+	Cmd_AddCommand ("cmdlist",Cmd_List_f, NULL);
+	Cmd_AddCommand ("exec",Cmd_Exec_f, NULL);
+	Cmd_AddCommand ("execq",Cmd_Exec_f, NULL);
 	Cmd_SetCommandCompletionFunc( "exec", Cmd_CompleteCfgName );
 	Cmd_SetCommandCompletionFunc( "execq", Cmd_CompleteCfgName );
-	Cmd_AddCommand ("vstr",Cmd_Vstr_f);
+	Cmd_AddCommand ("vstr",Cmd_Vstr_f, NULL);
 	Cmd_SetCommandCompletionFunc( "vstr", Cvar_CompleteCvarName );
-	Cmd_AddCommand ("echo",Cmd_Echo_f);
-	Cmd_AddCommand ("wait", Cmd_Wait_f);
+	Cmd_AddCommand ("echo",Cmd_Echo_f, NULL);
+	Cmd_AddCommand ("wait", Cmd_Wait_f, NULL);
 }

@@ -1468,7 +1468,7 @@ void CM_TracePointThroughPatchCollide( traceWork_t *tw, const struct patchCollid
 			// we hit this facet
 #ifndef BSPC
 			if (!cv) {
-				cv = Cvar_Get( "r_debugSurfaceUpdate", "1", 0 );
+				cv = Cvar_Get( "r_debugSurfaceUpdate", "1", 0, "");
 			}
 			if (cv->integer) {
 				debugPatchCollide = pc;
@@ -1655,7 +1655,7 @@ void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *
 				}
 #ifndef BSPC
 				if (!cv) {
-					cv = Cvar_Get( "r_debugSurfaceUpdate", "1", 0 );
+					cv = Cvar_Get( "r_debugSurfaceUpdate", "1", 0, "");
 				}
 				if (cv && cv->integer) {
 					debugPatchCollide = pc;

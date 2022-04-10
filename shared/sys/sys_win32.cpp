@@ -228,7 +228,7 @@ Sys_LowPhysicalMemory()
 qboolean Sys_LowPhysicalMemory(void) {
 	static MEMORYSTATUSEX stat;
 	static qboolean bAsked = qfalse;
-	static cvar_t* sys_lowmem = Cvar_Get( "sys_lowmem", "0", 0 );
+	static cvar_t* sys_lowmem = Cvar_Get( "sys_lowmem", "0", 0, "");
 
 	if (!bAsked)	// just in case it takes a little time for GlobalMemoryStatusEx() to gather stats on
 	{				//	stuff we don't care about such as virtual mem etc.

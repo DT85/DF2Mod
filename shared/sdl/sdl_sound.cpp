@@ -158,10 +158,10 @@ qboolean SNDDMA_Init(int sampleFrequencyInKHz)
 		return qtrue;
 
 	if (!s_sdlBits) {
-		s_sdlBits = Cvar_Get("s_sdlBits", "16", CVAR_ARCHIVE_ND);
-		s_sdlChannels = Cvar_Get("s_sdlChannels", "2", CVAR_ARCHIVE_ND);
-		s_sdlDevSamps = Cvar_Get("s_sdlDevSamps", "0", CVAR_ARCHIVE_ND);
-		s_sdlMixSamps = Cvar_Get("s_sdlMixSamps", "0", CVAR_ARCHIVE_ND);
+		s_sdlBits = Cvar_Get("s_sdlBits", "16", CVAR_ARCHIVE_ND, "");
+		s_sdlChannels = Cvar_Get("s_sdlChannels", "2", CVAR_ARCHIVE_ND, "");
+		s_sdlDevSamps = Cvar_Get("s_sdlDevSamps", "0", CVAR_ARCHIVE_ND, "");
+		s_sdlMixSamps = Cvar_Get("s_sdlMixSamps", "0", CVAR_ARCHIVE_ND, "");
 	}
 
 	Com_Printf( "SDL_Init( SDL_INIT_AUDIO )... " );

@@ -44,6 +44,7 @@ option(BuildSPEngine "Whether to create projects for the SP engine (opendf2_sp.e
 option(BuildSPGame "Whether to create projects for the SP gamecode (df2gamex86.dll)" ON)
 option(BuildSPRdGL1 "Whether to create projects for the SP OpenGL 1 renderer (rdsp-GL1_x86.dll)" ON)
 option(BuildSPRdGL2 "Whether to create projects for the SP OpenGL 2 renderer (rdsp-GL2_x86.dll)" ON)
+option(BuildSPRdVulkan "Whether to create projects for the SP Vulkan renderer (rdsp-vulkan_x86.dll)" ON)
 
 option(BuildTests "Whether to build automatic unit tests (requires Boost)" OFF)
 
@@ -145,6 +146,7 @@ set(SPEngine "opendf2_sp.${Architecture}")
 set(SPGame "df2game${Architecture}")
 set(SPRDGL1Renderer "rdsp-GL1_${Architecture}")
 set(SPRDGL2Renderer "rdsp-GL2_${Architecture}")
+set(SPRDVulkanRenderer "rdsp-vulkan_${Architecture}")
 #
 #=============================================================================
 set(MPEngine "openjk.${Architecture}")

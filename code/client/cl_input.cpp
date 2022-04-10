@@ -938,102 +938,102 @@ CL_InitInput
 ============
 */
 void CL_InitInput( void ) {
-	Cmd_AddCommand ("centerview",IN_CenterView);
+	Cmd_AddCommand ("centerview",IN_CenterView, NULL);
 
-	Cmd_AddCommand ("+moveup",IN_UpDown);
-	Cmd_AddCommand ("-moveup",IN_UpUp);
-	Cmd_AddCommand ("+movedown",IN_DownDown);
-	Cmd_AddCommand ("-movedown",IN_DownUp);
-	Cmd_AddCommand ("+left",IN_LeftDown);
-	Cmd_AddCommand ("-left",IN_LeftUp);
-	Cmd_AddCommand ("+right",IN_RightDown);
-	Cmd_AddCommand ("-right",IN_RightUp);
-	Cmd_AddCommand ("+forward",IN_ForwardDown);
-	Cmd_AddCommand ("-forward",IN_ForwardUp);
-	Cmd_AddCommand ("+back",IN_BackDown);
-	Cmd_AddCommand ("-back",IN_BackUp);
-	Cmd_AddCommand ("+lookup", IN_LookupDown);
-	Cmd_AddCommand ("-lookup", IN_LookupUp);
-	Cmd_AddCommand ("+lookdown", IN_LookdownDown);
-	Cmd_AddCommand ("-lookdown", IN_LookdownUp);
-	Cmd_AddCommand ("+strafe", IN_StrafeDown);
-	Cmd_AddCommand ("-strafe", IN_StrafeUp);
-	Cmd_AddCommand ("+moveleft", IN_MoveleftDown);
-	Cmd_AddCommand ("-moveleft", IN_MoveleftUp);
-	Cmd_AddCommand ("+moveright", IN_MoverightDown);
-	Cmd_AddCommand ("-moveright", IN_MoverightUp);
-	Cmd_AddCommand ("+speed", IN_SpeedDown);
-	Cmd_AddCommand ("-speed", IN_SpeedUp);
-	Cmd_AddCommand ("useGivenForce", IN_UseGivenForce);
+	Cmd_AddCommand ("+moveup",IN_UpDown, NULL);
+	Cmd_AddCommand ("-moveup",IN_UpUp, NULL);
+	Cmd_AddCommand ("+movedown",IN_DownDown, NULL);
+	Cmd_AddCommand ("-movedown",IN_DownUp, NULL);
+	Cmd_AddCommand ("+left",IN_LeftDown, NULL);
+	Cmd_AddCommand ("-left",IN_LeftUp, NULL);
+	Cmd_AddCommand ("+right",IN_RightDown, NULL);
+	Cmd_AddCommand ("-right",IN_RightUp, NULL);
+	Cmd_AddCommand ("+forward",IN_ForwardDown, NULL);
+	Cmd_AddCommand ("-forward",IN_ForwardUp, NULL);
+	Cmd_AddCommand ("+back",IN_BackDown, NULL);
+	Cmd_AddCommand ("-back",IN_BackUp, NULL);
+	Cmd_AddCommand ("+lookup", IN_LookupDown, NULL);
+	Cmd_AddCommand ("-lookup", IN_LookupUp, NULL);
+	Cmd_AddCommand ("+lookdown", IN_LookdownDown, NULL);
+	Cmd_AddCommand ("-lookdown", IN_LookdownUp, NULL);
+	Cmd_AddCommand ("+strafe", IN_StrafeDown, NULL);
+	Cmd_AddCommand ("-strafe", IN_StrafeUp, NULL);
+	Cmd_AddCommand ("+moveleft", IN_MoveleftDown, NULL);
+	Cmd_AddCommand ("-moveleft", IN_MoveleftUp, NULL);
+	Cmd_AddCommand ("+moveright", IN_MoverightDown, NULL);
+	Cmd_AddCommand ("-moveright", IN_MoverightUp, NULL);
+	Cmd_AddCommand ("+speed", IN_SpeedDown, NULL);
+	Cmd_AddCommand ("-speed", IN_SpeedUp, NULL);
+	Cmd_AddCommand ("useGivenForce", IN_UseGivenForce, NULL);
 	//buttons
-	Cmd_AddCommand ("+attack", IN_Button0Down);//attack
-	Cmd_AddCommand ("-attack", IN_Button0Up);
-	Cmd_AddCommand ("+force_lightning", IN_Button1Down);//force lightning
-	Cmd_AddCommand ("-force_lightning", IN_Button1Up);
-	Cmd_AddCommand ("+useforce", IN_Button2Down);	//use current force power
-	Cmd_AddCommand ("-useforce", IN_Button2Up);
+	Cmd_AddCommand ("+attack", IN_Button0Down, NULL);//attack
+	Cmd_AddCommand ("-attack", IN_Button0Up, NULL);
+	Cmd_AddCommand ("+force_lightning", IN_Button1Down, NULL);//force lightning
+	Cmd_AddCommand ("-force_lightning", IN_Button1Up, NULL);
+	Cmd_AddCommand ("+useforce", IN_Button2Down, NULL);	//use current force power
+	Cmd_AddCommand ("-useforce", IN_Button2Up, NULL);
 #ifdef JK2_MODE
-	Cmd_AddCommand ("+block", IN_Button3Down);//manual blocking
-	Cmd_AddCommand ("-block", IN_Button3Up);
+	Cmd_AddCommand ("+block", IN_Button3Down, NULL);//manual blocking
+	Cmd_AddCommand ("-block", IN_Button3Up, NULL);
 #else
-	Cmd_AddCommand ("+force_drain", IN_Button3Down);//force drain
-	Cmd_AddCommand ("-force_drain", IN_Button3Up);
+	Cmd_AddCommand ("+force_drain", IN_Button3Down, NULL);//force drain
+	Cmd_AddCommand ("-force_drain", IN_Button3Up, NULL);
 #endif
-	Cmd_AddCommand ("+walk", IN_Button4Down);//walking
-	Cmd_AddCommand ("-walk", IN_Button4Up);
-	Cmd_AddCommand ("+use", IN_Button5Down);//use object
-	Cmd_AddCommand ("-use", IN_Button5Up);
-	Cmd_AddCommand ("+force_grip", IN_Button6Down);//force jump
-	Cmd_AddCommand ("-force_grip", IN_Button6Up);
-	Cmd_AddCommand ("+altattack", IN_Button7Down);//altattack
-	Cmd_AddCommand ("-altattack", IN_Button7Up);
+	Cmd_AddCommand ("+walk", IN_Button4Down, NULL);//walking
+	Cmd_AddCommand ("-walk", IN_Button4Up, NULL);
+	Cmd_AddCommand ("+use", IN_Button5Down, NULL);//use object
+	Cmd_AddCommand ("-use", IN_Button5Up, NULL);
+	Cmd_AddCommand ("+force_grip", IN_Button6Down, NULL);//force jump
+	Cmd_AddCommand ("-force_grip", IN_Button6Up, NULL);
+	Cmd_AddCommand ("+altattack", IN_Button7Down, NULL);//altattack
+	Cmd_AddCommand ("-altattack", IN_Button7Up, NULL);
 #ifndef JK2_MODE
-	Cmd_AddCommand ("+forcefocus", IN_Button8Down);//special saber attacks
-	Cmd_AddCommand ("-forcefocus", IN_Button8Up);
-	Cmd_AddCommand ("+block", IN_Button8Down);//manual blocking
-	Cmd_AddCommand ("-block", IN_Button8Up);
+	Cmd_AddCommand ("+forcefocus", IN_Button8Down, NULL);//special saber attacks
+	Cmd_AddCommand ("-forcefocus", IN_Button8Up, NULL);
+	Cmd_AddCommand ("+block", IN_Button8Down, NULL);//manual blocking
+	Cmd_AddCommand ("-block", IN_Button8Up, NULL);
 #endif
 
-	Cmd_AddCommand ("+button0", IN_Button0Down);
-	Cmd_AddCommand ("-button0", IN_Button0Up);
-	Cmd_AddCommand ("+button1", IN_Button1Down);
-	Cmd_AddCommand ("-button1", IN_Button1Up);
-	Cmd_AddCommand ("+button2", IN_Button2Down);
-	Cmd_AddCommand ("-button2", IN_Button2Up);
-	Cmd_AddCommand ("+button3", IN_Button3Down);
-	Cmd_AddCommand ("-button3", IN_Button3Up);
-	Cmd_AddCommand ("+button4", IN_Button4Down);
-	Cmd_AddCommand ("-button4", IN_Button4Up);
-	Cmd_AddCommand ("+button5", IN_Button5Down);
-	Cmd_AddCommand ("-button5", IN_Button5Up);
-	Cmd_AddCommand ("+button6", IN_Button6Down);
-	Cmd_AddCommand ("-button6", IN_Button6Up);
-	Cmd_AddCommand ("+button7", IN_Button7Down);
-	Cmd_AddCommand ("-button7", IN_Button7Up);
-	Cmd_AddCommand ("+button8", IN_Button8Down);
-	Cmd_AddCommand ("-button8", IN_Button8Up);
-	Cmd_AddCommand ("+button9", IN_Button9Down);
-	Cmd_AddCommand ("-button9", IN_Button9Up);
-	Cmd_AddCommand ("+button10", IN_Button10Down);
-	Cmd_AddCommand ("-button10", IN_Button10Up);
-	Cmd_AddCommand ("+button11", IN_Button11Down);
-	Cmd_AddCommand ("-button11", IN_Button11Up);
-	Cmd_AddCommand ("+button12", IN_Button12Down);
-	Cmd_AddCommand ("-button12", IN_Button12Up);
-	Cmd_AddCommand ("+button13", IN_Button13Down);
-	Cmd_AddCommand ("-button13", IN_Button13Up);
-	Cmd_AddCommand ("+button14", IN_Button14Down);
-	Cmd_AddCommand ("-button14", IN_Button14Up);
-	Cmd_AddCommand ("+button15", IN_Button15Down);
-	Cmd_AddCommand ("-button15", IN_Button15Up);
+	Cmd_AddCommand ("+button0", IN_Button0Down, NULL);
+	Cmd_AddCommand ("-button0", IN_Button0Up, NULL);
+	Cmd_AddCommand ("+button1", IN_Button1Down, NULL);
+	Cmd_AddCommand ("-button1", IN_Button1Up, NULL);
+	Cmd_AddCommand ("+button2", IN_Button2Down, NULL);
+	Cmd_AddCommand ("-button2", IN_Button2Up, NULL);
+	Cmd_AddCommand ("+button3", IN_Button3Down, NULL);
+	Cmd_AddCommand ("-button3", IN_Button3Up, NULL);
+	Cmd_AddCommand ("+button4", IN_Button4Down, NULL);
+	Cmd_AddCommand ("-button4", IN_Button4Up, NULL);
+	Cmd_AddCommand ("+button5", IN_Button5Down, NULL);
+	Cmd_AddCommand ("-button5", IN_Button5Up, NULL);
+	Cmd_AddCommand ("+button6", IN_Button6Down, NULL);
+	Cmd_AddCommand ("-button6", IN_Button6Up, NULL);
+	Cmd_AddCommand ("+button7", IN_Button7Down, NULL);
+	Cmd_AddCommand ("-button7", IN_Button7Up, NULL);
+	Cmd_AddCommand ("+button8", IN_Button8Down, NULL);
+	Cmd_AddCommand ("-button8", IN_Button8Up, NULL);
+	Cmd_AddCommand ("+button9", IN_Button9Down, NULL);
+	Cmd_AddCommand ("-button9", IN_Button9Up, NULL);
+	Cmd_AddCommand ("+button10", IN_Button10Down, NULL);
+	Cmd_AddCommand ("-button10", IN_Button10Up, NULL);
+	Cmd_AddCommand ("+button11", IN_Button11Down, NULL);
+	Cmd_AddCommand ("-button11", IN_Button11Up, NULL);
+	Cmd_AddCommand ("+button12", IN_Button12Down, NULL);
+	Cmd_AddCommand ("-button12", IN_Button12Up, NULL);
+	Cmd_AddCommand ("+button13", IN_Button13Down, NULL);
+	Cmd_AddCommand ("-button13", IN_Button13Up, NULL);
+	Cmd_AddCommand ("+button14", IN_Button14Down, NULL);
+	Cmd_AddCommand ("-button14", IN_Button14Up, NULL);
+	Cmd_AddCommand ("+button15", IN_Button15Down, NULL);
+	Cmd_AddCommand ("-button15", IN_Button15Up, NULL);
 
 	// can add up to button31 this just brings the number of available binds up to par with MP
 
 	//end buttons
-	Cmd_AddCommand ("+mlook", IN_MLookDown);
-	Cmd_AddCommand ("-mlook", IN_MLookUp);
+	Cmd_AddCommand ("+mlook", IN_MLookDown, NULL);
+	Cmd_AddCommand ("-mlook", IN_MLookUp, NULL);
 
-	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
-	cl_debugMove = Cvar_Get ("cl_debugMove", "0", 0);
+	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0, "");
+	cl_debugMove = Cvar_Get ("cl_debugMove", "0", 0, "");
 }
 

@@ -288,7 +288,7 @@ void NORETURN QDECL Com_Error( int code, const char *fmt, ... ) {
 	va_end (argptr);
 
 	if ( code != ERR_DISCONNECT ) {
-		Cvar_Get("com_errorMessage", "", CVAR_ROM);	//give com_errorMessage a default so it won't come back to life after a resetDefaults
+		Cvar_Get("com_errorMessage", "", CVAR_ROM, "");	//give com_errorMessage a default so it won't come back to life after a resetDefaults
 		Cvar_Set("com_errorMessage", com_errorMessage);
 	}
 
@@ -427,7 +427,7 @@ void Com_StartupVariable( const char *match ) {
 		if(!match || !strcmp(s, match))
 		{
 			if((unsigned)Cvar_Flags(s) == CVAR_NONEXISTENT)
-				Cvar_Get(s, Cmd_ArgsFrom(2), CVAR_USER_CREATED);
+				Cvar_Get(s, Cmd_ArgsFrom(2), CVAR_USER_CREATED, "");
 			else
 				Cvar_Set2(s, Cmd_ArgsFrom(2), qfalse);
 		}
@@ -1073,7 +1073,7 @@ void Com_Init( char *commandLine ) {
 		// done early so bind command exists
 		CL_InitKeyCommands();
 
-		com_homepath = Cvar_Get("com_homepath", "", CVAR_INIT);
+		com_homepath = Cvar_Get("com_homepath", "", CVAR_INIT, "");
 
 		FS_InitFilesystem ();	//uses z_malloc
 		//re.R_InitWorldEffects();   // this doesn't do much but I want to be sure certain variables are intialized.
@@ -1093,42 +1093,42 @@ void Com_Init( char *commandLine ) {
 		//
 		// init commands and vars
 		//
-		Cmd_AddCommand ("quit", Com_Quit_f);
-		Cmd_AddCommand ("writeconfig", Com_WriteConfig_f );
+		Cmd_AddCommand ("quit", Com_Quit_f, NULL);
+		Cmd_AddCommand ("writeconfig", Com_WriteConfig_f, NULL);
 
-		com_developer = Cvar_Get ("developer", "0", CVAR_TEMP );
-		com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP );
-		com_speedslog = Cvar_Get ("speedslog", "0", CVAR_TEMP );
+		com_developer = Cvar_Get ("developer", "0", CVAR_TEMP, "");
+		com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP, "");
+		com_speedslog = Cvar_Get ("speedslog", "0", CVAR_TEMP, "");
 
-		com_timescale = Cvar_Get ("timescale", "1", CVAR_CHEAT );
-		com_fixedtime = Cvar_Get ("fixedtime", "0", CVAR_CHEAT);
-		com_showtrace = Cvar_Get ("com_showtrace", "0", CVAR_CHEAT);
-		com_speeds = Cvar_Get ("com_speeds", "0", 0);
+		com_timescale = Cvar_Get ("timescale", "1", CVAR_CHEAT, "");
+		com_fixedtime = Cvar_Get ("fixedtime", "0", CVAR_CHEAT, "");
+		com_showtrace = Cvar_Get ("com_showtrace", "0", CVAR_CHEAT, "");
+		com_speeds = Cvar_Get ("com_speeds", "0", 0, "");
 
 #ifdef G2_PERFORMANCE_ANALYSIS
 		com_G2Report = Cvar_Get("com_G2Report", "0", 0);
 #endif
 
-		cl_paused	   = Cvar_Get ("cl_paused", "0", CVAR_ROM);
-		sv_paused	   = Cvar_Get ("sv_paused", "0", CVAR_ROM);
-		com_sv_running = Cvar_Get ("sv_running", "0", CVAR_ROM);
-		com_cl_running = Cvar_Get ("cl_running", "0", CVAR_ROM);
-		com_skippingcin = Cvar_Get ("skippingCinematic", "0", CVAR_ROM);
-		com_buildScript = Cvar_Get( "com_buildScript", "0", 0 );
+		cl_paused	   = Cvar_Get ("cl_paused", "0", CVAR_ROM, "");
+		sv_paused	   = Cvar_Get ("sv_paused", "0", CVAR_ROM, "");
+		com_sv_running = Cvar_Get ("sv_running", "0", CVAR_ROM, "");
+		com_cl_running = Cvar_Get ("cl_running", "0", CVAR_ROM, "");
+		com_skippingcin = Cvar_Get ("skippingCinematic", "0", CVAR_ROM, "");
+		com_buildScript = Cvar_Get( "com_buildScript", "0", 0, "");
 
-		com_affinity = Cvar_Get( "com_affinity", "0", CVAR_ARCHIVE_ND );
-		com_busyWait = Cvar_Get( "com_busyWait", "0", CVAR_ARCHIVE_ND );
+		com_affinity = Cvar_Get( "com_affinity", "0", CVAR_ARCHIVE_ND, "");
+		com_busyWait = Cvar_Get( "com_busyWait", "0", CVAR_ARCHIVE_ND, "");
 
-		com_bootlogo = Cvar_Get( "com_bootlogo", "1", CVAR_ARCHIVE_ND );
+		com_bootlogo = Cvar_Get( "com_bootlogo", "1", CVAR_ARCHIVE_ND, "");
 
 		if ( com_developer && com_developer->integer ) {
-			Cmd_AddCommand ("error", Com_Error_f);
-			Cmd_AddCommand ("crash", Com_Crash_f );
-			Cmd_AddCommand ("freeze", Com_Freeze_f);
+			Cmd_AddCommand ("error", Com_Error_f, NULL);
+			Cmd_AddCommand ("crash", Com_Crash_f, NULL);
+			Cmd_AddCommand ("freeze", Com_Freeze_f, NULL);
 		}
 
 		s = va("%s %s %s", Q3_VERSION, PLATFORM_STRING, SOURCE_DATE );
-		com_version = Cvar_Get ("version", s, CVAR_ROM | CVAR_SERVERINFO );
+		com_version = Cvar_Get ("version", s, CVAR_ROM | CVAR_SERVERINFO, "");
 
 #ifdef JK2_MODE
 		JK2SP_Init();

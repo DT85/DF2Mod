@@ -55,7 +55,7 @@ static void R_LocalFree(void *ptr)
 
 #define STBI_TEMP_ON_STACK
 #define STBI_ONLY_HDR
-#include <stb_image.h>
+#include "rd-common/stb_image.h"
 
 #define IMG_BYTE 0
 #define IMG_FLOAT 1

@@ -1087,7 +1087,7 @@ void CL_InitRef( void ) {
 	GetRefAPI_t	GetRefAPI;
 
 	Com_Printf( "----- Initializing Renderer ----\n" );
-    cl_renderer = Cvar_Get( "cl_renderer", DEFAULT_RENDER_LIBRARY, CVAR_ARCHIVE|CVAR_LATCH|CVAR_PROTECTED );
+    cl_renderer = Cvar_Get( "cl_renderer", DEFAULT_RENDER_LIBRARY, CVAR_ARCHIVE|CVAR_LATCH|CVAR_PROTECTED, "" );
 
 	Com_sprintf( dllName, sizeof( dllName ), "%s_" ARCH_STRING DLL_EXT, cl_renderer->string );
 
@@ -1188,6 +1188,12 @@ void CL_InitRef( void ) {
 
 	rit.saved_game = &ojk::SavedGame::get_instance();
 
+	// Vulkan 
+	rit.VK_IsMinimized = WIN_VK_IsMinimized;
+	rit.VK_GetInstanceProcAddress = WIN_VK_GetInstanceProcAddress;
+	rit.VK_createSurfaceImpl = WIN_VK_createSurfaceImpl;
+	rit.VK_destroyWindow = WIN_VK_destroyWindow;
+
 	ret = GetRefAPI( REF_API_VERSION, &rit );
 
 	if ( !ret ) {
@@ -1234,89 +1240,89 @@ void CL_Init( void ) {
 	//
 	// register our variables
 	//
-	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
+	cl_noprint = Cvar_Get( "cl_noprint", "0", 0, "");
 
-	cl_timeout = Cvar_Get ("cl_timeout", "125", 0);
+	cl_timeout = Cvar_Get ("cl_timeout", "125", 0, "");
 
-	cl_timeNudge = Cvar_Get ("cl_timeNudge", "0", CVAR_TEMP );
-	cl_shownet = Cvar_Get ("cl_shownet", "0", CVAR_TEMP );
-	cl_showTimeDelta = Cvar_Get ("cl_showTimeDelta", "0", CVAR_TEMP );
-	cl_newClock = Cvar_Get ("cl_newClock", "1", 0);
-	cl_activeAction = Cvar_Get( "activeAction", "", CVAR_TEMP );
+	cl_timeNudge = Cvar_Get ("cl_timeNudge", "0", CVAR_TEMP, "");
+	cl_shownet = Cvar_Get ("cl_shownet", "0", CVAR_TEMP, "");
+	cl_showTimeDelta = Cvar_Get ("cl_showTimeDelta", "0", CVAR_TEMP, "");
+	cl_newClock = Cvar_Get ("cl_newClock", "1", 0, "");
+	cl_activeAction = Cvar_Get( "activeAction", "", CVAR_TEMP, "");
 
-	cl_avidemo = Cvar_Get ("cl_avidemo", "0", 0);
-	cl_pano = Cvar_Get ("pano", "0", 0);
-	cl_panoNumShots= Cvar_Get ("panoNumShots", "10", CVAR_ARCHIVE_ND);
-	cl_skippingcin = Cvar_Get ("skippingCinematic", "0", CVAR_ROM);
-	cl_endcredits = Cvar_Get ("cg_endcredits", "0", 0);
+	cl_avidemo = Cvar_Get ("cl_avidemo", "0", 0, "");
+	cl_pano = Cvar_Get ("pano", "0", 0, "");
+	cl_panoNumShots= Cvar_Get ("panoNumShots", "10", CVAR_ARCHIVE_ND, "");
+	cl_skippingcin = Cvar_Get ("skippingCinematic", "0", CVAR_ROM, "");
+	cl_endcredits = Cvar_Get ("cg_endcredits", "0", 0, "");
 
-	cl_yawspeed = Cvar_Get ("cl_yawspeed", "140", CVAR_ARCHIVE_ND);
-	cl_pitchspeed = Cvar_Get ("cl_pitchspeed", "140", CVAR_ARCHIVE_ND);
-	cl_anglespeedkey = Cvar_Get ("cl_anglespeedkey", "1.5", CVAR_ARCHIVE_ND);
+	cl_yawspeed = Cvar_Get ("cl_yawspeed", "140", CVAR_ARCHIVE_ND, "");
+	cl_pitchspeed = Cvar_Get ("cl_pitchspeed", "140", CVAR_ARCHIVE_ND, "");
+	cl_anglespeedkey = Cvar_Get ("cl_anglespeedkey", "1.5", CVAR_ARCHIVE_ND, "");
 
-	cl_packetdup = Cvar_Get ("cl_packetdup", "1", CVAR_ARCHIVE_ND );
+	cl_packetdup = Cvar_Get ("cl_packetdup", "1", CVAR_ARCHIVE_ND, "");
 
-	cl_run = Cvar_Get ("cl_run", "1", CVAR_ARCHIVE_ND);
-	cl_sensitivity = Cvar_Get ("sensitivity", "5", CVAR_ARCHIVE);
-	cl_mouseAccel = Cvar_Get ("cl_mouseAccel", "0", CVAR_ARCHIVE_ND);
-	cl_freelook = Cvar_Get( "cl_freelook", "1", CVAR_ARCHIVE_ND );
+	cl_run = Cvar_Get ("cl_run", "1", CVAR_ARCHIVE_ND, "");
+	cl_sensitivity = Cvar_Get ("sensitivity", "5", CVAR_ARCHIVE, "");
+	cl_mouseAccel = Cvar_Get ("cl_mouseAccel", "0", CVAR_ARCHIVE_ND, "");
+	cl_freelook = Cvar_Get( "cl_freelook", "1", CVAR_ARCHIVE_ND, "");
 
-	cl_showMouseRate = Cvar_Get ("cl_showmouserate", "0", 0);
+	cl_showMouseRate = Cvar_Get ("cl_showmouserate", "0", 0, "");
 
-	cl_allowAltEnter = Cvar_Get ("cl_allowAltEnter", "1", CVAR_ARCHIVE_ND);
-	cl_inGameVideo = Cvar_Get ("cl_inGameVideo", "1", CVAR_ARCHIVE_ND);
-	cl_framerate	= Cvar_Get ("cl_framerate", "0", CVAR_TEMP);
+	cl_allowAltEnter = Cvar_Get ("cl_allowAltEnter", "1", CVAR_ARCHIVE_ND, "");
+	cl_inGameVideo = Cvar_Get ("cl_inGameVideo", "1", CVAR_ARCHIVE_ND, "");
+	cl_framerate	= Cvar_Get ("cl_framerate", "0", CVAR_TEMP, "");
 
 	// init autoswitch so the ui will have it correctly even
 	// if the cgame hasn't been started
-	Cvar_Get ("cg_autoswitch", "1", CVAR_ARCHIVE);
+	Cvar_Get ("cg_autoswitch", "1", CVAR_ARCHIVE, "");
 
-	m_pitch = Cvar_Get ("m_pitch", "0.022", CVAR_ARCHIVE_ND);
-	m_yaw = Cvar_Get ("m_yaw", "0.022", CVAR_ARCHIVE_ND);
-	m_forward = Cvar_Get ("m_forward", "0.25", CVAR_ARCHIVE_ND);
-	m_side = Cvar_Get ("m_side", "0.25", CVAR_ARCHIVE_ND);
-	m_filter = Cvar_Get ("m_filter", "0", CVAR_ARCHIVE_ND);
+	m_pitch = Cvar_Get ("m_pitch", "0.022", CVAR_ARCHIVE_ND, "");
+	m_yaw = Cvar_Get ("m_yaw", "0.022", CVAR_ARCHIVE_ND, "");
+	m_forward = Cvar_Get ("m_forward", "0.25", CVAR_ARCHIVE_ND, "");
+	m_side = Cvar_Get ("m_side", "0.25", CVAR_ARCHIVE_ND, "");
+	m_filter = Cvar_Get ("m_filter", "0", CVAR_ARCHIVE_ND, "");
 
 	// ~ and `, as keys and characters
-	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", "~ ` 0x7e 0x60 0xb2", CVAR_ARCHIVE);
-	cl_consoleUseScanCode = Cvar_Get( "cl_consoleUseScanCode", "1", CVAR_ARCHIVE );
+	cl_consoleKeys = Cvar_Get( "cl_consoleKeys", "~ ` 0x7e 0x60 0xb2", CVAR_ARCHIVE, "");
+	cl_consoleUseScanCode = Cvar_Get( "cl_consoleUseScanCode", "1", CVAR_ARCHIVE, "");
 
 	// userinfo
 #ifdef JK2_MODE
-	Cvar_Get ("name", "Kyle", CVAR_USERINFO | CVAR_ARCHIVE_ND );
+	Cvar_Get ("name", "Kyle", CVAR_USERINFO | CVAR_ARCHIVE_ND, "");
 #else
 	//DF2Mod - Changed to kyle
-	Cvar_Get("name", "Kyle", CVAR_USERINFO | CVAR_ARCHIVE_ND );
+	Cvar_Get("name", "Kyle", CVAR_USERINFO | CVAR_ARCHIVE_ND, "");
 #endif
 
 #ifdef JK2_MODE
 	// this is required for savegame compatibility - not ever actually used
-	Cvar_Get ("snaps", "20", CVAR_USERINFO );
-	Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_Get ("handicap", "100", CVAR_USERINFO | CVAR_SAVEGAME );
+	Cvar_Get ("snaps", "20", CVAR_USERINFO, "");
+	Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE, "");
+	Cvar_Get ("handicap", "100", CVAR_USERINFO | CVAR_SAVEGAME, "");
 #else
 	//DF2Mod - Changed to kyle
-	Cvar_Get("sex", "m", CVAR_USERINFO | CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	Cvar_Get("snd", "df2_kyle", CVAR_USERINFO | CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);//UI_SetSexandSoundForModel changes to match sounds.cfg for model
+	Cvar_Get("sex", "m", CVAR_USERINFO | CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	Cvar_Get("snd", "df2_kyle", CVAR_USERINFO | CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");//UI_SetSexandSoundForModel changes to match sounds.cfg for model
 
-	Cvar_Get("handicap", "100", CVAR_USERINFO | CVAR_SAVEGAME | CVAR_NORESTART);
+	Cvar_Get("handicap", "100", CVAR_USERINFO | CVAR_SAVEGAME | CVAR_NORESTART, "");
 #endif
 
 	//
 	// register our commands
 	//
-	Cmd_AddCommand ("cmd", CL_ForwardToServer_f);
-	Cmd_AddCommand ("configstrings", CL_Configstrings_f);
-	Cmd_AddCommand ("clientinfo", CL_Clientinfo_f);
-	Cmd_AddCommand ("snd_restart", CL_Snd_Restart_f);
-	Cmd_AddCommand ("vid_restart", CL_Vid_Restart_f);
-	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
-	Cmd_AddCommand ("cinematic", CL_PlayCinematic_f);
+	Cmd_AddCommand ("cmd", CL_ForwardToServer_f, NULL);
+	Cmd_AddCommand ("configstrings", CL_Configstrings_f, NULL);
+	Cmd_AddCommand ("clientinfo", CL_Clientinfo_f, NULL);
+	Cmd_AddCommand ("snd_restart", CL_Snd_Restart_f, NULL);
+	Cmd_AddCommand ("vid_restart", CL_Vid_Restart_f, NULL);
+	Cmd_AddCommand ("disconnect", CL_Disconnect_f, NULL);
+	Cmd_AddCommand ("cinematic", CL_PlayCinematic_f, NULL);
 	Cmd_SetCommandCompletionFunc( "cinematic", CL_CompleteCinematic );
-	Cmd_AddCommand ("ingamecinematic", CL_PlayInGameCinematic_f);
-	Cmd_AddCommand ("uimenu", CL_GenericMenu_f);
-	Cmd_AddCommand ("datapad", CL_DataPad_f);
-	Cmd_AddCommand ("endscreendissolve", CL_EndScreenDissolve_f);
+	Cmd_AddCommand ("ingamecinematic", CL_PlayInGameCinematic_f, NULL);
+	Cmd_AddCommand ("uimenu", CL_GenericMenu_f, NULL);
+	Cmd_AddCommand ("datapad", CL_DataPad_f, NULL);
+	Cmd_AddCommand ("endscreendissolve", CL_EndScreenDissolve_f, NULL);
 
 	CL_InitRef();
 

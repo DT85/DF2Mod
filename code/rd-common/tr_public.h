@@ -50,10 +50,10 @@ typedef struct {
 	int					(*Cmd_Argc)							( void );
 	char *				(*Cmd_Argv)							( int arg );
 	void				(*Cmd_ArgsBuffer)					( char *buffer, int bufferLength );
-	void				(*Cmd_AddCommand)					( const char *cmd_name, xcommand_t function );
+	void				(*Cmd_AddCommand)					( const char *cmd_name, xcommand_t function, const char *cmd_desc );
 	void				(*Cmd_RemoveCommand)				( const char *cmd_name );
 	void				(*Cvar_Set)							( const char *var_name, const char *value );
-	cvar_t *			(*Cvar_Get)							( const char *var_name, const char *value, int flags );
+	cvar_t *			(*Cvar_Get)							( const char *var_name, const char *value, uint32_t flags, const char* var_desc );
 	void				(*Cvar_SetValue)					( const char *name, float value );
 	void				(*Cvar_CheckRange)					( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral );
 	void				(*Cvar_VariableStringBuffer)		( const char *var_name, char *buffer, int bufsize );
@@ -127,6 +127,12 @@ typedef struct {
 	qboolean			*(*gbAlreadyDoingLoad)				( void );
 	int					(*com_frameTime)					( void );
 
+	// Vulkan
+	qboolean			(*VK_IsMinimized)					(void);
+	void				*(*VK_GetInstanceProcAddress)		(void);
+	qboolean			(*VK_createSurfaceImpl)				(VkInstance instance, VkSurfaceKHR *surface);
+	void				(*VK_destroyWindow)					(void);
+
 } refimport_t;
 
 extern refimport_t ri;
@@ -185,7 +191,7 @@ typedef struct {
 	// Nothing is drawn until R_RenderScene is called.
 	void	(*ClearScene)( void );
 	void	(*AddRefEntityToScene)( const refEntity_t *re );
-	void	(*AddPolyToScene)( qhandle_t hShader , int numVerts, const polyVert_t *verts );
+	void	(*AddPolyToScene)( qhandle_t hShader , int numVerts, const polyVert_t *verts, int numPolys );
 	void	(*AddLightToScene)( const vec3_t org, float intensity, float r, float g, float b );
 	void	(*RenderScene)( const refdef_t *fd );
 	qboolean(*GetLighting)( const vec3_t org, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);

@@ -2567,11 +2567,11 @@ void NPC_Think ( gentity_t *self)//, int msec )
 
 void NPC_InitAI ( void )
 {
-	debugNPCAI = gi.cvar ( "d_npcai", "0", CVAR_CHEAT );
-	debugNPCFreeze = gi.cvar ( "d_npcfreeze", "0", CVAR_CHEAT);
-	d_JediAI = gi.cvar ( "d_JediAI", "0", CVAR_CHEAT );
-	d_noGroupAI = gi.cvar ( "d_noGroupAI", "0", CVAR_CHEAT );
-	d_asynchronousGroupAI = gi.cvar ( "d_asynchronousGroupAI", "1", CVAR_CHEAT );
+	debugNPCAI = gi.cvar ( "d_npcai", "0", CVAR_CHEAT, "");
+	debugNPCFreeze = gi.cvar ( "d_npcfreeze", "0", CVAR_CHEAT, "");
+	d_JediAI = gi.cvar ( "d_JediAI", "0", CVAR_CHEAT, "");
+	d_noGroupAI = gi.cvar ( "d_noGroupAI", "0", CVAR_CHEAT, "");
+	d_asynchronousGroupAI = gi.cvar ( "d_asynchronousGroupAI", "1", CVAR_CHEAT, "");
 
 	//0 = never (BORING)
 	//1 = kyle only
@@ -2581,9 +2581,9 @@ void NPC_InitAI ( void )
 	//5 = kyle and any enemy
 	//6 = also when kyle takes pain or enemy jedi dodges player saber swing or does an acrobatic evasion
 	// NOTE : I also create this in UI_Init()
-	d_slowmodeath = gi.cvar ( "d_slowmodeath", "3", CVAR_ARCHIVE );//save this setting
+	d_slowmodeath = gi.cvar ( "d_slowmodeath", "3", CVAR_ARCHIVE, "");//save this setting
 
-	d_saberCombat = gi.cvar ( "d_saberCombat", "0", CVAR_CHEAT );
+	d_saberCombat = gi.cvar ( "d_saberCombat", "0", CVAR_CHEAT, "");
 }
 
 /*
@@ -2616,7 +2616,7 @@ extern int G_ParseAnimFileSet( const char *skeletonName, const char *modelName=0
 void NPC_InitGame( void )
 {
 //	globals.NPCs = (gNPC_t *) gi.TagMalloc(game.maxclients * sizeof(game.bots[0]), TAG_GAME);
-	debugNPCName = gi.cvar ( "d_npc", "", 0  );
+	debugNPCName = gi.cvar ( "d_npc", "", 0, "");
 	NPC_LoadParms();
 	NPC_InitAI();
 	NPC_InitAnimTable();

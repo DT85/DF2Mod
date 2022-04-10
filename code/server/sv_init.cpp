@@ -386,26 +386,26 @@ void SV_Init (void) {
 	SV_AddOperatorCommands ();
 
 	// serverinfo vars
-	Cvar_Get ("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM);
-	sv_mapname = Cvar_Get ("mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM);
+	Cvar_Get ("protocol", va("%i", PROTOCOL_VERSION), CVAR_SERVERINFO | CVAR_ROM, "");
+	sv_mapname = Cvar_Get ("mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM, "");
 
 	// systeminfo
-	Cvar_Get ("helpUsObi", "0", CVAR_SYSTEMINFO );
-	sv_serverid = Cvar_Get ("sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
+	Cvar_Get ("helpUsObi", "0", CVAR_SYSTEMINFO, "");
+	sv_serverid = Cvar_Get ("sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM, "");
 
 	// server vars
-	sv_fps = Cvar_Get ("sv_fps", "20", CVAR_TEMP );
-	sv_timeout = Cvar_Get ("sv_timeout", "120", CVAR_TEMP );
-	sv_zombietime = Cvar_Get ("sv_zombietime", "2", CVAR_TEMP );
-	Cvar_Get ("nextmap", "", CVAR_TEMP );
-	sv_spawntarget = Cvar_Get ("spawntarget", "", 0 );
+	sv_fps = Cvar_Get ("sv_fps", "20", CVAR_TEMP, "");
+	sv_timeout = Cvar_Get ("sv_timeout", "120", CVAR_TEMP, "");
+	sv_zombietime = Cvar_Get ("sv_zombietime", "2", CVAR_TEMP, "");
+	Cvar_Get ("nextmap", "", CVAR_TEMP, "");
+	sv_spawntarget = Cvar_Get ("spawntarget", "", 0, "");
 
-	sv_reconnectlimit = Cvar_Get ("sv_reconnectlimit", "3", 0);
-	sv_showloss = Cvar_Get ("sv_showloss", "0", 0);
-	sv_killserver = Cvar_Get ("sv_killserver", "0", 0);
-	sv_mapChecksum = Cvar_Get ("sv_mapChecksum", "", CVAR_ROM);
-	sv_testsave = Cvar_Get ("sv_testsave", "0", 0);
-	sv_compress_saved_games = Cvar_Get ("sv_compress_saved_games", "1", 0);
+	sv_reconnectlimit = Cvar_Get ("sv_reconnectlimit", "3", 0, "");
+	sv_showloss = Cvar_Get ("sv_showloss", "0", 0, "");
+	sv_killserver = Cvar_Get ("sv_killserver", "0", 0, "");
+	sv_mapChecksum = Cvar_Get ("sv_mapChecksum", "", CVAR_ROM, "");
+	sv_testsave = Cvar_Get ("sv_testsave", "0", 0, "");
+	sv_compress_saved_games = Cvar_Get ("sv_compress_saved_games", "1", 0, "");
 
 	// Only allocated once, no point in moving it around and fragmenting
 	// create a heap for Ghoul2 to use for game side model vertex transforms used in collision detection

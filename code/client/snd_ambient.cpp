@@ -816,7 +816,7 @@ Called on the client side to load and precache all the ambient sound sets
 
 void AS_ParseSets( void )
 {
-	cvar_t	*cv = Cvar_Get ("s_initsound", "1", 0);
+	cvar_t	*cv = Cvar_Get ("s_initsound", "1", 0, "");
 	if ( !cv->integer ) {
 		return;
 	}

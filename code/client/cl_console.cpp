@@ -281,12 +281,12 @@ Con_Init
 void Con_Init (void) {
 	int		i;
 
-	con_notifytime = Cvar_Get ("con_notifytime", "3", 0);
-	con_conspeed = Cvar_Get ("scr_conspeed", "3", 0);
+	con_notifytime = Cvar_Get ("con_notifytime", "3", 0, "");
+	con_conspeed = Cvar_Get ("scr_conspeed", "3", 0, "");
 	Cvar_CheckRange (con_conspeed, 1.0f, 100.0f, qfalse);
 
-	con_opacity = Cvar_Get ("con_opacity", "0.8", CVAR_ARCHIVE_ND);
-	con_autoclear = Cvar_Get ("con_autoclear", "1", CVAR_ARCHIVE_ND);
+	con_opacity = Cvar_Get ("con_opacity", "0.8", CVAR_ARCHIVE_ND, "");
+	con_autoclear = Cvar_Get ("con_autoclear", "1", CVAR_ARCHIVE_ND, "");
 
 	Field_Clear( &g_consoleField );
 	g_consoleField.widthInChars = g_console_field_width;
@@ -295,10 +295,10 @@ void Con_Init (void) {
 		historyEditLines[i].widthInChars = g_console_field_width;
 	}
 
-	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f);
-	Cmd_AddCommand ("togglemenu", Con_ToggleMenu_f);
-	Cmd_AddCommand ("clear", Con_Clear_f);
-	Cmd_AddCommand ("condump", Con_Dump_f);
+	Cmd_AddCommand ("toggleconsole", Con_ToggleConsole_f, NULL);
+	Cmd_AddCommand ("togglemenu", Con_ToggleMenu_f, NULL);
+	Cmd_AddCommand ("clear", Con_Clear_f, NULL);
+	Cmd_AddCommand ("condump", Con_Dump_f, NULL);
 	Cmd_SetCommandCompletionFunc( "condump", Cmd_CompleteTxtName );
 }
 

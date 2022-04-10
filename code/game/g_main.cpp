@@ -613,101 +613,101 @@ G_InitCvars
 */
 void G_InitCvars( void ) {
 	// don't override the cheat state set by the system
-	g_cheats = gi.cvar ("helpUsObi", "", 0);
-	g_developer = gi.cvar ("developer", "", 0);
+	g_cheats = gi.cvar ("helpUsObi", "", 0, "");
+	g_developer = gi.cvar ("developer", "", 0, "");
 
 	// noset vars
-	gi.cvar( "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM );
-	gi.cvar( "gamedate", SOURCE_DATE , CVAR_ROM );
-	g_skippingcin = gi.cvar ("skippingCinematic", "0", CVAR_ROM);
+	gi.cvar( "gamename", GAMEVERSION , CVAR_SERVERINFO | CVAR_ROM, "");
+	gi.cvar( "gamedate", SOURCE_DATE , CVAR_ROM, "");
+	g_skippingcin = gi.cvar ("skippingCinematic", "0", CVAR_ROM, "");
 
 	// latched vars
 
 	// change anytime vars
-	g_speed = gi.cvar( "g_speed", "250", CVAR_CHEAT );
-	g_gravity = gi.cvar( "g_gravity", "800", CVAR_SAVEGAME|CVAR_ROM );
-	g_stepSlideFix = gi.cvar( "g_stepSlideFix", "1", CVAR_ARCHIVE );
-	g_sex = gi.cvar ("sex", "f", CVAR_USERINFO | CVAR_ARCHIVE|CVAR_SAVEGAME|CVAR_NORESTART );
-	g_spskill = gi.cvar ("g_spskill", "0", CVAR_ARCHIVE | CVAR_SAVEGAME|CVAR_NORESTART);
-	g_knockback = gi.cvar( "g_knockback", "1000", CVAR_CHEAT );
-	g_dismemberment = gi.cvar ( "g_dismemberment", "3", CVAR_ARCHIVE );//0 = none, 1 = arms and hands, 2 = legs, 3 = waist and head
+	g_speed = gi.cvar( "g_speed", "250", CVAR_CHEAT, "");
+	g_gravity = gi.cvar( "g_gravity", "800", CVAR_SAVEGAME|CVAR_ROM, "");
+	g_stepSlideFix = gi.cvar( "g_stepSlideFix", "1", CVAR_ARCHIVE, "");
+	g_sex = gi.cvar ("sex", "f", CVAR_USERINFO | CVAR_ARCHIVE|CVAR_SAVEGAME|CVAR_NORESTART, "");
+	g_spskill = gi.cvar ("g_spskill", "0", CVAR_ARCHIVE | CVAR_SAVEGAME|CVAR_NORESTART, "");
+	g_knockback = gi.cvar( "g_knockback", "1000", CVAR_CHEAT, "");
+	g_dismemberment = gi.cvar ( "g_dismemberment", "3", CVAR_ARCHIVE, "");//0 = none, 1 = arms and hands, 2 = legs, 3 = waist and head
 	// for now I'm making default 10 seconds
-	g_corpseRemovalTime = gi.cvar ( "g_corpseRemovalTime", "10", CVAR_ARCHIVE );//number of seconds bodies stick around for, at least... 0 = never go away
-	g_synchSplitAnims = gi.cvar ( "g_synchSplitAnims", "1", 0 );
+	g_corpseRemovalTime = gi.cvar ( "g_corpseRemovalTime", "10", CVAR_ARCHIVE, "");//number of seconds bodies stick around for, at least... 0 = never go away
+	g_synchSplitAnims = gi.cvar ( "g_synchSplitAnims", "1", 0, "");
 #ifndef FINAL_BUILD
-	g_AnimWarning = gi.cvar ( "g_AnimWarning", "1", 0 );
+	g_AnimWarning = gi.cvar ( "g_AnimWarning", "1", 0, "");
 #endif
-	g_noFootSlide = gi.cvar ( "g_noFootSlide", "1", 0 );
-	g_noFootSlideRunScale = gi.cvar ( "g_noFootSlideRunScale", "150.0", 0 );
-	g_noFootSlideWalkScale = gi.cvar ( "g_noFootSlideWalkScale", "50.0", 0 );
+	g_noFootSlide = gi.cvar ( "g_noFootSlide", "1", 0, "");
+	g_noFootSlideRunScale = gi.cvar ( "g_noFootSlideRunScale", "150.0", 0, "");
+	g_noFootSlideWalkScale = gi.cvar ( "g_noFootSlideWalkScale", "50.0", 0, "");
 
-	g_nav1 = gi.cvar ( "g_nav1", "", 0 );
-	g_nav2 = gi.cvar ( "g_nav2", "", 0 );
+	g_nav1 = gi.cvar ( "g_nav1", "", 0, "");
+	g_nav2 = gi.cvar ( "g_nav2", "", 0, "");
 
-	g_bobaDebug = gi.cvar ( "g_bobaDebug", "", 0 );
+	g_bobaDebug = gi.cvar ( "g_bobaDebug", "", 0, "");
 
-	g_delayedShutdown = gi.cvar ( "g_delayedShutdown", "0", 0 );
+	g_delayedShutdown = gi.cvar ( "g_delayedShutdown", "0", 0, "");
 
-	g_inactivity = gi.cvar ("g_inactivity", "0", 0);
-	g_debugMove = gi.cvar ("g_debugMove", "0", CVAR_CHEAT );
-	g_debugDamage = gi.cvar ("g_debugDamage", "0", CVAR_CHEAT );
-	g_ICARUSDebug = gi.cvar( "g_ICARUSDebug", "0", CVAR_CHEAT );
-	g_timescale = gi.cvar( "timescale", "1", 0 );
-	g_npcdebug = gi.cvar( "g_npcdebug", "0", 0 );
-	g_navSafetyChecks = gi.cvar( "g_navSafetyChecks", "0", 0 );
+	g_inactivity = gi.cvar ("g_inactivity", "0", 0, "");
+	g_debugMove = gi.cvar ("g_debugMove", "0", CVAR_CHEAT, "");
+	g_debugDamage = gi.cvar ("g_debugDamage", "0", CVAR_CHEAT, "");
+	g_ICARUSDebug = gi.cvar( "g_ICARUSDebug", "0", CVAR_CHEAT, "");
+	g_timescale = gi.cvar( "timescale", "1", 0, "");
+	g_npcdebug = gi.cvar( "g_npcdebug", "0", 0, "");
+	g_navSafetyChecks = gi.cvar( "g_navSafetyChecks", "0", 0, "");
 	// NOTE : I also create this is UI_Init()
-	g_subtitles = gi.cvar( "g_subtitles", "0", CVAR_ARCHIVE );
-	com_buildScript = gi.cvar ("com_buildscript", "0", 0);
+	g_subtitles = gi.cvar( "g_subtitles", "0", CVAR_ARCHIVE, "");
+	com_buildScript = gi.cvar ("com_buildscript", "0", 0, "");
 
-	g_saberAutoBlocking = gi.cvar( "g_saberAutoBlocking", "1", CVAR_CHEAT );//must press +block button to do any blocking
-	g_saberRealisticCombat = gi.cvar( "g_saberMoreRealistic", "0", CVAR_ARCHIVE );//makes collision more precise, increases damage
-	debug_subdivision = gi.cvar( "debug_subdivision", "0", CVAR_ARCHIVE );//debug for dismemberment
-	g_dismemberProbabilities = gi.cvar ( "g_dismemberProbabilities", "1", CVAR_ARCHIVE );//0 = ignore probabilities, 1 = use probabilities
-	g_saberDamageCapping = gi.cvar( "g_saberDamageCapping", "1", CVAR_CHEAT );//caps damage of sabers vs players and NPC who use sabers
-	g_saberMoveSpeed = gi.cvar( "g_saberMoveSpeed", "1", CVAR_CHEAT );//how fast you run while attacking with a saber
-	g_saberAnimSpeed = gi.cvar( "g_saberAnimSpeed", "1", CVAR_CHEAT );//how fast saber animations run
-	g_saberAutoAim = gi.cvar( "g_saberAutoAim", "1", CVAR_CHEAT );//auto-aims at enemies when not moving or when just running forward
-	g_saberNewControlScheme = gi.cvar( "g_saberNewControlScheme", "0", CVAR_ARCHIVE );//use +forcefocus to pull off all the special moves
-	g_debugSaberLock = gi.cvar( "g_debugSaberLock", "0", CVAR_CHEAT );//just for debugging/development, makes saberlocks happen all the time
-	g_saberLockRandomNess = gi.cvar( "g_saberLockRandomNess", "2", CVAR_ARCHIVE );//just for debugging/development, controls frequency of saberlocks
-	g_debugMelee = gi.cvar( "g_debugMelee", "0", CVAR_CHEAT );//just for debugging/development, test kicks and grabs
-	g_saberRestrictForce = gi.cvar( "g_saberRestrictForce", "0", CVAR_ARCHIVE );//restricts certain force powers when using a 2-handed saber or 2 sabers
-	g_saberPickuppableDroppedSabers = gi.cvar( "g_saberPickuppableDroppedSabers", "0", CVAR_CHEAT );//lets you pick up sabers that are dropped
+	g_saberAutoBlocking = gi.cvar( "g_saberAutoBlocking", "1", CVAR_CHEAT, "");//must press +block button to do any blocking
+	g_saberRealisticCombat = gi.cvar( "g_saberMoreRealistic", "0", CVAR_ARCHIVE, "");//makes collision more precise, increases damage
+	debug_subdivision = gi.cvar( "debug_subdivision", "0", CVAR_ARCHIVE, "");//debug for dismemberment
+	g_dismemberProbabilities = gi.cvar ( "g_dismemberProbabilities", "1", CVAR_ARCHIVE, "");//0 = ignore probabilities, 1 = use probabilities
+	g_saberDamageCapping = gi.cvar( "g_saberDamageCapping", "1", CVAR_CHEAT, "");//caps damage of sabers vs players and NPC who use sabers
+	g_saberMoveSpeed = gi.cvar( "g_saberMoveSpeed", "1", CVAR_CHEAT, "");//how fast you run while attacking with a saber
+	g_saberAnimSpeed = gi.cvar( "g_saberAnimSpeed", "1", CVAR_CHEAT, "");//how fast saber animations run
+	g_saberAutoAim = gi.cvar( "g_saberAutoAim", "1", CVAR_CHEAT, "");//auto-aims at enemies when not moving or when just running forward
+	g_saberNewControlScheme = gi.cvar( "g_saberNewControlScheme", "0", CVAR_ARCHIVE, "");//use +forcefocus to pull off all the special moves
+	g_debugSaberLock = gi.cvar( "g_debugSaberLock", "0", CVAR_CHEAT, "");//just for debugging/development, makes saberlocks happen all the time
+	g_saberLockRandomNess = gi.cvar( "g_saberLockRandomNess", "2", CVAR_ARCHIVE, "");//just for debugging/development, controls frequency of saberlocks
+	g_debugMelee = gi.cvar( "g_debugMelee", "0", CVAR_CHEAT, "");//just for debugging/development, test kicks and grabs
+	g_saberRestrictForce = gi.cvar( "g_saberRestrictForce", "0", CVAR_ARCHIVE, "");//restricts certain force powers when using a 2-handed saber or 2 sabers
+	g_saberPickuppableDroppedSabers = gi.cvar( "g_saberPickuppableDroppedSabers", "0", CVAR_CHEAT, "");//lets you pick up sabers that are dropped
 
-	g_AIsurrender = gi.cvar( "g_AIsurrender", "0", CVAR_CHEAT );
-	g_numEntities = gi.cvar( "g_numEntities", "0", 0 );
+	g_AIsurrender = gi.cvar( "g_AIsurrender", "0", CVAR_CHEAT, "");
+	g_numEntities = gi.cvar( "g_numEntities", "0", 0, "");
 
-	gi.cvar( "newTotalSecrets", "0", CVAR_ROM );
+	gi.cvar( "newTotalSecrets", "0", CVAR_ROM, "");
 	gi.cvar_set("newTotalSecrets", "0");//used to carry over the count from SP_target_secret to ClientBegin
 	//g_iscensored = gi.cvar( "ui_iscensored", "0", CVAR_ARCHIVE|CVAR_ROM|CVAR_INIT|CVAR_CHEAT|CVAR_NORESTART );
 
-	g_speederControlScheme = gi.cvar( "g_speederControlScheme", "2", CVAR_ARCHIVE );//2 is default, 1 is alternate
+	g_speederControlScheme = gi.cvar( "g_speederControlScheme", "2", CVAR_ARCHIVE, "");//2 is default, 1 is alternate
 
 	//DF2Mod - Changed to kyle
-	g_char_model = gi.cvar("g_char_model", "df2_kyle", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_char_skin_head = gi.cvar("g_char_skin_head", "model_default", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_char_skin_torso = gi.cvar("g_char_skin_torso", "model_default", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_char_skin_legs = gi.cvar("g_char_skin_legs", "model_default", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_char_color_red = gi.cvar("g_char_color_red", "255", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_char_color_green = gi.cvar("g_char_color_green", "255", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_char_color_blue = gi.cvar("g_char_color_blue", "255", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_saber = gi.cvar("g_saber", "single_1", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_saber2 = gi.cvar("g_saber2", "", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_saber_color = gi.cvar("g_saber_color", "green", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_saber2_color = gi.cvar("g_saber2_color", "yellow", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART);
-	g_saberDarkSideSaberColor = gi.cvar("g_saberDarkSideSaberColor", "0", CVAR_ARCHIVE);	//when you turn evil, it turns your saber red!
+	g_char_model = gi.cvar("g_char_model", "df2_kyle", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_char_skin_head = gi.cvar("g_char_skin_head", "model_default", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_char_skin_torso = gi.cvar("g_char_skin_torso", "model_default", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_char_skin_legs = gi.cvar("g_char_skin_legs", "model_default", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_char_color_red = gi.cvar("g_char_color_red", "255", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_char_color_green = gi.cvar("g_char_color_green", "255", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_char_color_blue = gi.cvar("g_char_color_blue", "255", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_saber = gi.cvar("g_saber", "single_1", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_saber2 = gi.cvar("g_saber2", "", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_saber_color = gi.cvar("g_saber_color", "green", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_saber2_color = gi.cvar("g_saber2_color", "yellow", CVAR_ARCHIVE | CVAR_SAVEGAME | CVAR_NORESTART, "");
+	g_saberDarkSideSaberColor = gi.cvar("g_saberDarkSideSaberColor", "0", CVAR_ARCHIVE, "");	//when you turn evil, it turns your saber red!
 
-	g_broadsword = gi.cvar( "broadsword", "1", 0);
+	g_broadsword = gi.cvar( "broadsword", "1", 0, "");
 
-	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0 );
+	g_allowBunnyhopping = gi.cvar( "g_allowBunnyhopping", "0", 0, "");
 
-	gi.cvar( "tier_storyinfo", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
-	gi.cvar( "tiers_complete", "", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
+	gi.cvar( "tier_storyinfo", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART, "");
+	gi.cvar( "tiers_complete", "", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART, "");
 
-	gi.cvar( "ui_prisonerobj_currtotal", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
-	gi.cvar( "ui_prisonerobj_maxtotal", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART);
+	gi.cvar( "ui_prisonerobj_currtotal", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART, "");
+	gi.cvar( "ui_prisonerobj_maxtotal", "0", CVAR_ROM|CVAR_SAVEGAME|CVAR_NORESTART, "");
 
-	gi.cvar( "g_clearstats", "1", CVAR_ROM|CVAR_NORESTART);
+	gi.cvar( "g_clearstats", "1", CVAR_ROM|CVAR_NORESTART, "");
 
 }
 /*
@@ -858,7 +858,7 @@ Ghoul2 Insert End
 //===================================================================
 
 static void G_Cvar_Create( const char *var_name, const char *var_value, int flags ) {
-	gi.cvar( var_name, var_value, flags );
+	gi.cvar( var_name, var_value, flags, 0 );
 }
 
 //BEGIN GAMESIDE RMG

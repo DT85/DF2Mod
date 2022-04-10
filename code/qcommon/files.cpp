@@ -2864,19 +2864,19 @@ void FS_Startup( const char *gameName ) {
 
 	fs_packFiles = 0;
 
-	fs_debug = Cvar_Get( "fs_debug", "0", 0 );
-	fs_copyfiles = Cvar_Get( "fs_copyfiles", "0", CVAR_INIT );
-	fs_cdpath = Cvar_Get ("fs_cdpath", "", CVAR_INIT|CVAR_PROTECTED );
-	fs_basepath = Cvar_Get ("fs_basepath", Sys_DefaultInstallPath(), CVAR_INIT|CVAR_PROTECTED );
-	fs_basegame = Cvar_Get ("fs_basegame", "", CVAR_INIT );
+	fs_debug = Cvar_Get( "fs_debug", "0", 0, "");
+	fs_copyfiles = Cvar_Get( "fs_copyfiles", "0", CVAR_INIT, "");
+	fs_cdpath = Cvar_Get ("fs_cdpath", "", CVAR_INIT|CVAR_PROTECTED, "");
+	fs_basepath = Cvar_Get ("fs_basepath", Sys_DefaultInstallPath(), CVAR_INIT|CVAR_PROTECTED, "");
+	fs_basegame = Cvar_Get ("fs_basegame", "", CVAR_INIT, "");
 	homePath = Sys_DefaultHomePath();
 	if (!homePath || !homePath[0]) {
 		homePath = fs_basepath->string;
 	}
-	fs_homepath = Cvar_Get ("fs_homepath", homePath, CVAR_INIT|CVAR_PROTECTED );
-	fs_gamedirvar = Cvar_Get ("fs_game", "DF2", CVAR_INIT|CVAR_SYSTEMINFO );
+	fs_homepath = Cvar_Get ("fs_homepath", homePath, CVAR_INIT|CVAR_PROTECTED, "");
+	fs_gamedirvar = Cvar_Get ("fs_game", "DF2", CVAR_INIT|CVAR_SYSTEMINFO, "");
 
-	fs_dirbeforepak = Cvar_Get("fs_dirbeforepak", "0", CVAR_INIT|CVAR_PROTECTED);
+	fs_dirbeforepak = Cvar_Get("fs_dirbeforepak", "0", CVAR_INIT|CVAR_PROTECTED, "");
 
 	// add search path elements in reverse priority order
 	if (fs_cdpath->string[0]) {
@@ -2930,11 +2930,11 @@ void FS_Startup( const char *gameName ) {
 	}
 
 	// add our commands
-	Cmd_AddCommand ("path", FS_Path_f);
-	Cmd_AddCommand ("dir", FS_Dir_f );
-	Cmd_AddCommand ("fdir", FS_NewDir_f );
-	Cmd_AddCommand ("touchFile", FS_TouchFile_f );
-	Cmd_AddCommand ("which", FS_Which_f );
+	Cmd_AddCommand ("path", FS_Path_f, NULL);
+	Cmd_AddCommand ("dir", FS_Dir_f, NULL );
+	Cmd_AddCommand ("fdir", FS_NewDir_f, NULL);
+	Cmd_AddCommand ("touchFile", FS_TouchFile_f, NULL);
+	Cmd_AddCommand ("which", FS_Which_f, NULL);
 
 	// print the current search paths
 	FS_Path_f();

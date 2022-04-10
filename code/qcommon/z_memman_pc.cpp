@@ -936,18 +936,18 @@ void Com_InitZoneMemory( void )
 
 void Com_InitZoneMemoryVars( void)
 {
-	com_validateZone = Cvar_Get("com_validateZone", "0", 0);
+	com_validateZone = Cvar_Get("com_validateZone", "0", 0, "");
 
-	Cmd_AddCommand("zone_stats",	Z_Stats_f);
-	Cmd_AddCommand("zone_details",	Z_Details_f);
+	Cmd_AddCommand("zone_stats",	Z_Stats_f, NULL);
+	Cmd_AddCommand("zone_details",	Z_Details_f, NULL);
 
 #ifdef _DEBUG
 	Cmd_AddCommand("zone_memrecovertest", Z_MemRecoverTest_f);
 #endif
 
 #ifdef DEBUG_ZONE_ALLOCS
-	Cmd_AddCommand("zone_tagdebug",	Z_TagDebug_f);
-	Cmd_AddCommand("zone_snapshot",	Z_Snapshot_f);
+	Cmd_AddCommand("zone_tagdebug",	Z_TagDebug_f, NULL);
+	Cmd_AddCommand("zone_snapshot",	Z_Snapshot_f, NULL);
 #endif
 }
 
