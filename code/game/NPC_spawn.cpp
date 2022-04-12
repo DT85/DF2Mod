@@ -2989,8 +2989,9 @@ void SP_NPC_Gran( gentity_t *self)
 	SP_NPC_spawner( self );
 }
 
-/*QUAKED NPC_Rodian(1 0 0) (-16 -16 -24) (16 16 40) BLASTER NO_HIDE x x DROPTOFLOOR CINEMATIC NOTSOLID STARTINSOLID SHY
+/*QUAKED NPC_Rodian(1 0 0) (-16 -16 -24) (16 16 40) BLASTER NO_HIDE BLASTERPISTOL x DROPTOFLOOR CINEMATIC NOTSOLID STARTINSOLID SHY
 BLASTER uses a blaster instead of sniper rifle, different skin
+BLASTERPISTOL uses a blaster pistol instead of sniper rifle, different skin
 NO_HIDE (only applicable with snipers) does not duck and hide between shots
 DROPTOFLOOR - NPC can be in air, but will spawn on the closest floor surface below it
 CINEMATIC - Will spawn with no default AI (BS_CINEMATIC)
@@ -3005,6 +3006,10 @@ void SP_NPC_Rodian( gentity_t *self)
 		if ( self->spawnflags&1 )
 		{
 			self->NPC_type = "rodian2";
+		}
+		else if (self->spawnflags & 4)
+		{
+			self->NPC_type = "rodian3";
 		}
 		else
 		{
