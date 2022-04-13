@@ -2287,8 +2287,8 @@ qboolean ClientSpawn(gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded 
 
 		for ( i = FIRST_WEAPON; i < MAX_PLAYER_WEAPONS; i++ ) // don't give ammo for explosives
 		{
-			if ( (client->ps.stats[STAT_WEAPONS]&(1<<i)) )
-			{//if starting with this weapon, gimme max ammo for it
+			if ( (client->ps.stats[STAT_WEAPONS] & (1 << i) && g_spskill->integer == 0) )
+			{//if starting with this weapon on easiest skill, gimme max ammo for it
 				client->ps.ammo[weaponData[i].ammoIndex] = ammoData[weaponData[i].ammoIndex].max;
 			}
 		}
