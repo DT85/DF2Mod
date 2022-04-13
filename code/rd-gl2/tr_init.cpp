@@ -252,9 +252,12 @@ int max_polyverts;
 extern void	RB_SetGL2D(void);
 static void R_Splash()
 {
-	const GLfloat black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	//widescreen fix
+	float widthRatioCoef = (float)(SCREEN_WIDTH * glConfig.vidHeight) / (float)(SCREEN_HEIGHT * glConfig.vidWidth);
 
-	qglViewport(0, 0, glConfig.vidWidth, glConfig.vidHeight);
+	const GLfloat black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	
+	qglViewport(SCREEN_WIDTH - (SCREEN_WIDTH - 0) * widthRatioCoef, 0, glConfig.vidWidth * widthRatioCoef, glConfig.vidHeight);
 	qglClearBufferfv(GL_COLOR, 0, black);
 
 	GLSL_InitSplashScreenShader();

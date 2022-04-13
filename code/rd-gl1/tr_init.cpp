@@ -237,6 +237,9 @@ void RE_SetLightStyle(int style, int color);
 
 void R_Splash()
 {
+	//widescreen fix
+	float widthRatioCoef = (float)(SCREEN_WIDTH * glConfig.vidHeight) / (float)(SCREEN_HEIGHT * glConfig.vidWidth);
+
 	image_t *pImage = R_FindImageFile( "menu/splash", qfalse, qfalse, qfalse, GL_CLAMP);
 
 	if ( !pImage )
@@ -253,7 +256,7 @@ void R_Splash()
 		GL_Bind( pImage );
 		GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);
 
-		const int width = 640;
+		const int width = 640 * widthRatioCoef;
 		const int height = 480;
 		const float x1 = 320 - width / 2;
 		const float x2 = 320 + width / 2;
