@@ -63,14 +63,13 @@ void main()
 
 	vec3 offset = offsets[gl_VertexID];
 
-#if defined(FACE_CAMERA)
-	//TODO: Allow facing the camera on the z axis as well to match GL1.
+#if defined(FACE_CAMERA) //oriented
+	//TODO: rework to include Z axis.
+	// Sprite facing camera on every axis
 	vec2 toCamera = normalize(V.xy);
 	offset.xy = offset.x*vec2(toCamera.y, -toCamera.x);
-#elif defined(FACE_UP)
-	// Incorrect. Copied the FACE_CAMERA code (orients sprite only on X & Y axis) for FACE_UP instead. Now matches GL1.
-	// Make this sprite face in some direction
-	//offset.xy = offset.x*attr_Normal.xy;
+#elif defined(FACE_UP) //vertical
+	// Sprite facing camera X & Y axis only
 	vec2 toCamera = normalize(V.xy);
 	offset.xy = offset.x*vec2(toCamera.y, -toCamera.x);
 #endif
