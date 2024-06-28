@@ -1,4 +1,4 @@
-# OpenDF2
+# DF2Mod
 
 Star Wars Dark Forces II: Jedi Knight Mod for Jedi Academy source code. This project uses OpenJK as a base. This project also uses code from ioquake3's OpenGL2 renderer.
 
